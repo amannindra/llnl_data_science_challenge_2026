@@ -4,6 +4,8 @@
 
 This repository contains materials for the Data Science Challenge 2026 at Lawrence Livermore National Laboratory (LLNL). The challenge is part of the 2026 Data Science Summer Institute (DSSI) and Data Science Challenge (DSC) and focuses on applying agentic AI to a materials science workflow.
 
+anthony - this is a test!
+
 ## Goal
 
 The goal of this challenge is to build an AI-assisted workflow for analyzing X-ray CT data from additively manufactured lattice structures. Participants use coding agents, Model Context Protocol (MCP) tools, skills, and subagents to automate steps such as:
