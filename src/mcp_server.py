@@ -1,4 +1,5 @@
 from fastmcp import FastMCP
+import numpy as np
 
 # Initialize the MCP server
 mcp = FastMCP("CT Segmentation")
@@ -32,7 +33,24 @@ def visualize_slice(input_filepath: str, output_filepath: str, slice_index: int,
     Returns:
         A status message indicating success and the save location, or an error message.
     """
-    pass # Implementation goes here
+    threshold = 0.5
+
+    try:
+        ct_data = np.load(input_filepath)
+
+        if ct_data.ndim != 3:
+            return (
+                f"Error: expected a 3D dataset, "
+                f"but received shape {ct_data.shape}."
+            )
+
+        segmentation_mask = (ct_data >= threshold).astype(np.uint8)
+        np.save(output_filepath, segmentation_mask)
+
+        return f"Segmentation saved successfully to {output_filepath}"
+
+    except Exception as error:
+        return f"Error segmenting CT dataset: {error}"
 
 @mcp.tool()
 def skeletonize(input_filepath: str, output_filepath: str) -> str:
