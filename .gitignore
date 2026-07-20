@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Project-generated analysis outputs
+outputs/
+
 # C extensions
 *.so
 
