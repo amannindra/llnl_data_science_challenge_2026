@@ -1,0 +1,37 @@
+{
+  "foreground_fraction_metric_region": 0.06898448462755695,
+  "metric_region_voxel_count": 6139395,
+  "metric_region_foreground_voxels": 423523,
+  "metric_region_background_voxels": 5715872,
+  "metric_region_component_count_3d": 26,
+  "metric_region_largest_component_voxels_3d": 420446,
+  "metric_region_largest_component_fraction_3d": 0.9927347511233157,
+  "metric_region_small_component_count_3d_lt_64": 15,
+  "slice_380_component_count_2d": 229,
+  "slice_380_largest_component_pixels_2d": 3231,
+  "slice_380_largest_component_fraction_2d": 0.08367431501527943,
+  "slice_380_small_component_count_2d_lt_16": 69,
+  "mode": "preview",
+  "threshold": 39000.0,
+  "sigma": 0.8,
+  "closing_iters": 1,
+  "opening_iters": 0,
+  "metric_slices": [
+    372,
+    374,
+    376,
+    378,
+    380,
+    382,
+    384,
+    386,
+    388
+  ],
+  "sample_slices": [
+    190,
+    285,
+    380,
+    475,
+    570
+  ]
+}
