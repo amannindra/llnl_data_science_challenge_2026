@@ -6,6 +6,11 @@ matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
 
+try:
+    from .skeletonization import skeletonize_mask
+except ImportError:
+    from skeletonization import skeletonize_mask
+
 # Initialize the MCP server
 mcp = FastMCP("CT Segmentation")
 
@@ -100,7 +105,16 @@ def skeletonize(input_filepath: str, output_filepath: str) -> str:
     Returns:
         A status message indicating success and the save location, or an error message.
     """
-    pass # Implementation goes here, calling skeletonize_mask internally
+    try:
+        skeleton = skeletonize_mask(input_filepath, output_filepath)
+
+        if skeleton is None:
+            return f"Error: could not skeletonize {input_filepath}."
+
+        return f"Skeleton saved successfully to {output_filepath}"
+
+    except Exception as error:
+        return f"Error skeletonizing mask: {error}"
 
 if __name__ == "__main__":
     # Run the FastMCP server, exposing the tools over standard I/O (default)
