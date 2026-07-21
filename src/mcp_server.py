@@ -17,8 +17,6 @@ def segment_ct_dataset(input_filepath: str, output_filepath: str, threshold: flo
     Returns:
         A status message indicating success and the save location, or an error message.
     """
-    threshold = 0.5
-
     try:
         ct_data = np.load(input_filepath)
 
