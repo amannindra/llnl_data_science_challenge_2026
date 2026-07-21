@@ -1,5 +1,10 @@
 from fastmcp import FastMCP
 import numpy as np
+import matplotlib
+
+matplotlib.use("Agg")
+
+import matplotlib.pyplot as plt
 
 # Initialize the MCP server
 mcp = FastMCP("CT Segmentation")
@@ -18,15 +23,15 @@ def segment_ct_dataset(input_filepath: str, output_filepath: str, threshold: flo
         A status message indicating success and the save location, or an error message.
     """
     try:
-        ct_data = np.load(input_filepath)
+        data = np.load(input_filepath)
 
-        if ct_data.ndim != 3:
+        if data.ndim != 3:
             return (
                 f"Error: expected a 3D dataset, "
-                f"but received shape {ct_data.shape}."
+                f"but received shape {data.shape}."
             )
 
-        segmentation_mask = (ct_data >= threshold).astype(np.uint8)
+        segmentation_mask = (data >= threshold).astype(np.uint8)
         np.save(output_filepath, segmentation_mask)
 
         return f"Segmentation saved successfully to {output_filepath}"
@@ -48,7 +53,40 @@ def visualize_slice(input_filepath: str, output_filepath: str, slice_index: int,
     Returns:
         A status message indicating success and the save location, or an error message.
     """
-    pass # Implementation goes here
+    try:
+        data = np.load(input_filepath)
+
+        if data.ndim != 3:
+            return (
+                f"Error: expected a 3D dataset, "
+                f"but received shape {data.shape}."
+            )
+
+        if axis not in (0, 1, 2):
+            return f"Error: axis must be 0, 1, or 2; received {axis}."
+
+        if not 0 <= slice_index < data.shape[axis]:
+            return (
+                f"Error: slice_index must be between 0 and "
+                f"{data.shape[axis] - 1} for axis {axis}; "
+                f"received {slice_index}."
+            )
+
+        slice_data = np.take(data, slice_index, axis=axis)
+
+        plt.figure(figsize=(8, 8))
+        plt.imshow(slice_data, cmap="gray")
+        plt.title(f"Slice {slice_index} along axis {axis}")
+        plt.axis("off")
+        plt.tight_layout()
+        plt.savefig(output_filepath, dpi=150, bbox_inches="tight")
+        plt.close()
+
+        return f"Slice visualization saved successfully to {output_filepath}"
+
+    except Exception as error:
+        plt.close()
+        return f"Error visualizing slice: {error}"
 
 @mcp.tool()
 def skeletonize(input_filepath: str, output_filepath: str) -> str:
