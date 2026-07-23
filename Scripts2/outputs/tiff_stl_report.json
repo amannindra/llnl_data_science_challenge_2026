@@ -1,0 +1,62 @@
+[
+  {
+    "relative_path": "data/9x9x9_octet_lattice/9x9x9_octet_lattice.tif",
+    "present_bytes": 135,
+    "sha256_present_bytes": "ea01b79a3b369c70f86a8da671c897f0f9ee88848cfcb8797ae0ff19cf799f11",
+    "kind": "git_lfs_pointer",
+    "lfs": {
+      "object_id": "1dea75b7a9882065cc52d4eb137b7d2cdc86d3ad928543e751ae4c811c466b79",
+      "expected_bytes": 1038433319
+    }
+  },
+  {
+    "relative_path": "data/missing_struts/stls/0.1.stl",
+    "present_bytes": 134,
+    "sha256_present_bytes": "7eaf9d707701078fed996b872072715f2cf79ffa975d5d7a112a0c0ef55fee65",
+    "kind": "git_lfs_pointer",
+    "lfs": {
+      "object_id": "38e4e226a4f866855098384fc479ac6267d056477af8ce5dd5599d9bd83b902b",
+      "expected_bytes": 175572984
+    }
+  },
+  {
+    "relative_path": "data/missing_struts/stls/0.5.stl",
+    "present_bytes": 134,
+    "sha256_present_bytes": "ae03946f46a3a3b69844468771293703c4eb9963bb251ce13f7c1593178e845a",
+    "kind": "git_lfs_pointer",
+    "lfs": {
+      "object_id": "24dcb40c13c4a729cdd84b760b803d78c61bb31ec6b2411724ff6f78cafc2ec4",
+      "expected_bytes": 174932884
+    }
+  },
+  {
+    "relative_path": "data/missing_struts/stls/0.stl",
+    "present_bytes": 134,
+    "sha256_present_bytes": "f752bd5e1e7a918409691f0a3c82318471cdcb1aaf8d5c0bba243d1874c7e678",
+    "kind": "git_lfs_pointer",
+    "lfs": {
+      "object_id": "2a5b2911f641b0282c276ea6bb1062d98c5b956396a18dd60a9fd3b8c1d8220a",
+      "expected_bytes": 175732184
+    }
+  },
+  {
+    "relative_path": "data/missing_struts/stls/1.stl",
+    "present_bytes": 134,
+    "sha256_present_bytes": "f9d208cf519dd297cbf238e27eaa7c1b268945fa3dc5355804725281125325a2",
+    "kind": "git_lfs_pointer",
+    "lfs": {
+      "object_id": "4bb48e2459e836e306b3f357c592671a318df4324580600041375da7fb4ca1fa",
+      "expected_bytes": 174118484
+    }
+  },
+  {
+    "relative_path": "data/missing_struts/tif_stacks/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.tif",
+    "present_bytes": 135,
+    "sha256_present_bytes": "ea01b79a3b369c70f86a8da671c897f0f9ee88848cfcb8797ae0ff19cf799f11",
+    "kind": "git_lfs_pointer",
+    "lfs": {
+      "object_id": "1dea75b7a9882065cc52d4eb137b7d2cdc86d3ad928543e751ae4c811c466b79",
+      "expected_bytes": 1038433319
+    }
+  }
+]
