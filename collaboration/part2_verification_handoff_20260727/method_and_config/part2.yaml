@@ -1,0 +1,223 @@
+schema_version: "0.2.0"
+project_name: "DSC Part 2 Registration-Aware Strut Digital Twin"
+
+run:
+  run_id: null
+  output_root: "outputs/part2"
+  random_seed: 20260723
+  overwrite_existing: false
+  write_input_hashes: true
+  write_package_versions: true
+
+repository:
+  require_clean_worktree: false
+  forbid_git_write_operations: true
+  raw_data_read_only: true
+
+specimen:
+  specimen_id: "210127_Brian_Tran_strut_lattices_0point5dash1_1"
+  nominal_missing_tier_percent: 0.5
+  paper_specimen_mapping: "0.5% (#1)"
+  mapping_status: "UNVERIFIED"
+
+inputs:
+  tiff_path: "data/missing_struts/tif_stacks/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.tif"
+  nominal_graph_json: "data/missing_struts/octet_truss_9x9x9.json"
+  registered_graph_json: "data/missing_struts/registered_jsons/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.json"
+  baseline_stl: "data/missing_struts/stls/0.stl"
+  specimen_design_stl: "data/missing_struts/stls/0.5.stl"
+  all_design_stls:
+    "0.0": "data/missing_struts/stls/0.stl"
+    "0.1": "data/missing_struts/stls/0.1.stl"
+    "0.5": "data/missing_struts/stls/0.5.stl"
+    "1.0": "data/missing_struts/stls/1.stl"
+
+coordinate_frames:
+  nominal_graph:
+    name: "nominal_graph_units"
+    coordinate_order: [x, y, z]
+    units: "graph_unit"
+    graph_units_per_unit_cell_edge: 2.0
+    unit_cell_edge_mm: 4.56
+    mm_per_graph_unit: 2.28
+    status: "CALIBRATED_FROM_CHALLENGE_AND_GRAPH_SCALE"
+  registered_graph:
+    name: "registered_ct_xyz_voxels"
+    coordinate_order: [x, y, z]
+    units: "voxel"
+    status: "VERIFY_FROM_REAL_JSON"
+  tiff_array:
+    name: "tiff_array_zyx"
+    index_order: [z, y, x]
+    units: "voxel"
+    expected_shape_zyx: [761, 815, 837]
+    status: "VERIFY_FROM_REAL_TIFF"
+  stl:
+    name: "stl_mm"
+    coordinate_order: [x, y, z]
+    units: "mm"
+    axis_mapping_to_nominal: null
+    status: "UNVERIFIED"
+  manufacturing:
+    build_direction_in_registered_xyz: [0.0, 1.0, 0.0]
+    build_direction_status: "VERIFY_FROM_PAPER_AND_DATA"
+    skin_normal_in_registered_xyz: [0.0, 0.0, 1.0]
+    skin_normal_status: "VERIFY_FROM_PAPER_AND_TIFF"
+    lpbf_layer_thickness_mm: null
+    true_print_layer_origin_mm: null
+
+canonical_graph:
+  position_merge_tolerance_nominal: 1.0e-8
+  position_merge_tolerance_registered_voxels: 1.0e-6
+  preserve_source_junction_aliases: true
+  preserve_source_strut_ids: true
+  require_unique_geometric_edges: true
+  require_connected_physical_graph: true
+
+registration:
+  nominal_to_registered:
+    model: "affine_audit_then_similarity_check"
+    expected_uniform_scale_voxels_per_graph_unit: 39.48880949493
+    expected_rotation_degrees: 0.3351084961
+    expected_translation_xyz_voxels: [59.3396041862, 52.1828934867, 26.4617319582]
+    values_status: "RECOMPUTE_AND_VERIFY"
+  stl_to_nominal:
+    first_method: "triangle_difference_audit_then_centerline_surface_distance_delta"
+    quantization_tolerance_mm: 1.0e-4
+    centerline_distance_delta_threshold_mm: 0.15
+    graph_to_stl_axis_mapping: "identity_centered_phase1_assumption"
+    graph_to_stl_axis_mapping_status: "UNVERIFIED_REVIEW_NEEDED"
+    test_all_axis_permutations: true
+    test_reflections: true
+    allow_similarity_refinement: true
+    allow_icp_only_after_coarse_alignment: true
+
+ct_access:
+  preferred_backend: "tifffile_memmap_or_zarr"
+  max_memory_gb: 6.0
+  page_cache_size: 64
+  never_materialize_multiple_full_volume_copies: true
+
+segmentation:
+  baseline_method_id: "IMG-001"
+  candidate_thresholds_uint16: [38557, 40000, 41018]
+  threshold_source_labels:
+    - "part1_improved_slice_calibration"
+    - "intermediate"
+    - "sampled_otsu"
+  morphology:
+    enabled: false
+    method: null
+  require_threshold_ensemble: true
+
+strut_sampling:
+  method_id: "ROI-001"
+  coarse:
+    axial_bins: 48
+    endpoint_exclusion_fraction: 0.12
+    radial_radius_voxels: 5
+    radial_pattern: "disk"
+  detailed:
+    axial_bins: 64
+    endpoint_exclusion_fraction: 0.10
+    radial_radius_voxels: 9
+    cross_section_size_voxels: 19
+  expected_registered_edge_length_voxels: 55.8456099497
+  nominal_strut_diameter_mm_candidates: [0.350, 0.424]
+  nominal_diameter_status: "UNRESOLVED_USE_CALIBRATION"
+  neighboring_edge_ownership: "nearest_finite_segment_with_node_exclusion"
+
+classification:
+  primary_classes:
+    - intact
+    - intentionally_removed
+    - unexpected_material_on_removed_edge
+    - unintended_missing
+    - disconnected
+    - uncertain
+  secondary_classes:
+    - thin
+    - bent
+    - dross_or_overbuilt
+  enable_secondary_classes_initially: false
+  confidence_method_id: "DEF-003"
+  minimum_stability_for_non_uncertain_label: 0.80
+  calibration:
+    use_stl_design_missing_edges: true
+    manual_review_sample_size: 150
+    do_not_tune_only_to_paper_aggregate: true
+
+perturbation_ensemble:
+  threshold_offsets_uint16: [-1500, -750, 0, 750, 1500]
+  registration_translation_offsets_voxels: [-1.0, 0.0, 1.0]
+  registration_rotation_offsets_degrees: [-0.10, 0.0, 0.10]
+  roi_radius_offsets_voxels: [-1, 0, 1]
+  max_combinations: 60
+
+statistics:
+  build_height_axis_registered_xyz: "y"
+  ct_page_axis: "z"
+  unit_cell_build_index: 1
+  height_bin_mm: 2.28
+  orientation_bins_abs_cos: [0.0, 0.25, 0.50, 0.75, 1.0]
+  report_true_print_layers: false
+
+mechanics:
+  enabled_after_classifier_validation: true
+  models:
+    - "3d_axial_truss_baseline"
+    - "3d_euler_bernoulli_frame"
+  material:
+    youngs_modulus_gpa: 85.0
+    poisson_ratio: 0.31
+    density_kg_m3: 4650.0
+    source: "Tran/Fisher paper bulk Ti-5553 inputs"
+    status: "VERIFY_AND_SENSITIVITY_ANALYZE"
+  section:
+    initial_shape: "solid_circle"
+    radius_mm: null
+    use_ct_measured_sections_when_available: true
+  boundary_conditions:
+    compression_axis_registered_xyz: "z"
+    use_rigid_diaphragm_boundary_nodes: true
+    explicit_skin_model_for_absolute_rus: false
+  modal:
+    enabled_initially: false
+    number_of_modes: 8
+    solver: "scipy.sparse.linalg.eigsh"
+
+redesign:
+  enabled_after_mechanics_validation: false
+  mass_constraint_fraction_vs_reference: 1.0
+  allowed_actions:
+    - redistribute_edge_radius
+    - thicken_selected_edges
+  allow_new_topology_edges: false
+  scenario_source: "observed_plus_explicit_hypothetical"
+
+agents:
+  use_codex_native_first: true
+  use_langgraph_initially: false
+  max_agent_iterations: 8
+  max_failed_tool_calls: 3
+  require_reference_auditor_approval: true
+
+qe_sidecar:
+  enabled: false
+  role: "bulk_alloy_context_not_ct_defect_prediction"
+  phase: "beta_bcc"
+  sqs_sizes_atoms: [64, 128]
+  engine: "Quantum ESPRESSO pw.x"
+  pseudopotential_family: null
+  pseudo_dir: null
+  qe_executable: null
+  mpi_command: null
+  convergence_required: true
+  calculations:
+    - perfect_sqs_vc_relax
+    - selected_neutral_vacancy_relaxations
+    - optional_zero_k_elastic_tensor
+  prohibited_initial_claims:
+    - direct_macroscopic_strut_failure_probability
+    - local_cooling_rate_prediction
+    - printer_parameter_recommendation

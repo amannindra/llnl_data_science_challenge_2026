@@ -1,0 +1,169 @@
+schema_version: "0.2.0"
+assumptions:
+  - id: A-REPO-001
+    statement: "The user's real local repository contains newer Part 1 artifacts that were omitted from the uploaded archive."
+    status: UNVERIFIED
+    evidence: "Uploaded notes claim Tasks 5-7 files, but uploaded tree does not contain them."
+    resolution: "Task 8 compares actual local files with notes."
+
+  - id: A-GRAPH-001
+    statement: "The 9x9 JSON uses the same unit-cell junction-alias convention as the included 8x8 JSON."
+    status: UNVERIFIED
+    evidence: "Same file family/generator is likely; 9x9 raw file is an LFS pointer in the upload."
+    resolution: "Recompute alias multiplicity and physical topology from real 9x9 JSON."
+
+  - id: A-ID-001
+    statement: "Nominal and registered JSON strut IDs correspond one-to-one."
+    status: UNVERIFIED
+    evidence: "Generated affine audit implies corresponding junction array order, but source files were not uploaded as raw bytes."
+    resolution: "Compare IDs, endpoints, unit-cell slots, and transformed coordinates."
+
+  - id: A-COORD-001
+    statement: "Registered JSON positions are CT voxel coordinates in [x,y,z] order."
+    status: CALIBRATED
+    evidence: "Generated overlay and coordinate bounds fit TIFF; inventory uses volume[z,y,x]."
+    resolution: "Recompute overlay and transform from real files."
+
+  - id: A-AXIS-001
+    statement: "Manufacturing build direction is approximately registered/nominal y."
+    status: CALIBRATED
+    evidence: "Paper states build direction y; transform is nearly axis-preserving."
+    resolution: "Verify using specimen orientation, unit-cell indexing, and file metadata."
+
+  - id: A-AXIS-002
+    statement: "TIFF page axis z is skin-normal, not manufacturing build direction."
+    status: CALIBRATED
+    evidence: "First/last sampled pages are solid skins; paper skins are normal to z."
+    resolution: "Verify from real TIFF and registered graph boundary geometry."
+
+  - id: A-SCALE-001
+    statement: "One nominal graph coordinate unit equals 2.28 mm."
+    status: CALIBRATED
+    evidence: "Unit-cell edge is 4.56 mm and graph cell span is two coordinate units."
+    resolution: "Verify against STL lattice extent and registered transform."
+
+  - id: A-STL-001
+    statement: "STL files share a common tessellation and differ mainly by deleted strut triangles."
+    status: REJECTED
+    evidence: "Phase 1 quantized triangle audit at 1e-4 mm found 157833 baseline-only triangle keys versus a simple triangle-count drop of 15986, with 255 connected baseline-only components."
+    resolution: "Do not use direct triangle-set difference alone for final edge-ID mapping; use it only as an audit signal."
+
+  - id: A-STL-AXIS-001
+    statement: "The nominal graph maps to STL coordinates by centering nominal [9,9,9] at STL [0,0,0], using 2.28 mm per graph unit, identity axis order, and positive axis signs."
+    status: UNVERIFIED
+    evidence: "Phase 1 baseline graph centerline samples sit about 0.204 mm from the 0% STL surface, consistent with strut radius scale. Phase 2A tested 48 centered axis/sign candidates: all preserved the 92 threshold count, but only the identity transform preserved the exact same top edge IDs. Phase 2A.1 sparse CT/STL surface audit found top transforms separated by only about 0.006 score units, so multiple transforms remain plausible. Phase 2R late fusion found a leading transform, perm021_signmmm, but the top transform evaluated only 7 of 67 mapped deleted-volume components in CT, so this is provisional rather than verified."
+    resolution: "Do not treat exact Phase 1, Phase 2A.1, or Phase 2R edge IDs as final ground truth until manual anchors, design-generation metadata, broader CT coverage, or a stronger registration audit resolves the orientation."
+
+  - id: A-STL-002
+    statement: "A strong centerline-to-surface distance increase from 0.stl to 0.5.stl identifies intentionally removed design struts."
+    status: CALIBRATED
+    evidence: "Phase 1 centroid-distance method flagged 92 canonical edges. Phase 2A.1 replaced centroid distance with point-to-triangle surface distance for all 18468 edges and found a large natural exact-score gap after rank 91: 0.548682 mm above the gap versus 0.014862 mm below it."
+    resolution: "Use as a design-intent candidate signal only. The exact edge IDs remain limited by A-STL-AXIS-001 until human review or independent metadata resolves the transform."
+
+  - id: A-STL-EXACT-001
+    statement: "KD-tree candidate triangle retrieval with exact point-to-triangle distance is accurate enough for the Phase 2A.1 design-intent review packet."
+    status: CALIBRATED
+    evidence: "Phase 2A.1 computes final distances to triangle surfaces, not centroids. Representative candidate-count audit showed stable median and p95 deltas from 16 to 128 candidates, but pointwise max changes remained nonzero; this supports review ranking but not final automatic labels."
+    resolution: "Keep Phase 2A.1 labels provisional. If exact final labels are required without human review, rerun with a larger candidate count or a true mesh BVH/signed-distance backend such as trimesh/pyembree after dependency approval."
+
+  - id: A-DIAM-001
+    statement: "Nominal strut diameter for this released scan is 0.424 mm."
+    status: UNVERIFIED
+    evidence: "Paper reports 0.424 mm; challenge README reports 0.350 mm."
+    resolution: "Recover from STL cross-section and/or dataset metadata; run sensitivity analysis."
+
+  - id: A-SPEC-001
+    statement: "The available CT is exactly paper specimen 0.5% (#1)."
+    status: CALIBRATED
+    evidence: "Filename contains 0point5dash1 and inventory/paper context."
+    resolution: "Verify against file_names metadata or dataset documentation."
+
+  - id: A-SEG-001
+    statement: "A single global threshold is sufficient for all edge ROIs."
+    status: UNVERIFIED
+    evidence: "Beam hardening/intensity variation may exist. Phase 2A swept thresholds 38557, 41018, and 43069, but the base material-evidence score did not separate design-removed and matched-present groups."
+    resolution: "Use threshold ensembles and local/background features only as calibration diagnostics until edge-level separation is validated."
+
+  - id: A-CT-SAMPLER-001
+    statement: "The Phase 2A target-edge-owned material-evidence score separates Phase 1 design-removed candidates from matched design-present controls."
+    status: REJECTED
+    evidence: "Phase 2A base setting gave removed mean score 3.946614, matched-present mean score 3.651005, present-minus-removed score -0.295609, bootstrap 95% CI [-1.249036, 0.609976], and diagnostic ROC AUC 0.475780."
+    resolution: "Do not use the current Phase 2A score as a final classifier. Investigate STL-axis ambiguity, local registration, feature design, local thresholding, and ambiguous review panels before Phase 2B."
+
+  - id: A-STL-VOXEL-2R
+    statement: "Voxelized STL occupancy subtraction can find deleted design-volume regions without relying on exact triangle identity."
+    status: CALIBRATED
+    evidence: "Phase 2R used VTK mesh-to-image stencil occupancy and synthetic tests for cylinder voxelization and removed-cylinder subtraction. Natural deleted-volume component counts were 7 for 0.1%, 67 for 0.5%, and 104 for 1.0%."
+    resolution: "Use as a benchmark design-only detector. Do not force counts to nominal percentages, and keep pitch/watertightness limitations in reports."
+
+  - id: A-CT-ATLAS-2R
+    statement: "Straightened CT strut volumes and robust median/MAD templates provide useful anomaly rankings for a pilot cohort."
+    status: UNVERIFIED
+    evidence: "Phase 2R evaluated 500 CT edges with 73 template groups. Median CT anomaly was 0.000, 95th percentile was 2.353, and maximum was 3.944. These are ranks only and have not been validated as final missing/disconnected labels."
+    resolution: "Use the features for benchmarking and transform-resolution evidence only. Do not publish specimen-wide defect percentages until calibrated against verified labels or manual anchors."
+
+  - id: A-FUSION-2R
+    statement: "Late fusion of STL deleted-volume candidates and CT anomaly ranks verifies one graph/STL cube transform."
+    status: UNVERIFIED
+    evidence: "Phase 2R found a leading transform, perm021_signmmm, with J=3.142 and bootstrap separation from the runner-up, but the top transform had CT features for only 7 of 67 mapped removed components. The coverage gate therefore downgrades the decision to PROVISIONAL."
+    resolution: "Collect 3 to 5 manual anchor edges or expand CT evaluation around mapped deleted-volume components before treating any transform as verified."
+
+  - id: A-ANCHOR-2R1
+    statement: "A small number of clear human anchor edges can resolve the graph/STL transform enough to permit Phase 2B calibration."
+    status: CALIBRATED
+    evidence: "Phase 2R.1 expanded CT coverage to 1300 edges and generated 10 anchor candidates. The repaired human-anchor CSV recorded the 5 primary anchors as same_physical_location. The anchor-gate run outputs/part2/phase2r1/anchor_gate_runs/20260726_220926/ reported ANCHOR_GATE_PASSED for perm021_signmmm with 5 supporting primary anchors and 0 contradictions."
+    resolution: "Use perm021_signmmm as the human-anchored transform for Phase 2B calibration. This permits calibration, not final specimen-wide percentages."
+
+  - id: A-DESIGN-VOLUME-001
+    statement: "A deleted STL volume component may contain multiple intentionally removed strut edges; the component volume divided by the median single-component volume is a useful strut-equivalent estimate."
+    status: CALIBRATED
+    evidence: "Phase 2B.1 used the 0.5% STL deleted components under the human-anchored transform perm021_signmmm. The median component volume was 0.393216 mm^3. The 67 connected deleted components summed to 94 volume-estimated strut candidates, close to the expected round(0.005 * 18468) = 92. The reconciled CT calibration remained strong with 94 design-removed candidate features, AUC 0.9635, sensitivity 0.9574, and specificity 0.9554 for the CT missing-material anomaly score."
+    resolution: "Use the Phase 2B.1 multi-edge design-intent candidate set for calibration and review. Keep it as a candidate set until broader CT sampling and uncertain-case review are complete."
+
+  - id: A-PHASE2B2-BATCH-001
+    statement: "Registered-edge CT sampling can be expanded in deterministic batches while preserving calibration provenance and non-final candidate statuses."
+    status: CALIBRATED
+    evidence: "Phase 2B.2 completed all-edge CT sampling in outputs/part2/phase2b2/20260727_013304/, producing 18468 combined CT feature rows out of 18468 registered graph edges. The full run sampled 16142 new edges from the prior 2326-row table, wrote checkpoints every 100 edges, and all Part 2 tests passed with 71 tests OK and 1 optional VTK test skipped."
+    resolution: "Use outputs/part2/phase2b2/20260727_013304/combined_ct_edge_features.csv as the all-edge CT feature table for Phase 2B.3. Do not publish final missing/disconnected percentages until uncertainty handling and review rules are implemented."
+
+  - id: A-PHASE2B3-GUARDED-001
+    statement: "A guarded multi-signal CT label workflow can separate present-like, design-removed absent/disconnected, possible unintended missing/disconnected, and uncertain review-required edges without publishing final percentages."
+    status: CALIBRATED
+    evidence: "Phase 2B.3 ran on all 18468 Phase 2B.2 CT feature rows in outputs/part2/phase2b3/20260727_090709/. Guarded counts were 14820 present-like, 88 designed-removed CT-absent, 1 designed-removed disconnected/residual, 4 designed-removed CT-present conflicts, 420 possible unintended missing, 58 possible unintended disconnected, and 3076 uncertain review-required. The run generated 60 review panels and all Part 2 tests passed with 77 tests OK and 1 optional VTK test skipped."
+    resolution: "Use Phase 2B.3 labels as guarded screening labels and review queues. Phase 2B.4 has now applied stricter automated review, but final publication still requires spot-check approval."
+
+  - id: A-PHASE2B4-AUTO-REVIEW-001
+    statement: "A stricter automated evidence-review layer can reduce the Phase 2B.3 review queue by auto-supporting only clean, stable possible unintended missing/disconnected candidates."
+    status: CALIBRATED
+    evidence: "Phase 2B.4 ran on outputs/part2/phase2b3/20260727_090709/guarded_edge_labels.csv and wrote outputs/part2/phase2b4/20260727_092219/. Strict rules required score >= 3.3135416666666666, no near-threshold flag, no threshold-sensitivity warning, no local-registration instability, and at least 7 missing-evidence flags for possible missing or 5 for possible disconnected. The result auto-supported 202 possible unintended missing, 12 possible unintended disconnected, 89 designed-removed absent/disconnected, and 14820 present-like rows, while leaving 920 rows blocked for manual review. The run generated 80 spot-check panels and all Part 2 tests passed with 82 tests OK and 1 optional VTK test skipped."
+    resolution: "Use Phase 2B.4 as an automated draft-review result. Do not call the 214 auto-supported possible unintended candidates final published defects until spot-check approval is complete."
+
+  - id: A-FINAL-SPOTCHECK-001
+    statement: "The user's top-40 Phase 2B.4 spot-check labels are sufficient to describe the 214 auto-supported possible unintended candidates as a spot-check-supported automated estimate."
+    status: CALIBRATED
+    evidence: "The user reviewed ranks 001-040 from outputs/part2/phase2b4/20260727_092219/spotcheck_panels/. The saved CSV outputs/part2/phase2b4/20260727_092219/human_spotcheck_labels_rank001_040.csv contains 29 material_absent, 7 material_disconnected, 4 ambiguous, and 0 present-like contradictions. The final package outputs/part2/final_report/20260727_123413/ reports status SPOTCHECK_SUPPORTED_AUTOMATED_ESTIMATE_NOT_FULL_GROUND_TRUTH."
+    resolution: "Use the 214/18468 = 1.16% value only as a spot-check-supported automated estimate. Do not claim exhaustive human-labeled ground truth unless more review is completed."
+
+  - id: A-PHASE2C-TRIAGE-001
+    statement: "A second-pass automatic triage can safely promote only very clear Phase 2B.4 blocked rows while keeping mixed or unstable rows review-required."
+    status: CALIBRATED
+    evidence: "Phase 2C ran on outputs/part2/phase2b4/20260727_092219/automated_review_labels.csv and wrote outputs/part2/phase2c/20260727_132248/. It reused all-edge CT features for 18468 registered struts, promoted 14 blocked rows, reported 215 possible unintended missing and 13 possible unintended disconnected candidates, left 677 rows still review-required, and generated 120 review panels. Full Part 2 tests passed with 93 tests OK and 1 optional VTK test skipped."
+    resolution: "Use Phase 2C as the newest automatic triage state. Do not replace the Phase 2B.4 spot-check-supported final-report baseline with the 228 Phase 2C count until the 14 newly promoted rows and a sample of the remaining review queue are spot-checked."
+
+  - id: A-AGENTIC-PIPELINE-001
+    statement: "A config-driven runner can orchestrate the current deterministic Part 2 workflow when the configured TIFF, JSON, and STL files are real local data and prior phase gates exist."
+    status: CALIBRATED
+    evidence: "python3 -m src.part2.run_defect_pipeline --config configs/part2.yaml --dry-run wrote outputs/part2/pipeline_runs/20260727_132540/ and reported can_run_strut_level_pipeline=true. The full run wrote outputs/part2/pipeline_runs/20260727_132552/, reproduced the Phase 2C 228-candidate count, exported a viewer with 18468 edges, and packaged the conservative Phase 2B.4 final report."
+    resolution: "Use the pipeline runner for repeatable local orchestration and future preflight. A new specimen still requires registered JSON and design-intent inputs before safe strut-level classification."
+
+  - id: A-MECH-001
+    statement: "Linear Euler-Bernoulli frame elements adequately rank defect criticality."
+    status: UNVERIFIED
+    evidence: "Reasonable first model for fused slender struts, but node compliance, shear, plasticity, and contact are omitted."
+    resolution: "Compare truss/frame results, analytical benchmarks, sensitivity, and paper trends."
+
+  - id: A-QE-001
+    statement: "Atomic vacancy formation energies explain the observed missing/disconnected struts."
+    status: REJECTED
+    evidence: "No validated multiscale/process link exists in the supplied dataset."
+    resolution: "QE remains a separate bulk-alloy context sidecar only."
