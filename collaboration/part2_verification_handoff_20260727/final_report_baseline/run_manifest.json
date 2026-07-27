@@ -1,0 +1,43 @@
+{
+  "created_utc": "2026-07-27T19:34:13.870929+00:00",
+  "runtime_seconds": 0.0902550220489502,
+  "python_version": "3.9.13",
+  "repo": {
+    "branch": "haseeb",
+    "head": "eceb89c91068374da24fb7c389a431418f26ec8c",
+    "status_filters_disabled": "## haseeb...origin/haseeb\n M .gitignore\n M data/missing_struts/octet_truss_9x9x9.json\n M \"data/missing_struts/registered_jsons/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.json\"\n M data/missing_struts/stls/0.stl\n M \"data/missing_struts/tif_stacks/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.tif\"\n M requirements.txt\n M src/mcp_server.py\n?? .agents/skills/part2-defect-analysis/\n?? .agents/skills/threshold-optimizer/\n?? .codex/\n?? AGENTS.md\n?? DSC_PART2_EXTRACT_INTO_2026_MAIN/\n?? Papers/\n?? configs/\n?? data/9x9x9_octet_lattice/segmentation/\n?? data/9x9x9_octet_lattice/segmentation_improved/\n?? docs/\n?? evals/\n?? notes/\n?? references/\n?? schemas/\n?? src/inspect_missing_struts_data.py\n?? src/part2/\n?? src/threshold_inspection.py\n?? tests/"
+  },
+  "inputs": {
+    "phase2b4_dir": "outputs/part2/phase2b4/20260727_092219",
+    "phase2b4_summary": "outputs/part2/phase2b4/20260727_092219/phase2b4_summary.json",
+    "human_spotcheck_labels": "outputs/part2/phase2b4/20260727_092219/human_spotcheck_labels_rank001_040.csv",
+    "hashes": {
+      "outputs/part2/phase2b4/20260727_092219/phase2b4_summary.json": "7cf3ae00529bd2d9f4ab2cbfc8261b82afa330deacf05c1e8f7d8237a654afdc",
+      "outputs/part2/phase2b4/20260727_092219/automated_review_labels.csv": "f26a3db1cb92286ada3c076ecb6f113e1986edf6d36191703b57e0b2e57ecd8d",
+      "outputs/part2/phase2b4/20260727_092219/human_spotcheck_labels_rank001_040.csv": "c4926fbe9640ce72384db2e374d27d78bcf3ebec2eb8e3665c7c4b9e6946d45f"
+    }
+  },
+  "outputs": {
+    "final_report": "outputs/part2/final_report/20260727_123413/final_ct_defect_report.md",
+    "final_summary": "outputs/part2/final_report/20260727_123413/final_ct_defect_summary.json",
+    "agentic_workflow": "outputs/part2/final_report/20260727_123413/agentic_workflow.md",
+    "tables": "outputs/part2/final_report/20260727_123413/tables",
+    "figures": "outputs/part2/final_report/20260727_123413/figures"
+  },
+  "copied_supporting_artifacts": {
+    "outputs/part2/phase2b4/20260727_092219/auto_supported_unintended_candidates.csv": "outputs/part2/final_report/20260727_123413/tables/auto_supported_unintended_candidates.csv",
+    "outputs/part2/phase2b4/20260727_092219/manual_review_queue.csv": "outputs/part2/final_report/20260727_123413/tables/manual_review_queue.csv",
+    "outputs/part2/phase2b4/20260727_092219/spotcheck_panel_index.csv": "outputs/part2/final_report/20260727_123413/tables/spotcheck_panel_index.csv",
+    "outputs/part2/phase2b4/20260727_092219/human_spotcheck_labels_rank001_040.csv": "outputs/part2/final_report/20260727_123413/tables/human_spotcheck_labels_rank001_040.csv",
+    "outputs/part2/phase2b4/20260727_092219/qc/automated_review_label_counts.png": "outputs/part2/final_report/20260727_123413/figures/automated_review_label_counts.png"
+  },
+  "method_ids": [
+    "FINAL-REPORT-PACKAGE-001",
+    "PHASE2B4-AUTO-REVIEW-001"
+  ],
+  "assumption_ids": [
+    "A-FINAL-SPOTCHECK-001",
+    "A-PHASE2B4-AUTO-REVIEW-001"
+  ],
+  "stop_condition": "Final package generated; do not begin a new phase without user approval."
+}

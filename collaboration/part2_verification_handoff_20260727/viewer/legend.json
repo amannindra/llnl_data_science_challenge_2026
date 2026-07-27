@@ -1,0 +1,37 @@
+{
+  "present_like": {
+    "color": "#b8bec5",
+    "width": 0.7,
+    "label": "Present-like"
+  },
+  "possible_unintended_missing": {
+    "color": "#d7191c",
+    "width": 2.5,
+    "label": "Possible unintended missing"
+  },
+  "possible_unintended_disconnected": {
+    "color": "#fdae61",
+    "width": 2.5,
+    "label": "Possible unintended disconnected"
+  },
+  "designed_removed": {
+    "color": "#2c7bb6",
+    "width": 2.0,
+    "label": "Designed removed"
+  },
+  "review_required": {
+    "color": "#7b3294",
+    "width": 1.6,
+    "label": "Review required"
+  },
+  "low_priority_uncertain": {
+    "color": "#ffd92f",
+    "width": 1.2,
+    "label": "Low-priority uncertain"
+  },
+  "unknown": {
+    "color": "#666666",
+    "width": 0.8,
+    "label": "Unknown"
+  }
+}

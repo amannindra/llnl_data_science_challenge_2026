@@ -1,0 +1,55 @@
+{
+  "phase": "Part 2 final report package",
+  "status": "SPOTCHECK_SUPPORTED_AUTOMATED_ESTIMATE_NOT_FULL_GROUND_TRUTH",
+  "source_phase2b4_dir": "outputs/part2/phase2b4/20260727_092219",
+  "final_output_dir": "outputs/part2/final_report/20260727_123413",
+  "automated_review": {
+    "total_expected_struts": 18468,
+    "auto_supported_possible_unintended_missing": 202,
+    "auto_supported_possible_unintended_disconnected": 12,
+    "auto_supported_possible_unintended_combined": 214,
+    "auto_supported_designed_removed_absent_or_disconnected": 89,
+    "auto_supported_present_like": 14820,
+    "blocked_manual_review": 920,
+    "low_priority_uncertain_not_reported_as_defect": 2425,
+    "draft_auto_supported_possible_unintended_fraction": 0.011587611002815681,
+    "draft_auto_supported_possible_unintended_percent": 1.158761100281568
+  },
+  "human_spotcheck": {
+    "reviewed_panel_count": 40,
+    "label_counts": {
+      "material_absent": 29,
+      "material_disconnected": 7,
+      "ambiguous": 4
+    },
+    "defect_like_count": 36,
+    "ambiguous_count": 4,
+    "present_like_contradiction_count": 0,
+    "defect_like_support_fraction": 0.9,
+    "defect_like_or_ambiguous_fraction": 1.0
+  },
+  "reportable_interpretation": "The automated system supports a draft possible-unintended-defect estimate, and the top-40 human spot-check found no clearly present-like contradictions.",
+  "not_reported_as_final_defects": {
+    "blocked_manual_review": 920,
+    "low_priority_uncertain_not_reported_as_defect": 2425
+  },
+  "method_ids": [
+    "FINAL-REPORT-PACKAGE-001",
+    "PHASE2B4-AUTO-REVIEW-001"
+  ],
+  "assumption_ids": [
+    "A-FINAL-SPOTCHECK-001",
+    "A-PHASE2B4-AUTO-REVIEW-001"
+  ],
+  "reference_ids": [
+    "LLNLDSC2026",
+    "FisherTran2023RUS",
+    "Hampel1974"
+  ],
+  "limitations": [
+    "This is a spot-check-supported automated estimate, not exhaustive human ground truth.",
+    "Only the first 40 top-ranked Phase 2B.4 spot-check panels were reviewed by the user.",
+    "The 920 blocked manual-review rows remain unresolved and are not counted as defects.",
+    "Intentionally designed removals are reported separately from possible unintended defects."
+  ]
+}

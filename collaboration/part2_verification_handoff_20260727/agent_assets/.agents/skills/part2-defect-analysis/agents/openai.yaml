@@ -1,0 +1,4 @@
+interface:
+  display_name: "Part 2 Defect Analysis"
+  short_description: "Run the LLNL Part 2 CT defect workflow through Phase 2C"
+  default_prompt: "Use $part2-defect-analysis to run or audit the LLNL Part 2 lattice CT defect-analysis workflow through Phase 2C triage, viewer export, and conservative reporting while preserving gates and caveats."

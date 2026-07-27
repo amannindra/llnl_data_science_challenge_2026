@@ -1,0 +1,74 @@
+{
+  "phase": "Phase 2C",
+  "status": "PHASE2C_TRIAGE_COMPLETE_REVIEW_STILL_REQUIRED_FOR_REMAINING_UNRESOLVED_ROWS",
+  "phase2b4_dir": "outputs/part2/phase2b4/20260727_092219",
+  "config": {
+    "anomaly_score_high": 2.8135416666666666,
+    "extreme_score_margin": 0.75,
+    "missing_min_evidence_flags": 6,
+    "disconnected_min_evidence_flags": 5,
+    "max_bounded_threshold_stability_fraction": 0.5,
+    "max_bounded_registration_stability_voxels": 4.0,
+    "zero_material_occupied_fraction_max": 0.05,
+    "zero_material_area_mean_voxels2_max": 0.25,
+    "long_gap_fraction_for_missing": 0.95,
+    "long_gap_fraction_for_disconnected": 0.7,
+    "low_priority_score_margin_below_high": 0.5,
+    "low_priority_max_evidence_flags": 2
+  },
+  "summary": {
+    "total_edge_count": 18468,
+    "by_phase2c_label": {
+      "phase2c_auto_supported_designed_removed_absent_or_disconnected": 89,
+      "phase2c_auto_supported_possible_unintended_missing": 215,
+      "phase2c_auto_supported_possible_unintended_disconnected": 13,
+      "phase2c_still_review_required": 672,
+      "phase2c_low_priority_uncertain_not_defect_like": 2654,
+      "phase2c_still_review_required_design_intent_conflict": 5,
+      "phase2c_auto_supported_present_like": 14820
+    },
+    "by_phase2c_status": {
+      "auto_supported": 14909,
+      "auto_supported_spotcheck_recommended": 228,
+      "still_review_required": 677,
+      "low_priority_not_reported_as_defect": 2654
+    },
+    "by_phase2c_triage_bucket": {
+      "not_blocked_or_other": 14903,
+      "uncertain_registration_unstable": 1457,
+      "possible_missing_boundary": 418,
+      "possible_missing_instability_or_evidence_shortfall": 2,
+      "possible_disconnected_instability_or_evidence_shortfall": 58,
+      "uncertain_mixed_evidence": 555,
+      "uncertain_threshold_sensitive": 1070,
+      "design_removed_uncertain": 1,
+      "design_removed_present_like_conflict": 4
+    },
+    "phase2c_auto_supported_possible_unintended_missing_count": 215,
+    "phase2c_auto_supported_possible_unintended_disconnected_count": 13,
+    "phase2c_auto_supported_possible_unintended_combined_count": 228,
+    "phase2c_auto_supported_possible_unintended_combined_fraction": 0.012345679012345678,
+    "phase2c_newly_promoted_from_blocked_count": 14,
+    "phase2c_remaining_review_required_count": 677,
+    "phase2c_low_priority_not_reported_as_defect_count": 2654,
+    "publication_status": "PHASE2C_TRIAGE_COMPLETE_REVIEW_STILL_REQUIRED_FOR_REMAINING_UNRESOLVED_ROWS"
+  },
+  "method_ids": [
+    "PHASE2C-MANUAL-QUEUE-TRIAGE-001",
+    "PHASE2B4-AUTO-REVIEW-001"
+  ],
+  "assumption_ids": [
+    "A-PHASE2C-TRIAGE-001",
+    "A-PHASE2B4-AUTO-REVIEW-001"
+  ],
+  "reference_ids": [
+    "LLNL-DSC-2026",
+    "FisherTran2023RUS",
+    "Hampel1974"
+  ],
+  "limitations": [
+    "Phase 2C uses existing CT features; it does not rerun raw CT sampling.",
+    "Remaining review-required rows are not counted as defects.",
+    "Promoted rows should still be spot-checked before strong publication claims."
+  ]
+}

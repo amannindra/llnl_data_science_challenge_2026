@@ -1,0 +1,52 @@
+{
+  "created_utc": "2026-07-27T20:23:44.593184+00:00",
+  "runtime_seconds": 1.317033052444458,
+  "repo": {
+    "branch": {
+      "command": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "returncode": 0,
+      "stdout": [
+        "haseeb"
+      ],
+      "stderr": []
+    },
+    "head": {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": [
+        "eceb89c91068374da24fb7c389a431418f26ec8c"
+      ],
+      "stderr": []
+    }
+  },
+  "inputs": {
+    "graph_path": "outputs/part2/phase0/canonical_graphs/registered_9x9.canonical_graph.json",
+    "labels_csv_path": "outputs/part2/phase2c/20260727_132248/phase2c_labels.csv",
+    "hashes": {
+      "outputs/part2/phase0/canonical_graphs/registered_9x9.canonical_graph.json": "165d96d30d699ef2e7fc53593a31a09c37cd64eed6d25d8b4c4be0c9919ad057",
+      "outputs/part2/phase2c/20260727_132248/phase2c_labels.csv": "a852062f89ebd90023966cf07449468704e661d4877842eca0a1ec154e58cb39"
+    }
+  },
+  "outputs": {
+    "index_html": "outputs/part2/visualization/20260727_132343/index.html",
+    "viewer_data_json": "outputs/part2/visualization/20260727_132343/viewer_data.json",
+    "legend_json": "outputs/part2/visualization/20260727_132343/legend.json"
+  },
+  "class_counts": {
+    "present_like": 14820,
+    "low_priority_uncertain": 2654,
+    "designed_removed": 89,
+    "review_required": 677,
+    "possible_unintended_disconnected": 13,
+    "possible_unintended_missing": 215
+  },
+  "edge_count": 18468
+}

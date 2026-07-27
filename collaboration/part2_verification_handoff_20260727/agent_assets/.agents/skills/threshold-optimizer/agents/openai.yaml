@@ -1,0 +1,4 @@
+interface:
+  display_name: "Threshold Optimizer"
+  short_description: "Optimize CT segmentation thresholds"
+  default_prompt: "Use $threshold-optimizer to compare CT segmentation thresholds, inspect masks and skeletons, and recommend a working threshold."
