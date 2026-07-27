@@ -1,4 +1,4 @@
-"""Shared Task 3 helpers backed by the reusable Scripts components."""
+"""Shared Task 3 helpers backed by the reusable Aman components."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ ROOT = str(find_repository_root(__file__))
 def load_module():
     """Import and return the production MCP module."""
 
-    path = repository_path("src", "mcp_server.py", root=ROOT, must_exist=True)
+    path = repository_path("Aman_src", "mcp_server.py", root=ROOT, must_exist=True)
     return load_module_from_path(path, "mcp_server_under_test")
 
 

@@ -1,6 +1,6 @@
 # Reusable Scripts Components
 
-`Scripts/Components` contains the side-effect-free implementation shared by the
+`Aman_Scripts/Components` contains the side-effect-free implementation shared by the
 project's analysis commands and adversarial tests. Importing these modules does
 not create directories, write artifacts, launch a UI, or load a full TIFF.
 
@@ -34,13 +34,13 @@ not create directories, write artifacts, launch a UI, or load a full TIFF.
 Run the complete fail-fast suite in the prepared environment:
 
 ```bash
-conda run -n DSC python Scripts/ComponentTests/run_all.py
+conda run -n DSC python Aman_Scripts/ComponentTests/run_all.py
 ```
 
 Persistent results are written to:
 
-- `Scripts/outputs/component_validation/component_test_summary.json`
-- `Scripts/outputs/component_validation/component_test_summary.md`
+- `Aman_Scripts/outputs/component_validation/component_test_summary.json`
+- `Aman_Scripts/outputs/component_validation/component_test_summary.md`
 
 The suite includes synthetic edge cases, import/CLI compatibility, both restored
 TIFF stacks, the registered graph, and a restored STL. Each public component has
@@ -50,7 +50,7 @@ identical runs are byte-for-byte reproducible.
 Run the original MCP Task regressions separately:
 
 ```bash
-for test_file in Scripts/Task1/test_*.py Scripts/Task2/test_*.py Scripts/Task3/test_*.py; do
+for test_file in Aman_Scripts/Task1/test_*.py Aman_Scripts/Task2/test_*.py Aman_Scripts/Task3/test_*.py; do
   conda run -n DSC python "$test_file" || exit 1
 done
 ```
@@ -58,7 +58,7 @@ done
 ## Dependencies
 
 The prepared `DSC` conda environment is the reference environment. Core package
-requirements are listed in `Scripts/requirements.txt`. Napari is optional and
+requirements are listed in `Aman_Scripts/requirements.txt`. Napari is optional and
 needed only by `view_tif_napari.py`; it is deliberately not required by the
 headless validation suite.
 
@@ -66,4 +66,4 @@ headless validation suite.
 
 No new TIFF defect detector is implemented here. The future registration,
 strut-ROI, feature, and five-state classification design is documented in
-`Scripts/TIFF_DEFECT_DETECTION_DEFERRED_PLAN.md` and remains deferred.
+`Aman_Scripts/TIFF_DEFECT_DETECTION_DEFERRED_PLAN.md` and remains deferred.

@@ -1,4 +1,4 @@
-"""Shared Task 1 helpers backed by the reusable Scripts components."""
+"""Shared Task 1 helpers backed by the reusable Aman components."""
 
 from __future__ import annotations
 
@@ -20,6 +20,6 @@ ROOT = str(find_repository_root(__file__))
 def load_segment():
     """Import ``segment_ct_dataset`` from the production MCP module."""
 
-    path = repository_path("src", "mcp_server.py", root=ROOT, must_exist=True)
+    path = repository_path("Aman_src", "mcp_server.py", root=ROOT, must_exist=True)
     module = load_module_from_path(path, "mcp_server_under_test")
     return module.segment_ct_dataset, module

@@ -5,7 +5,7 @@ Git-LFS pointer files are identified before any parser is called.  With real
 assets present, TIFF stacks are traversed page-by-page for exact global
 intensity statistics and representative slice previews; binary STL meshes are
 streamed in chunks for triangle count and spatial bounds.  Outputs are placed
-only in ``Scripts/outputs``.
+only in ``Aman_Scripts/outputs``.
 """
 
 from __future__ import annotations

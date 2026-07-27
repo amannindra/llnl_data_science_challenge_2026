@@ -14,7 +14,7 @@ import numpy as np
 
 
 ROOT = Path(__file__).resolve().parents[2]
-SCRIPTS = ROOT / "Scripts"
+SCRIPTS = ROOT / "Aman_Scripts"
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 MODULES = (
@@ -76,7 +76,7 @@ def main() -> int:
     for module in MODULES:
         command = (
             "import importlib; "
-            f"m=importlib.import_module('Scripts.{module}'); "
+            f"m=importlib.import_module('Aman_Scripts.{module}'); "
             "assert callable(m.main)"
         )
         result = _run("-c", command)
@@ -102,7 +102,7 @@ def main() -> int:
         str(line_counts),
     )
 
-    from Scripts.analyze_npy import extract_isosurface_xyz
+    from Aman_Scripts.analyze_npy import extract_isosurface_xyz
 
     asymmetric = np.zeros((8, 10, 12), dtype=np.float32)
     asymmetric[2:6, 2:8, 4:10] = 1

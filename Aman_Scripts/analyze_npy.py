@@ -2,8 +2,8 @@
 """Analyze ``unitcell.npy`` without performing work when the module is imported.
 
 The default command preserves the original histogram, center-slice, and
-isosurface artifact names under ``Scripts/outputs``.  Reusable I/O and numeric
-validation live in ``Scripts/Components``; this file only coordinates the
+isosurface artifact names under ``Aman_Scripts/outputs``. Reusable I/O and numeric
+validation live in ``Aman_Scripts/Components``; this file only coordinates the
 analysis and plotting steps.
 """
 

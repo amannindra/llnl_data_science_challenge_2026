@@ -3,7 +3,7 @@
 
 Requires Poppler's ``pdftoppm`` (already available in this environment).  All
 temporary page images are removed automatically; persistent visual-review
-artifacts are written only to ``Scripts/outputs``.
+artifacts are written only to ``Aman_Scripts/outputs``.
 """
 
 from __future__ import annotations
@@ -15,9 +15,9 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
-try:  # Package import (`import Scripts.create_pdf_contacts`).
+try:  # Package import (`import Aman_Scripts.create_pdf_contacts`).
     from .Components.paths import find_repository_root, output_path
-except ImportError:  # Direct execution (`python Scripts/create_pdf_contacts.py`).
+except ImportError:  # Direct execution (`python Aman_Scripts/create_pdf_contacts.py`).
     from Components.paths import find_repository_root, output_path
 
 

@@ -2,9 +2,9 @@
 """Create a repeatable, non-destructive inventory of this DSSI repository.
 
 Run with the prepared environment:
-    conda run -n DSC python Scripts/analyze_project_assets.py
+    conda run -n DSC python Aman_Scripts/analyze_project_assets.py
 
-Results are written below ``Scripts/analysis_output``.  The program handles
+Results are written below ``Aman_Scripts/analysis_output``. The program handles
 Git-LFS pointer files explicitly, so it never mistakes a pointer for a TIFF,
 STL, or other scientific asset.
 """
@@ -286,7 +286,7 @@ def markdown_report(files: list[dict[str, Any]]) -> str:
     lines = [
         "# Repository asset analysis",
         "",
-        "This is a non-destructive inventory produced by `Scripts/analyze_project_assets.py`.",
+        "This is a non-destructive inventory produced by `Aman_Scripts/analyze_project_assets.py`.",
         "Git-LFS pointers are reported as unavailable source assets; their expected size and object ID are preserved.",
         "",
         "## File inventory",
@@ -334,13 +334,13 @@ def markdown_report(files: list[dict[str, Any]]) -> str:
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    excluded = {".git", "Scripts/analysis_output"}
+    excluded = {".git", "Aman_Scripts/analysis_output"}
     paths = sorted(
         path
         for path in ROOT.rglob("*")
         if path.is_file() and str(path.relative_to(ROOT)) not in excluded
         and not any(part == ".git" for part in path.relative_to(ROOT).parts)
-        and "Scripts/analysis_output" not in str(path.relative_to(ROOT))
+        and "Aman_Scripts/analysis_output" not in str(path.relative_to(ROOT))
     )
     files = [analyze_path(path) for path in paths]
     document = {

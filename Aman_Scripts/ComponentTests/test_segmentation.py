@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from Scripts.Components.segmentation import (  # noqa: E402
+from Aman_Scripts.Components.segmentation import (  # noqa: E402
     SegmentationError,
     apply_mask,
     normalize_mask,
@@ -144,4 +144,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

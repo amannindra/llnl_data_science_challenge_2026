@@ -17,7 +17,7 @@ import tifffile
 REPOSITORY = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPOSITORY))
 
-from Scripts.Components.asset_io import (  # noqa: E402
+from Aman_Scripts.Components.asset_io import (  # noqa: E402
     AssetNotMaterializedError,
     detect_lfs_pointer,
     inspect_npy,

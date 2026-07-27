@@ -6,11 +6,11 @@ is opened with tifffile.memmap -- disk-backed and lazy, nothing is fully loaded
 into RAM. napari gives you a z-slider (2D) plus a 3D volume-render toggle.
 
 Run inside the DSC conda env:
-    /Users/amannindra/miniconda3/envs/DSC/bin/python Scripts/view_tif_napari.py
-    # or, with the env active:  python Scripts/view_tif_napari.py
+    /Users/amannindra/miniconda3/envs/DSC/bin/python Aman_Scripts/view_tif_napari.py
+    # or, with the env active:  python Aman_Scripts/view_tif_napari.py
 
 Optionally point it at a different stack:
-    python Scripts/view_tif_napari.py --path "data/missing_struts/tif_stacks/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.tif"
+    python Aman_Scripts/view_tif_napari.py --path "data/missing_struts/tif_stacks/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.tif"
 
 Requires: napari + a Qt backend (pyqt5). Install once:
     /Users/amannindra/miniconda3/envs/DSC/bin/pip install "napari[pyqt5]"

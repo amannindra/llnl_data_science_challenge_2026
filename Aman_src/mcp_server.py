@@ -9,7 +9,7 @@ from fastmcp import FastMCP
 # Task 3 is an API wrapper: expose the *existing* skeletonize_mask() from
 # skeletonization.py rather than reimplementing it. Make sure this file's own
 # directory is importable so the import works both when the server is run as a
-# script (python src/mcp_server.py) and when it is loaded by absolute path.
+# script (python Aman_src/mcp_server.py) and when it is loaded by absolute path.
 _SRC_DIR = os.path.dirname(os.path.abspath(__file__))
 if _SRC_DIR not in sys.path:
     sys.path.insert(0, _SRC_DIR)

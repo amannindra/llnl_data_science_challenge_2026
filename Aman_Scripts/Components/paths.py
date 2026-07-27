@@ -7,7 +7,8 @@ from pathlib import Path
 from typing import Iterable
 
 
-DEFAULT_REPOSITORY_MARKERS = ("Scripts", "data")
+SCRIPTS_DIRECTORY = "Aman_Scripts"
+DEFAULT_REPOSITORY_MARKERS = (SCRIPTS_DIRECTORY, "data")
 
 
 class RepositoryNotFoundError(FileNotFoundError):
@@ -111,10 +112,11 @@ def scripts_path(
     root: str | PathLike[str] | None = None,
     must_exist: bool = False,
 ) -> Path:
-    """Build a safe path below the repository's ``Scripts`` directory."""
+    """Build a safe path below the repository's ``Aman_Scripts`` directory."""
 
     repository = find_repository_root(root) if root is not None else find_repository_root()
-    target = ensure_within(repository / "Scripts", Path(*parts)) if parts else repository / "Scripts"
+    scripts = repository / SCRIPTS_DIRECTORY
+    target = ensure_within(scripts, Path(*parts)) if parts else scripts
     if must_exist and not target.exists():
         raise FileNotFoundError(target)
     return target
@@ -126,14 +128,14 @@ def output_path(
     create: bool = False,
     must_exist: bool = False,
 ) -> Path:
-    """Build a safe path below ``Scripts/outputs``.
+    """Build a safe path below ``Aman_Scripts/outputs``.
 
     ``create=True`` creates the returned path as a directory.  This is the only
     path helper that writes, and the write is explicit at the call site.
     """
 
     repository = find_repository_root(root) if root is not None else find_repository_root()
-    base = repository / "Scripts" / "outputs"
+    base = repository / SCRIPTS_DIRECTORY / "outputs"
     target = ensure_within(base, Path(*parts)) if parts else base.resolve(strict=False)
     if create:
         target.mkdir(parents=True, exist_ok=True)

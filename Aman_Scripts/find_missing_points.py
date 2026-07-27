@@ -36,7 +36,7 @@ The damaged file may not even be valid JSON (hand-deleting a record can eat a
 closing brace), so parsing falls back to a tolerant regex extractor that pulls
 every intact record out of the raw text.
 
-Outputs (Scripts/outputs/)
+Outputs (Aman_Scripts/outputs/)
 --------------------------
   defect_report.json         machine-readable full report (feeds the napari viz)
   defect_missing_points.csv  one row per missing physical point
@@ -45,7 +45,7 @@ Outputs (Scripts/outputs/)
 
 Run
 ---
-  ~/miniconda3/envs/DSC/bin/python Scripts/find_missing_points.py
+  ~/miniconda3/envs/DSC/bin/python Aman_Scripts/find_missing_points.py
 """
 
 import argparse
