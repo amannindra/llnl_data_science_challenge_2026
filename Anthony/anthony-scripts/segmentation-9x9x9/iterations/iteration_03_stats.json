@@ -1,0 +1,28 @@
+{
+  "input_path": "/Users/anthonyching/Desktop/DSC Team Project/llnl_data_science_challenge_2026/data/9x9x9_octet_lattice/9x9x9_octet_lattice.tif",
+  "output_dir": "/Users/anthonyching/Desktop/DSC Team Project/llnl_data_science_challenge_2026/data/9x9x9_octet_lattice/segmentation",
+  "shape": [
+    761,
+    815,
+    837
+  ],
+  "input_dtype": ">u2",
+  "intensity_min": 0,
+  "intensity_max": 65535,
+  "slice_index": 380,
+  "mode": "preview",
+  "method": "global",
+  "params": {
+    "threshold": 40000.0,
+    "sigma": 0.5,
+    "min_size": 8
+  },
+  "preview": {
+    "foreground_fraction": 0.04932310105474562,
+    "foreground_count": 33646,
+    "background_count": 648509,
+    "component_count": 197,
+    "largest_component_fraction": 0.056856684301254234
+  },
+  "preview_path": "/Users/anthonyching/Desktop/DSC Team Project/llnl_data_science_challenge_2026/data/9x9x9_octet_lattice/segmentation/iterations/iteration_03_slice_380.png"
+}
