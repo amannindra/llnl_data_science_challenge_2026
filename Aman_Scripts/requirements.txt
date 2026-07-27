@@ -1,0 +1,12 @@
+# Reference dependencies for Scripts/ and ComponentTests/ in the DSC environment.
+numpy>=2.4,<3
+scipy>=1.17,<2
+matplotlib>=3.11,<4
+Pillow>=12.3,<13
+scikit-image>=0.26,<0.27
+tifffile>=2026.3.3
+psutil>=7.2,<8
+fastmcp>=3.4,<4
+
+# Optional interactive viewer (not required by headless tests):
+# napari>=0.8,<0.9

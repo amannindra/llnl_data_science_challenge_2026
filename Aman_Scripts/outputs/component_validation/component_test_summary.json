@@ -1,0 +1,1724 @@
+{
+  "checks_passed": 385,
+  "checks_total": 385,
+  "expected_tests": [
+    "test_paths.py",
+    "test_asset_io.py",
+    "test_real_assets.py",
+    "test_coordinates.py",
+    "test_lattice_graph.py",
+    "test_segmentation.py",
+    "test_tiff_mesh.py",
+    "test_legacy_occupancy.py",
+    "test_reporting.py",
+    "test_testing.py",
+    "test_cli_compatibility.py"
+  ],
+  "success": true,
+  "suite": "Scripts component validation",
+  "tests": [
+    {
+      "passed": 22,
+      "status": "passed",
+      "summary": {
+        "failed": 0,
+        "minimum_satisfied": true,
+        "passed": 22,
+        "results": [
+          {
+            "name": "discovers root from nested directory",
+            "passed": true
+          },
+          {
+            "name": "discovers root from file",
+            "passed": true
+          },
+          {
+            "name": "nearest marked ancestor wins",
+            "passed": true
+          },
+          {
+            "name": "default discovery finds real repository",
+            "passed": true
+          },
+          {
+            "name": "empty marker list rejected",
+            "passed": true
+          },
+          {
+            "name": "absolute marker rejected",
+            "passed": true
+          },
+          {
+            "name": "parent-traversal marker rejected",
+            "passed": true
+          },
+          {
+            "name": "missing repository rejected",
+            "passed": true
+          },
+          {
+            "name": "relative path remains in base",
+            "passed": true
+          },
+          {
+            "name": "absolute in-base path accepted",
+            "passed": true
+          },
+          {
+            "name": "dot-dot escape rejected",
+            "passed": true
+          },
+          {
+            "name": "absolute escape rejected",
+            "passed": true
+          },
+          {
+            "name": "symlink escape rejected",
+            "passed": true
+          },
+          {
+            "name": "repository_path joins safely",
+            "passed": true
+          },
+          {
+            "name": "data_path uses data base",
+            "passed": true
+          },
+          {
+            "name": "scripts_path uses Scripts base",
+            "passed": true
+          },
+          {
+            "name": "must_exist rejects absent path",
+            "passed": true
+          },
+          {
+            "name": "output lookup has no write side effect",
+            "passed": true
+          },
+          {
+            "name": "explicit output creation creates directory",
+            "passed": true
+          },
+          {
+            "name": "output helper rejects escape",
+            "passed": true
+          },
+          {
+            "name": "repository-relative conversion is stable",
+            "passed": true
+          },
+          {
+            "name": "repository-relative conversion rejects outside path",
+            "passed": true
+          }
+        ],
+        "suite": "paths",
+        "total": 22
+      },
+      "test": "test_paths.py",
+      "total": 22
+    },
+    {
+      "passed": 46,
+      "status": "passed",
+      "summary": {
+        "failed": 0,
+        "minimum_satisfied": true,
+        "passed": 46,
+        "results": [
+          {
+            "name": "valid LFS pointer detected",
+            "passed": true
+          },
+          {
+            "name": "LFS object id parsed",
+            "passed": true
+          },
+          {
+            "name": "LFS expected size parsed",
+            "passed": true
+          },
+          {
+            "name": "ordinary small file is not pointer",
+            "passed": true
+          },
+          {
+            "name": "malformed LFS header remains classified as pointer",
+            "passed": true
+          },
+          {
+            "name": "unreasonably small pointer limit rejected",
+            "passed": true
+          },
+          {
+            "name": "JSON round-trip",
+            "passed": true
+          },
+          {
+            "name": "JSON LFS pointer rejected before decoding",
+            "passed": true
+          },
+          {
+            "name": "missing file rejected",
+            "passed": true
+          },
+          {
+            "name": "directory rejected as asset",
+            "passed": true
+          },
+          {
+            "name": "NPY defaults to memory mapping",
+            "passed": true
+          },
+          {
+            "name": "NPY values preserved",
+            "passed": true
+          },
+          {
+            "name": "explicit materialized NPY read",
+            "passed": true
+          },
+          {
+            "name": "NPY shape inspected lazily",
+            "passed": true
+          },
+          {
+            "name": "NPY dtype inspected lazily",
+            "passed": true
+          },
+          {
+            "name": "NPY byte count inspected lazily",
+            "passed": true
+          },
+          {
+            "name": "save_npy appends extension",
+            "passed": true
+          },
+          {
+            "name": "save_npy preserves values",
+            "passed": true
+          },
+          {
+            "name": "save_npy requires parent unless opted in",
+            "passed": true
+          },
+          {
+            "name": "TIFF shape inspected",
+            "passed": true
+          },
+          {
+            "name": "TIFF axes explicit",
+            "passed": true
+          },
+          {
+            "name": "TIFF dtype inspected",
+            "passed": true
+          },
+          {
+            "name": "TIFF page count inspected",
+            "passed": true
+          },
+          {
+            "name": "uncompressed TIFF marked mappable",
+            "passed": true
+          },
+          {
+            "name": "TIFF compression metadata populated",
+            "passed": true
+          },
+          {
+            "name": "TIFF defaults to memory mapping",
+            "passed": true
+          },
+          {
+            "name": "mapped TIFF values preserved",
+            "passed": true
+          },
+          {
+            "name": "explicit full TIFF read preserves values",
+            "passed": true
+          },
+          {
+            "name": "single TIFF Z page read",
+            "passed": true
+          },
+          {
+            "name": "negative TIFF Z page rejected",
+            "passed": true
+          },
+          {
+            "name": "past-end TIFF Z page rejected",
+            "passed": true
+          },
+          {
+            "name": "invalid TIFF series rejected",
+            "passed": true
+          },
+          {
+            "name": "TIFF LFS pointer rejected before parser",
+            "passed": true
+          },
+          {
+            "name": "multidimensional TIFF axes are reported explicitly",
+            "passed": true
+          },
+          {
+            "name": "Z-slice helper rejects ambiguous non-ZYX series",
+            "passed": true
+          },
+          {
+            "name": "ASCII STL encoding detected",
+            "passed": true
+          },
+          {
+            "name": "ASCII STL triangle count parsed",
+            "passed": true
+          },
+          {
+            "name": "ASCII STL vertex count parsed",
+            "passed": true
+          },
+          {
+            "name": "ASCII STL minimum XYZ bound parsed",
+            "passed": true
+          },
+          {
+            "name": "ASCII STL maximum XYZ bound parsed",
+            "passed": true
+          },
+          {
+            "name": "ASCII STL bounding-box size derived",
+            "passed": true
+          },
+          {
+            "name": "binary STL encoding detected",
+            "passed": true
+          },
+          {
+            "name": "binary STL triangle and vertex counts parsed",
+            "passed": true
+          },
+          {
+            "name": "binary STL minimum XYZ bound parsed",
+            "passed": true
+          },
+          {
+            "name": "binary STL maximum XYZ bound parsed",
+            "passed": true
+          },
+          {
+            "name": "STL LFS pointer rejected before parsing",
+            "passed": true
+          }
+        ],
+        "suite": "asset_io",
+        "total": 46
+      },
+      "test": "test_asset_io.py",
+      "total": 46
+    },
+    {
+      "passed": 25,
+      "status": "passed",
+      "summary": {
+        "failed": 0,
+        "minimum_satisfied": true,
+        "passed": 25,
+        "results": [
+          {
+            "name": "raw TIFF payload is restored",
+            "passed": true
+          },
+          {
+            "name": "segmented TIFF payload is restored",
+            "passed": true
+          },
+          {
+            "name": "raw TIFF has expected ZYX shape",
+            "passed": true
+          },
+          {
+            "name": "segmented TIFF has expected ZYX shape",
+            "passed": true
+          },
+          {
+            "name": "raw TIFF axes are explicit",
+            "passed": true
+          },
+          {
+            "name": "segmented TIFF axes are explicit",
+            "passed": true
+          },
+          {
+            "name": "raw TIFF dtype is uint16",
+            "passed": true
+          },
+          {
+            "name": "segmented TIFF dtype is uint8",
+            "passed": true
+          },
+          {
+            "name": "raw TIFF page count is correct",
+            "passed": true
+          },
+          {
+            "name": "segmented TIFF page count is correct",
+            "passed": true
+          },
+          {
+            "name": "raw TIFF is memory-mappable",
+            "passed": true
+          },
+          {
+            "name": "segmented TIFF is memory-mappable",
+            "passed": true
+          },
+          {
+            "name": "raw single-page read has YX shape",
+            "passed": true
+          },
+          {
+            "name": "duplicate raw asset has identical middle page",
+            "passed": true
+          },
+          {
+            "name": "raw middle page has nonzero dynamic range",
+            "passed": true
+          },
+          {
+            "name": "segmented sampled slices use only 0/255",
+            "passed": true
+          },
+          {
+            "name": "segmented sampled slices contain foreground and background",
+            "passed": true
+          },
+          {
+            "name": "registered graph junction-record count",
+            "passed": true
+          },
+          {
+            "name": "registered graph expected-strut count",
+            "passed": true
+          },
+          {
+            "name": "registered graph welds to physical-node count",
+            "passed": true
+          },
+          {
+            "name": "registered welded graph is one component",
+            "passed": true
+          },
+          {
+            "name": "restored STL is binary",
+            "passed": true
+          },
+          {
+            "name": "restored STL contains a substantial triangle mesh",
+            "passed": true
+          },
+          {
+            "name": "restored STL has finite XYZ bounds",
+            "passed": true
+          },
+          {
+            "name": "real-asset smoke stays below 512 MiB RSS growth",
+            "passed": true
+          }
+        ],
+        "suite": "real_assets",
+        "total": 25
+      },
+      "test": "test_real_assets.py",
+      "total": 25
+    },
+    {
+      "passed": 31,
+      "status": "passed",
+      "summary": {
+        "failed": 0,
+        "minimum_satisfied": true,
+        "passed": 31,
+        "results": [
+          {
+            "name": "single XYZ point converts to ZYX",
+            "passed": true
+          },
+          {
+            "name": "coordinate conversion preserves dtype",
+            "passed": true
+          },
+          {
+            "name": "coordinate conversion returns a copy",
+            "passed": true
+          },
+          {
+            "name": "batched coordinate shape preserved",
+            "passed": true
+          },
+          {
+            "name": "batched coordinate values reverse last axis",
+            "passed": true
+          },
+          {
+            "name": "XYZ-ZYX round trip exact",
+            "passed": true
+          },
+          {
+            "name": "scalar coordinate rejected",
+            "passed": true
+          },
+          {
+            "name": "wrong final dimension rejected",
+            "passed": true
+          },
+          {
+            "name": "zero Euler angles produce identity",
+            "passed": true
+          },
+          {
+            "name": "positive Z rotation maps X to Y",
+            "passed": true
+          },
+          {
+            "name": "degree and radian rotations agree",
+            "passed": true
+          },
+          {
+            "name": "rotation matrix is orthonormal",
+            "passed": true
+          },
+          {
+            "name": "wrong Euler angle count rejected",
+            "passed": true
+          },
+          {
+            "name": "nonfinite Euler angle rejected",
+            "passed": true
+          },
+          {
+            "name": "default homogeneous transform is identity",
+            "passed": true
+          },
+          {
+            "name": "translation applies in XYZ order",
+            "passed": true
+          },
+          {
+            "name": "uniform scale applies",
+            "passed": true
+          },
+          {
+            "name": "anisotropic scale precedes rotation",
+            "passed": true
+          },
+          {
+            "name": "zero scale rejected",
+            "passed": true
+          },
+          {
+            "name": "wrong scale length rejected",
+            "passed": true
+          },
+          {
+            "name": "wrong rotation shape rejected",
+            "passed": true
+          },
+          {
+            "name": "wrong translation shape rejected",
+            "passed": true
+          },
+          {
+            "name": "transform preserves arbitrary leading dimensions",
+            "passed": true
+          },
+          {
+            "name": "inverse transform restores points",
+            "passed": true
+          },
+          {
+            "name": "composition follows application order",
+            "passed": true
+          },
+          {
+            "name": "empty composition is identity",
+            "passed": true
+          },
+          {
+            "name": "non-4x4 transform rejected",
+            "passed": true
+          },
+          {
+            "name": "nonfinite transform rejected",
+            "passed": true
+          },
+          {
+            "name": "zero homogeneous weight rejected",
+            "passed": true
+          },
+          {
+            "name": "singular transform cannot invert",
+            "passed": true
+          },
+          {
+            "name": "non-unit homogeneous weight is normalized",
+            "passed": true
+          }
+        ],
+        "suite": "coordinates",
+        "total": 31
+      },
+      "test": "test_coordinates.py",
+      "total": 31
+    },
+    {
+      "passed": 39,
+      "status": "passed",
+      "summary": {
+        "failed": 0,
+        "passed": 39,
+        "results": [
+          {
+            "name": "parser canonicalizes junction order",
+            "passed": true
+          },
+          {
+            "name": "parser canonicalizes strut order",
+            "passed": true
+          },
+          {
+            "name": "XYZ positions become immutable triples",
+            "passed": true
+          },
+          {
+            "name": "optional unit_cell_edge_idx is preserved",
+            "passed": true
+          },
+          {
+            "name": "absent unit_cell_edge_idx stays None",
+            "passed": true
+          },
+          {
+            "name": "unknown record metadata is preserved",
+            "passed": true
+          },
+          {
+            "name": "unknown top-level metadata is preserved",
+            "passed": true
+          },
+          {
+            "name": "endpoint normalization is orientation independent",
+            "passed": true
+          },
+          {
+            "name": "non-integral endpoint IDs are rejected",
+            "passed": true
+          },
+          {
+            "name": "string endpoint pair is rejected",
+            "passed": true
+          },
+          {
+            "name": "coincident records weld to four physical nodes",
+            "passed": true
+          },
+          {
+            "name": "weld preserves all source-junction provenance",
+            "passed": true
+          },
+          {
+            "name": "welded centroid is deterministic",
+            "passed": true
+          },
+          {
+            "name": "duplicate physical edges retain both source struts",
+            "passed": true
+          },
+          {
+            "name": "collapsed source edge is reported as self-loop",
+            "passed": true
+          },
+          {
+            "name": "connectivity includes isolated nodes",
+            "passed": true
+          },
+          {
+            "name": "component summary reports largest fraction",
+            "passed": true
+          },
+          {
+            "name": "component summary identifies the isolate",
+            "passed": true
+          },
+          {
+            "name": "zero tolerance means exact-position welding",
+            "passed": true
+          },
+          {
+            "name": "negative weld tolerance is rejected",
+            "passed": true
+          },
+          {
+            "name": "input record order cannot change weld result",
+            "passed": true
+          },
+          {
+            "name": "welding is transitive across tolerance neighbors",
+            "passed": true
+          },
+          {
+            "name": "duplicate junction IDs are rejected",
+            "passed": true
+          },
+          {
+            "name": "dangling endpoints fail strict parsing",
+            "passed": true
+          },
+          {
+            "name": "damaged graphs support explicit permissive parsing",
+            "passed": true
+          },
+          {
+            "name": "permissive welding preserves dangling strut provenance",
+            "passed": true
+          },
+          {
+            "name": "tolerant loader recovers intact records from damaged JSON",
+            "passed": true
+          },
+          {
+            "name": "strict loader reports malformed JSON",
+            "passed": true
+          },
+          {
+            "name": "lattice loader preserves LFS-not-materialized error contract",
+            "passed": true
+          },
+          {
+            "name": "real 1x1x1 project schema parses",
+            "passed": true
+          },
+          {
+            "name": "real 1x1x1 optional edge index is absent",
+            "passed": true
+          },
+          {
+            "name": "real multi-cell project schema parses",
+            "passed": true
+          },
+          {
+            "name": "real multi-cell edge index is retained",
+            "passed": true
+          },
+          {
+            "name": "real 8x8x8 duplicate records weld to 2,457 physical nodes",
+            "passed": true
+          },
+          {
+            "name": "real 8x8x8 welded graph is one connected component",
+            "passed": true
+          },
+          {
+            "name": "real registered 9x9x9 graph welds to 3,430 physical nodes",
+            "passed": true
+          },
+          {
+            "name": "real registered 9x9x9 graph remains connected after welding",
+            "passed": true
+          },
+          {
+            "name": "real damaged JSON tolerant parse recovers expected junction records",
+            "passed": true
+          },
+          {
+            "name": "real damaged JSON tolerant parse recovers struts and unit cells",
+            "passed": true
+          }
+        ],
+        "suite": "lattice_graph",
+        "total": 39
+      },
+      "test": "test_lattice_graph.py",
+      "total": 39
+    },
+    {
+      "passed": 33,
+      "status": "passed",
+      "summary": {
+        "failed": 0,
+        "passed": 33,
+        "results": [
+          {
+            "name": "threshold uses inclusive >= semantics",
+            "passed": true
+          },
+          {
+            "name": "threshold output defaults to uint8",
+            "passed": true
+          },
+          {
+            "name": "thresholding never mutates the source",
+            "passed": true
+          },
+          {
+            "name": "boolean output dtype is supported",
+            "passed": true
+          },
+          {
+            "name": "integer volumes accept fractional thresholds",
+            "passed": true
+          },
+          {
+            "name": "finite threshold handles infinite voxels deterministically",
+            "passed": true
+          },
+          {
+            "name": "NaN threshold is rejected",
+            "passed": true
+          },
+          {
+            "name": "infinite threshold is rejected",
+            "passed": true
+          },
+          {
+            "name": "complex-valued volume is rejected",
+            "passed": true
+          },
+          {
+            "name": "floating mask output dtype is rejected",
+            "passed": true
+          },
+          {
+            "name": "optional 3D requirement rejects vectors",
+            "passed": true
+          },
+          {
+            "name": "0/255 mask normalizes to literal 0/1",
+            "passed": true
+          },
+          {
+            "name": "normalization returns a fresh array",
+            "passed": true
+          },
+          {
+            "name": "default normalization is finite-nonzero foreground",
+            "passed": true
+          },
+          {
+            "name": "explicit label selection is exact",
+            "passed": true
+          },
+          {
+            "name": "empty foreground label selection is rejected",
+            "passed": true
+          },
+          {
+            "name": "nonnumeric masks are rejected",
+            "passed": true
+          },
+          {
+            "name": "3D volume validation reports shape and size",
+            "passed": true
+          },
+          {
+            "name": "volume validation counts non-finite voxels",
+            "passed": true
+          },
+          {
+            "name": "strict finite validation rejects NaN/inf",
+            "passed": true
+          },
+          {
+            "name": "3D volume validation rejects 2D arrays",
+            "passed": true
+          },
+          {
+            "name": "volume validation rejects empty arrays by default",
+            "passed": true
+          },
+          {
+            "name": "empty volume can be allowed explicitly",
+            "passed": true
+          },
+          {
+            "name": "binary mask validation accepts project 0/255 encoding",
+            "passed": true
+          },
+          {
+            "name": "constant valid binary masks are accepted",
+            "passed": true
+          },
+          {
+            "name": "binary validation rejects arbitrary labels",
+            "passed": true
+          },
+          {
+            "name": "binary validation rejects non-finite values",
+            "passed": true
+          },
+          {
+            "name": "binary validation enforces 3D by default",
+            "passed": true
+          },
+          {
+            "name": "mask summary reports source values",
+            "passed": true
+          },
+          {
+            "name": "mask summary catches raw high-cardinality arrays",
+            "passed": true
+          },
+          {
+            "name": "apply_mask respects normalized mask semantics",
+            "passed": true
+          },
+          {
+            "name": "apply_mask rejects shape mismatch",
+            "passed": true
+          },
+          {
+            "name": "random fixture exactly matches independent NumPy ground truth",
+            "passed": true
+          }
+        ],
+        "suite": "segmentation",
+        "total": 33
+      },
+      "test": "test_segmentation.py",
+      "total": 33
+    },
+    {
+      "passed": 51,
+      "status": "passed",
+      "summary": {
+        "failed": 0,
+        "minimum_satisfied": true,
+        "passed": 51,
+        "results": [
+          {
+            "name": "valid scalar volume reports ZYX shape",
+            "passed": true
+          },
+          {
+            "name": "2D input is rejected",
+            "passed": true
+          },
+          {
+            "name": "nonnumeric input is rejected",
+            "passed": true
+          },
+          {
+            "name": "nonfinite input is rejected",
+            "passed": true
+          },
+          {
+            "name": "uint16 histogram offset is zero",
+            "passed": true
+          },
+          {
+            "name": "streamed histogram counts every voxel",
+            "passed": true
+          },
+          {
+            "name": "streamed histogram preserves foreground count",
+            "passed": true
+          },
+          {
+            "name": "Otsu separates a two-level volume",
+            "passed": true
+          },
+          {
+            "name": "empty histogram cannot produce Otsu",
+            "passed": true
+          },
+          {
+            "name": "foreground voxel count is exact",
+            "passed": true
+          },
+          {
+            "name": "foreground crop includes requested padding",
+            "passed": true
+          },
+          {
+            "name": "surface transition estimate is positive",
+            "passed": true
+          },
+          {
+            "name": "triangle estimate is twice transitions",
+            "passed": true
+          },
+          {
+            "name": "plausible sparse foreground passes quality gate",
+            "passed": true
+          },
+          {
+            "name": "dense threshold is rejected",
+            "passed": true
+          },
+          {
+            "name": "empty threshold is rejected",
+            "passed": true
+          },
+          {
+            "name": "PLY estimate includes vertices and triangles",
+            "passed": true
+          },
+          {
+            "name": "exact disk requirement passes",
+            "passed": true
+          },
+          {
+            "name": "insufficient disk is rejected",
+            "passed": true
+          },
+          {
+            "name": "binary cuboid creates a nonempty closed surface",
+            "passed": true
+          },
+          {
+            "name": "slab extraction preserves vertex count",
+            "passed": true
+          },
+          {
+            "name": "slab extraction preserves face count",
+            "passed": true
+          },
+          {
+            "name": "slab extraction preserves triangle geometry",
+            "passed": true
+          },
+          {
+            "name": "shared slab vertices are actually reused",
+            "passed": true
+          },
+          {
+            "name": "ZYX is converted to expected XYZ minimum",
+            "passed": true
+          },
+          {
+            "name": "ZYX is converted to expected XYZ maximum",
+            "passed": true
+          },
+          {
+            "name": "XYZ voxel spacing scales minimum",
+            "passed": true
+          },
+          {
+            "name": "XYZ voxel spacing scales maximum",
+            "passed": true
+          },
+          {
+            "name": "nonpositive spacing is rejected",
+            "passed": true
+          },
+          {
+            "name": "disconnected material is preserved by default",
+            "passed": true
+          },
+          {
+            "name": "single foreground voxel produces a surface",
+            "passed": true
+          },
+          {
+            "name": "automatic threshold parser remains symbolic",
+            "passed": true
+          },
+          {
+            "name": "explicit threshold parser returns float",
+            "passed": true
+          },
+          {
+            "name": "spacing parser uses XYZ order",
+            "passed": true
+          },
+          {
+            "name": "PLY header vertex count is correct",
+            "passed": true
+          },
+          {
+            "name": "PLY header face count is correct",
+            "passed": true
+          },
+          {
+            "name": "PLY payload bounds are correct",
+            "passed": true
+          },
+          {
+            "name": "binary PLY has a nontrivial payload",
+            "passed": true
+          },
+          {
+            "name": "new PLY uses normal user-readable permissions",
+            "passed": true
+          },
+          {
+            "name": "truncated PLY is rejected",
+            "passed": true
+          },
+          {
+            "name": "face index outside vertex payload is rejected",
+            "passed": true
+          },
+          {
+            "name": "end-to-end TIFF conversion creates PLY",
+            "passed": true
+          },
+          {
+            "name": "end-to-end conversion creates preflight",
+            "passed": true
+          },
+          {
+            "name": "end-to-end conversion creates manifest",
+            "passed": true
+          },
+          {
+            "name": "end-to-end conversion creates threshold preview",
+            "passed": true
+          },
+          {
+            "name": "manifest records explicit threshold",
+            "passed": true
+          },
+          {
+            "name": "end-to-end result passes payload validation",
+            "passed": true
+          },
+          {
+            "name": "preflight-only does not create a mesh",
+            "passed": true
+          },
+          {
+            "name": "preflight-only still saves evidence",
+            "passed": true
+          },
+          {
+            "name": "preflight-only saves threshold overlay",
+            "passed": true
+          },
+          {
+            "name": "synthetic low-disk estimate fails before allocation",
+            "passed": true
+          }
+        ],
+        "suite": "TIFF to MeshLab conversion",
+        "total": 51
+      },
+      "test": "test_tiff_mesh.py",
+      "total": 51
+    },
+    {
+      "passed": 30,
+      "status": "passed",
+      "summary": {
+        "failed": 0,
+        "minimum_satisfied": true,
+        "passed": 30,
+        "results": [
+          {
+            "name": "radius zero contains origin only",
+            "passed": true
+          },
+          {
+            "name": "radius one has seven lattice points",
+            "passed": true
+          },
+          {
+            "name": "radius one excludes cube diagonal",
+            "passed": true
+          },
+          {
+            "name": "negative radius rejected",
+            "passed": true
+          },
+          {
+            "name": "boolean radius rejected",
+            "passed": true
+          },
+          {
+            "name": "Otsu split lies between two modes",
+            "passed": true
+          },
+          {
+            "name": "constant Otsu sample returns constant",
+            "passed": true
+          },
+          {
+            "name": "empty Otsu sample rejected",
+            "passed": true
+          },
+          {
+            "name": "too few Otsu bins rejected",
+            "passed": true
+          },
+          {
+            "name": "noncontiguous source strut IDs preserved",
+            "passed": true
+          },
+          {
+            "name": "noncontiguous endpoint IDs preserved",
+            "passed": true
+          },
+          {
+            "name": "fully supported synthetic strut has occupancy one",
+            "passed": true
+          },
+          {
+            "name": "empty synthetic corridor has occupancy zero",
+            "passed": true
+          },
+          {
+            "name": "only empty corridor is candidate missing",
+            "passed": true
+          },
+          {
+            "name": "midpoints remain in XYZ order",
+            "passed": true
+          },
+          {
+            "name": "material threshold preserved",
+            "passed": true
+          },
+          {
+            "name": "missing cutoff preserved",
+            "passed": true
+          },
+          {
+            "name": "occupancy never mutates input volume",
+            "passed": true
+          },
+          {
+            "name": "2D volume rejected",
+            "passed": true
+          },
+          {
+            "name": "one centerline sample rejected",
+            "passed": true
+          },
+          {
+            "name": "invalid missing cutoff rejected",
+            "passed": true
+          },
+          {
+            "name": "nonfinite material threshold rejected",
+            "passed": true
+          },
+          {
+            "name": "fractional sample count rejected",
+            "passed": true
+          },
+          {
+            "name": "fractional threshold stride rejected",
+            "passed": true
+          },
+          {
+            "name": "negative background is not replaced by invented zero intensity",
+            "passed": true
+          },
+          {
+            "name": "legacy CSV keeps established filename",
+            "passed": true
+          },
+          {
+            "name": "legacy figure keeps established filename",
+            "passed": true
+          },
+          {
+            "name": "legacy figure is nonempty",
+            "passed": true
+          },
+          {
+            "name": "legacy CSV keeps established schema",
+            "passed": true
+          },
+          {
+            "name": "legacy CSV writes one row per strut",
+            "passed": true
+          }
+        ],
+        "suite": "legacy_occupancy",
+        "total": 30
+      },
+      "test": "test_legacy_occupancy.py",
+      "total": 30
+    },
+    {
+      "passed": 30,
+      "status": "passed",
+      "summary": {
+        "failed": 0,
+        "minimum_satisfied": true,
+        "passed": 30,
+        "results": [
+          {
+            "name": "NumPy array becomes JSON list",
+            "passed": true
+          },
+          {
+            "name": "NumPy scalar becomes Python scalar",
+            "passed": true
+          },
+          {
+            "name": "dataclass becomes mapping",
+            "passed": true
+          },
+          {
+            "name": "Path becomes string",
+            "passed": true
+          },
+          {
+            "name": "nonfinite JSON rejected",
+            "passed": true
+          },
+          {
+            "name": "unknown JSON type rejected",
+            "passed": true
+          },
+          {
+            "name": "JSON key collisions are rejected",
+            "passed": true
+          },
+          {
+            "name": "canonical JSON ignores mapping insertion order",
+            "passed": true
+          },
+          {
+            "name": "canonical JSON has one trailing newline",
+            "passed": true
+          },
+          {
+            "name": "atomic writer preserves bytes",
+            "passed": true
+          },
+          {
+            "name": "new atomic report uses readable file mode",
+            "passed": true
+          },
+          {
+            "name": "atomic writer leaves no temporary sibling",
+            "passed": true
+          },
+          {
+            "name": "atomic replacement overwrites complete file",
+            "passed": true
+          },
+          {
+            "name": "atomic replacement preserves existing file mode",
+            "passed": true
+          },
+          {
+            "name": "missing parent rejected by default",
+            "passed": true
+          },
+          {
+            "name": "written JSON round-trips",
+            "passed": true
+          },
+          {
+            "name": "pretty JSON keys are sorted",
+            "passed": true
+          },
+          {
+            "name": "negative JSON indent rejected",
+            "passed": true
+          },
+          {
+            "name": "JSONL writes exactly two records",
+            "passed": true
+          },
+          {
+            "name": "JSONL second record round-trips",
+            "passed": true
+          },
+          {
+            "name": "CSV preserves requested field order",
+            "passed": true
+          },
+          {
+            "name": "CSV row round-trips",
+            "passed": true
+          },
+          {
+            "name": "duplicate CSV fields rejected",
+            "passed": true
+          },
+          {
+            "name": "CSV extra columns are rejected",
+            "passed": true
+          },
+          {
+            "name": "CSV missing columns are rejected",
+            "passed": true
+          },
+          {
+            "name": "streamed SHA-256 matches known vector",
+            "passed": true
+          },
+          {
+            "name": "SHA-256 independent of block size",
+            "passed": true
+          },
+          {
+            "name": "nonpositive hash block rejected",
+            "passed": true
+          },
+          {
+            "name": "manifest is path sorted",
+            "passed": true
+          },
+          {
+            "name": "manifest includes size and SHA",
+            "passed": true
+          }
+        ],
+        "suite": "reporting",
+        "total": 30
+      },
+      "test": "test_reporting.py",
+      "total": 30
+    },
+    {
+      "passed": 37,
+      "status": "passed",
+      "summary": {
+        "failed": 0,
+        "minimum_satisfied": true,
+        "passed": 37,
+        "results": [
+          {
+            "name": "new checker starts with zero passes",
+            "passed": true
+          },
+          {
+            "name": "new checker starts with zero failures",
+            "passed": true
+          },
+          {
+            "name": "truthy check returns true",
+            "passed": true
+          },
+          {
+            "name": "falsey check returns false",
+            "passed": true
+          },
+          {
+            "name": "equal helper passes equal values",
+            "passed": true
+          },
+          {
+            "name": "close helper accepts tolerance",
+            "passed": true
+          },
+          {
+            "name": "raises helper recognizes expected type",
+            "passed": true
+          },
+          {
+            "name": "pass count is accurate",
+            "passed": true
+          },
+          {
+            "name": "failure count is accurate",
+            "passed": true
+          },
+          {
+            "name": "summary total is accurate",
+            "passed": true
+          },
+          {
+            "name": "minimum count is satisfied",
+            "passed": true
+          },
+          {
+            "name": "failed checker exits nonzero",
+            "passed": true
+          },
+          {
+            "name": "human output contains title",
+            "passed": true
+          },
+          {
+            "name": "human output contains PASS and FAIL",
+            "passed": true
+          },
+          {
+            "name": "minimum check count is enforced",
+            "passed": true
+          },
+          {
+            "name": "summary writer creates parents",
+            "passed": true
+          },
+          {
+            "name": "written summary round-trips",
+            "passed": true
+          },
+          {
+            "name": "module loader executes source",
+            "passed": true
+          },
+          {
+            "name": "module loader rejects missing path",
+            "passed": true
+          },
+          {
+            "name": "module loader rejects invalid name",
+            "passed": true
+          },
+          {
+            "name": "CheckResult stores name",
+            "passed": true
+          },
+          {
+            "name": "CheckResult stores pass state",
+            "passed": true
+          },
+          {
+            "name": "finish exits with requested code",
+            "passed": true
+          },
+          {
+            "name": "runner parses plain check count",
+            "passed": true
+          },
+          {
+            "name": "runner parses JSON check count",
+            "passed": true
+          },
+          {
+            "name": "runner rejects output without summary",
+            "passed": true
+          },
+          {
+            "name": "runner normalization removes volatile detail paths",
+            "passed": true
+          },
+          {
+            "name": "runner accepts valid successful test",
+            "passed": true
+          },
+          {
+            "name": "runner persists successful status",
+            "passed": true
+          },
+          {
+            "name": "runner persists parsed totals",
+            "passed": true
+          },
+          {
+            "name": "exit-zero test without summary fails",
+            "passed": true
+          },
+          {
+            "name": "invalid summary status is failed",
+            "passed": true
+          },
+          {
+            "name": "runner stops before later test after invalid summary",
+            "passed": true
+          },
+          {
+            "name": "allow-missing permits only missing build-stage test",
+            "passed": true
+          },
+          {
+            "name": "missing test is represented explicitly",
+            "passed": true
+          },
+          {
+            "name": "partial check count fails despite exit zero",
+            "passed": true
+          },
+          {
+            "name": "partial check status is failed",
+            "passed": true
+          }
+        ],
+        "suite": "testing",
+        "total": 37
+      },
+      "test": "test_testing.py",
+      "total": 37
+    },
+    {
+      "passed": 41,
+      "status": "passed",
+      "summary": {
+        "failed": 0,
+        "passed": 41,
+        "results": [
+          {
+            "name": "analyze_json imports successfully",
+            "passed": true
+          },
+          {
+            "name": "analyze_json import is stdout-silent",
+            "passed": true
+          },
+          {
+            "name": "analyze_json import is stderr-silent",
+            "passed": true
+          },
+          {
+            "name": "analyze_npy imports successfully",
+            "passed": true
+          },
+          {
+            "name": "analyze_npy import is stdout-silent",
+            "passed": true
+          },
+          {
+            "name": "analyze_npy import is stderr-silent",
+            "passed": true
+          },
+          {
+            "name": "analyze_project_assets imports successfully",
+            "passed": true
+          },
+          {
+            "name": "analyze_project_assets import is stdout-silent",
+            "passed": true
+          },
+          {
+            "name": "analyze_project_assets import is stderr-silent",
+            "passed": true
+          },
+          {
+            "name": "analyze_tiff_stl imports successfully",
+            "passed": true
+          },
+          {
+            "name": "analyze_tiff_stl import is stdout-silent",
+            "passed": true
+          },
+          {
+            "name": "analyze_tiff_stl import is stderr-silent",
+            "passed": true
+          },
+          {
+            "name": "create_pdf_contacts imports successfully",
+            "passed": true
+          },
+          {
+            "name": "create_pdf_contacts import is stdout-silent",
+            "passed": true
+          },
+          {
+            "name": "create_pdf_contacts import is stderr-silent",
+            "passed": true
+          },
+          {
+            "name": "find_missing_points imports successfully",
+            "passed": true
+          },
+          {
+            "name": "find_missing_points import is stdout-silent",
+            "passed": true
+          },
+          {
+            "name": "find_missing_points import is stderr-silent",
+            "passed": true
+          },
+          {
+            "name": "view_tif_napari imports successfully",
+            "passed": true
+          },
+          {
+            "name": "view_tif_napari import is stdout-silent",
+            "passed": true
+          },
+          {
+            "name": "view_tif_napari import is stderr-silent",
+            "passed": true
+          },
+          {
+            "name": "imports do not create or modify established artifacts",
+            "passed": true
+          },
+          {
+            "name": "analyze_json --help exits successfully",
+            "passed": true
+          },
+          {
+            "name": "analyze_json --help contains usage",
+            "passed": true
+          },
+          {
+            "name": "analyze_npy --help exits successfully",
+            "passed": true
+          },
+          {
+            "name": "analyze_npy --help contains usage",
+            "passed": true
+          },
+          {
+            "name": "find_missing_points --help exits successfully",
+            "passed": true
+          },
+          {
+            "name": "find_missing_points --help contains usage",
+            "passed": true
+          },
+          {
+            "name": "view_tif_napari --help exits successfully",
+            "passed": true
+          },
+          {
+            "name": "view_tif_napari --help contains usage",
+            "passed": true
+          },
+          {
+            "name": "no root production script exceeds 1,000 lines",
+            "passed": true
+          },
+          {
+            "name": "isosurface extraction produces a nonempty mesh",
+            "passed": true
+          },
+          {
+            "name": "isosurface vertices are converted from array ZYX to geometry XYZ",
+            "passed": true
+          },
+          {
+            "name": "legacy occupancy path is visibly marked and opt-in",
+            "passed": true
+          },
+          {
+            "name": "graph CLI real-data smoke exits successfully",
+            "passed": true
+          },
+          {
+            "name": "graph CLI reports welded physical topology",
+            "passed": true
+          },
+          {
+            "name": "graph CLI reports recovered registration",
+            "passed": true
+          },
+          {
+            "name": "NPY CLI synthetic smoke exits successfully",
+            "passed": true
+          },
+          {
+            "name": "NPY CLI writes historical histogram name",
+            "passed": true
+          },
+          {
+            "name": "NPY CLI writes historical center-slice name",
+            "passed": true
+          },
+          {
+            "name": "NPY CLI does not mutate its input",
+            "passed": true
+          }
+        ],
+        "suite": "cli_compatibility",
+        "total": 41
+      },
+      "test": "test_cli_compatibility.py",
+      "total": 41
+    }
+  ],
+  "tests_run": 11
+}
