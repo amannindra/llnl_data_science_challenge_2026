@@ -1,7 +1,7 @@
 # Task 2 — `visualize_slice` adversarial test suite
 
 Task 2 implements the `visualize_slice(input_filepath, output_filepath, slice_index, axis=0)`
-MCP tool in `src/mcp_server.py`. Spec: **load a 3D CT `.npy`, take the 2D slice at
+MCP tool in `Aman_src/mcp_server.py`. Spec: **load a 3D CT `.npy`, take the 2D slice at
 `slice_index` along `axis`, and save it as an image** (e.g. `.png`); return a
 status/error string.
 
@@ -9,7 +9,7 @@ These scripts exist to **try to prove that implementation wrong**. Run them with
 `DSC` env:
 
 ```bash
-cd Scripts/Task2
+cd Aman_Scripts/Task2
 for t in test_0*.py; do /Users/amannindra/miniconda3/envs/DSC/bin/python "$t"; done
 ```
 
@@ -19,7 +19,7 @@ for t in test_0*.py; do /Users/amannindra/miniconda3/envs/DSC/bin/python "$t"; d
 | `test_02_io_persistence.py` | **I/O / persistence** | reported path vs real file (the missing-extension `.png` append), other formats (`.jpg`/`.tif`/`.bmp`), auto-created dirs, stale image on overwrite, input `.npy` bytes unchanged, round-trip resolution |
 | `test_03_edge_and_mcp.py` | **Edge / errors + live MCP** | missing/empty paths, non-3D arrays, out-of-range axis/index, bad types, non-numeric & pickled arrays, NaN/inf/constant slices — **plus** a real FastMCP `Client`: registration, 4-param schema, live `call_tool`, error propagation |
 
-`_harness.py` loads the tool from `src/mcp_server.py`, provides the PASS/FAIL checker,
+`_harness.py` loads the tool from `Aman_src/mcp_server.py`, provides the PASS/FAIL checker,
 and a `read_luminance()` helper (via Pillow) so content checks don't depend on how the
 tool encoded the image. Every test uses throwaway temp dirs — nothing is written into
 the repo.

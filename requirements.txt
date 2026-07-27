@@ -3,3 +3,6 @@ matplotlib
 fastmcp
 scikit-image
 tifffile
+Pillow
+scipy
+psutil

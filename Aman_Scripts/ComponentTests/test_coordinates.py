@@ -14,7 +14,7 @@ import numpy as np
 REPOSITORY = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPOSITORY))
 
-from Scripts.Components.coordinates import (  # noqa: E402
+from Aman_Scripts.Components.coordinates import (  # noqa: E402
     apply_transform,
     compose_transforms,
     homogeneous_matrix,

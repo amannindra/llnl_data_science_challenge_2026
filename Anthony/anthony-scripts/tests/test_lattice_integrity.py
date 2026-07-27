@@ -2,11 +2,17 @@
 
 from __future__ import annotations
 
+import sys
 import unittest
+from pathlib import Path
 
 import numpy as np
 
-from src.inspect_lattice_integrity import (
+SCRIPTS_DIR = Path(__file__).resolve().parents[1]
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
+
+from inspect_lattice_integrity import (  # noqa: E402
     JUNCTION_STATES,
     STRUT_STATES,
     assign_junction_states,

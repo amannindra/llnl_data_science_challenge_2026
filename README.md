@@ -19,7 +19,9 @@ By the end of the challenge, participants should understand how to move from sta
 ## Repository Contents
 
 - `DATA_SCIENCE_CHALLENGE_2026.md/pdf` - main challenge instructions
-- `src/` - starter Python code for MCP tools and skeletonization
+- `Anthony/src-anthony/` - Anthony's MCP tools and local skeletonization module
+- `Aman_src/` - Aman's independent MCP tools and local skeletonization module
+- `Anthony/anthony-scripts/` and `Aman_Scripts/` - contributor analyses and validation suites
 - `data/` - sample CT, mesh, and lattice structure data
 - `images/` - example visualizations used in the challenge materials
 - `presentation/` - introductory challenge slides
@@ -122,7 +124,8 @@ if __name__ == "__main__":
     mcp.run()
 ```
 
-The server script in this repository, `src/mcp_server.py`, should follow this pattern as you add each tool.
+The repository contains two independent implementations of this server pattern:
+`Anthony/src-anthony/mcp_server.py` and `Aman_src/mcp_server.py`.
 
 #### Basic Image Processing Terms
 Before starting Tasks 1-3, here are a few image-processing terms you will use with respect to a volume/image:
@@ -148,9 +151,14 @@ def segment_ct_dataset(input_filepath: str, output_filepath: str, threshold: flo
 Add the MCP tools to your Codex CLI configuration file at `~/.codex/config.toml` and then test it in the Codex CLI. You should add the following block, making sure to use the absolute paths for your Python executable and the server script. Replace `<PATH_TO_PYTHON_EXE>` with the path to your Python executable and `<PATH_TO_DSSI_CHALLENGE>` with the path to your DSSI Challenge directory:
 
 ```toml
-[mcp_servers.segmentation-tools]
+[mcp_servers.anthony-segmentation-tools]
 command = "<PATH_TO_PYTHON_EXE>"
-args = ["<PATH_TO_DSSI_CHALLENGE>/src/mcp_server.py"]
+args = ["<PATH_TO_DSSI_CHALLENGE>/Anthony/src-anthony/mcp_server.py"]
+env = {}
+
+[mcp_servers.aman-segmentation-tools]
+command = "<PATH_TO_PYTHON_EXE>"
+args = ["<PATH_TO_DSSI_CHALLENGE>/Aman_src/mcp_server.py"]
 env = {}
 ```
 
@@ -342,9 +350,13 @@ Here are some suggested tracks for your multi-agent system. You can choose one o
     *   **Workflow:** Build an interactive dashboard that visualizes the data in 3D and features a chat interface.
     *   **Capability:** The agent should be able to "see" the current viewport of the dashboard and execute analysis tasks in real-time based on your questions (e.g., "Analyze the connectivity in the region I'm looking at").
 
-## Appendix: Starter Python Code
+## Appendix: Historical Starter Python Code
 
-### `src/mcp_server.py`
+The original root `src/` template shown below was removed after the Anthony and
+Aman implementations were integrated. Use the contributor paths documented
+above for executable MCP servers.
+
+### Historical `src/mcp_server.py` template
 
 ```python
 from fastmcp import FastMCP
@@ -402,7 +414,7 @@ if __name__ == "__main__":
     mcp.run()
 ```
 
-### `src/skeletonization.py`
+### Historical `src/skeletonization.py` template
 
 ```python
 import numpy as np

@@ -1,8 +1,8 @@
 # Task 3 — `skeletonize` adversarial test suite
 
 Task 3 implements the `skeletonize(input_filepath, output_filepath)` MCP tool in
-`src/mcp_server.py`. Unlike Tasks 1 & 2, this one is an **API wrapper**: it must
-expose the *existing* `skeletonize_mask()` from `src/skeletonization.py`, not
+`Aman_src/mcp_server.py`. Unlike Tasks 1 & 2, this one is an **API wrapper**: it must
+expose the *existing* `skeletonize_mask()` from `Aman_src/skeletonization.py`, not
 reimplement skeletonization. Spec: load a 3D mask `.npy`, thin it to a 1-voxel
 centerline via `skimage.morphology.skeletonize`, save `.npy`, return a status/error string.
 
@@ -10,7 +10,7 @@ These 10 scripts exist to **try to prove that implementation wrong**. Run them w
 `DSC` env:
 
 ```bash
-cd Scripts/Task3
+cd Aman_Scripts/Task3
 for t in test_*.py; do /Users/amannindra/miniconda3/envs/DSC/bin/python "$t"; done
 ```
 
@@ -27,7 +27,7 @@ for t in test_*.py; do /Users/amannindra/miniconda3/envs/DSC/bin/python "$t"; do
 | 9 | `test_09_bad_arrays.py` | hostile payloads (string/object/corrupt/1D/4D arrays) → `Error:`; NaN/inf float mask still succeeds |
 | 10 | `test_10_mcp_end_to_end.py` | live FastMCP `Client`: registration, 2-param schema, real `call_tool`, error propagation, full segment→skeletonize pipeline |
 
-`_harness.py` loads the tool from `src/mcp_server.py` and provides the PASS/FAIL checker
+`_harness.py` loads the tool from `Aman_src/mcp_server.py` and provides the PASS/FAIL checker
 plus a `cross_mask()` helper. Every test uses throwaway temp dirs — nothing is written
 into the repo.
 

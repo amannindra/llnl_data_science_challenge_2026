@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from Scripts.Components.lattice_graph import (  # noqa: E402
+from Aman_Scripts.Components.lattice_graph import (  # noqa: E402
     LatticeGraphError,
     connected_components,
     load_lattice_graph,
@@ -22,7 +22,7 @@ from Scripts.Components.lattice_graph import (  # noqa: E402
     summarize_components,
     weld_coincident_nodes,
 )
-from Scripts.Components.asset_io import AssetNotMaterializedError  # noqa: E402
+from Aman_Scripts.Components.asset_io import AssetNotMaterializedError  # noqa: E402
 
 
 class Checker:

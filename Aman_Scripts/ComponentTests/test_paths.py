@@ -13,7 +13,7 @@ from typing import Callable
 REPOSITORY = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPOSITORY))
 
-from Scripts.Components.paths import (  # noqa: E402
+from Aman_Scripts.Components.paths import (  # noqa: E402
     RepositoryNotFoundError,
     UnsafePathError,
     data_path,
@@ -57,9 +57,9 @@ def main() -> int:
     with tempfile.TemporaryDirectory(prefix="dssi_paths_") as temporary:
         sandbox = Path(temporary).resolve()
         root = (sandbox / "project").resolve()
-        (root / "Scripts").mkdir(parents=True)
+        (root / "Aman_Scripts").mkdir(parents=True)
         (root / "data" / "nested").mkdir(parents=True)
-        source = root / "Scripts" / "tool.py"
+        source = root / "Aman_Scripts" / "tool.py"
         source.write_text("# fixture\n", encoding="utf-8")
 
         checks.check(
@@ -69,7 +69,7 @@ def main() -> int:
         checks.check("discovers root from file", find_repository_root(source) == root)
 
         inner = root / "data" / "nested" / "inner_project"
-        (inner / "Scripts").mkdir(parents=True)
+        (inner / "Aman_Scripts").mkdir(parents=True)
         (inner / "data").mkdir()
         checks.check("nearest marked ancestor wins", find_repository_root(inner) == inner)
         checks.check("default discovery finds real repository", find_repository_root() == REPOSITORY)
@@ -99,7 +99,7 @@ def main() -> int:
         )
         checks.check(
             "absolute in-base path accepted",
-            ensure_within(root, root / "Scripts") == root / "Scripts",
+            ensure_within(root, root / "Aman_Scripts") == root / "Aman_Scripts",
         )
         checks.raises(
             "dot-dot escape rejected",
@@ -131,7 +131,7 @@ def main() -> int:
             repository_path("data", "nested", root=root) == root / "data" / "nested",
         )
         checks.check("data_path uses data base", data_path("nested", root=root) == root / "data" / "nested")
-        checks.check("scripts_path uses Scripts base", scripts_path("tool.py", root=root) == source)
+        checks.check("scripts_path uses Aman_Scripts base", scripts_path("tool.py", root=root) == source)
         checks.raises(
             "must_exist rejects absent path",
             FileNotFoundError,
@@ -149,7 +149,7 @@ def main() -> int:
         )
         checks.check(
             "repository-relative conversion is stable",
-            relative_repository_path(source, root=root) == Path("Scripts/tool.py"),
+            relative_repository_path(source, root=root) == Path("Aman_Scripts/tool.py"),
         )
         checks.raises(
             "repository-relative conversion rejects outside path",

@@ -1,14 +1,14 @@
 # Task 1 — `segment_ct_dataset` adversarial test suite
 
 Task 1 implements the `segment_ct_dataset(input_filepath, output_filepath, threshold)`
-MCP tool in `src/mcp_server.py`. Spec: **voxels `>= threshold` → 1, everything else → 0**,
+MCP tool in `Aman_src/mcp_server.py`. Spec: **voxels `>= threshold` → 1, everything else → 0**,
 save as `.npy`, return a status/error string.
 
 These scripts exist to **try to prove that implementation wrong**. Run them with the
 `DSC` env:
 
 ```bash
-cd Scripts/Task1
+cd Aman_Scripts/Task1
 for t in test_0*.py; do /Users/amannindra/miniconda3/envs/DSC/bin/python "$t"; done
 ```
 
@@ -19,7 +19,7 @@ for t in test_0*.py; do /Users/amannindra/miniconda3/envs/DSC/bin/python "$t"; d
 | `test_03_edge_and_error_cases.py` | **Edge / errors** | missing file, out-of-range thresholds (the `unitcell.npy` value trap), NaN/inf voxels, empty & 2D & int arrays, string/NaN thresholds, non-numeric & pickled arrays |
 | `test_04_mcp_end_to_end.py` | **Live MCP server** | tool registration + input schema + real `call_tool` over the FastMCP in-memory `Client`, error propagation through the protocol |
 
-`_harness.py` loads the tool from `src/mcp_server.py` and provides the PASS/FAIL checker.
+`_harness.py` loads the tool from `Aman_src/mcp_server.py` and provides the PASS/FAIL checker.
 Every test uses throwaway temp dirs — nothing is written into the repo.
 
 ## Result
