@@ -1,87 +1,98 @@
-# Segmentation Report: 9x9x9 Octet Lattice
+# Focused Global Rerun Report
 
 ## Paths
 
-- Input path: `data/9x9x9_octet_lattice/9x9x9_octet_lattice.tif`
-- Output directory: `data/9x9x9_octet_lattice/segmentation/`
-- Final script: `data/9x9x9_octet_lattice/segmentation/segment_lattice.py`
-- Final mask: `data/9x9x9_octet_lattice/segmentation/segmented_mask.tif`
+- Input TIFF: `/Users/anthonyching/Desktop/DSC Team Project/llnl_data_science_challenge_2026/data/9x9x9_octet_lattice/9x9x9_octet_lattice.tif`
+- Rerun output directory: `/Users/anthonyching/Desktop/DSC Team Project/llnl_data_science_challenge_2026/data/9x9x9_octet_lattice/segmentation`
+- Reproducible script: `/Users/anthonyching/Desktop/DSC Team Project/llnl_data_science_challenge_2026/data/9x9x9_octet_lattice/segmentation/segment_lattice.py`
+- Final mask TIFF: `/Users/anthonyching/Desktop/DSC Team Project/llnl_data_science_challenge_2026/data/9x9x9_octet_lattice/segmentation/segmented_mask.tif`
 - Final slice image: [slice_380.png](slice_380.png)
 
-## Input Summary
+## Input And Mask Metadata
 
 - Input shape: `(761, 815, 837)`
-- Input dtype: `uint16`
-- Output mask shape: `(761, 815, 837)`
-- Output mask dtype: `uint8`
+- Input dtype: `>u2` (`uint16`)
+- Input intensity range: `0` to `65535`
+- Mask shape: `(761, 815, 837)`
+- Mask dtype: `uint8`
+- Mask values: binary `{0, 1}`
 
-## Inspection Summary
+## Inspection And Optimization Approach
 
-- Representative raw slices inspected: `z = 0, 95, 190, 285, 380, 475, 570, 665, 760`
-- Slice `380` showed bright lattice nodes and struts on a darker background, but the lattice intensity decayed from left to right across the field of view.
-- A stratified histogram sample of `96,390` voxels had percentiles:
-  - `p50 = 32523`
-  - `p75 = 35378.75`
-  - `p90 = 50662`
-  - `p95 = 54370.55`
-- The histogram suggested a bright-material segmentation, but slice `380` showed that a single global raw-intensity threshold would under-segment the dimmer right-hand struts.
+The input TIFF was validated as an existing 3D volume, and slice `380` was confirmed to exist on axis `0`. Inspection artifacts were saved in the rerun directory:
 
-## Final Method
+- `raw_slice_380.png`
+- `inspection_histogram.png`
+- `inspection_slices.png`
 
-Selected method: slice-wise Gaussian smoothing, slice-wise background subtraction, thresholding on the background-corrected image, minimum smoothed-intensity gating, and one iteration of 2D binary closing.
+The sampled histogram remains consistent with the earlier focused run: a dominant background peak around the low-`30k` range plus a brighter material tail extending toward saturation. Representative slices `0`, `190`, `380`, `570`, and `760` show that slice `380` lies in the lattice interior, while the outer slices contain stronger surrounding boundary signal.
 
-Final parameters:
+This rerun used the original global baseline only as a visual comparison target:
 
-- `sigma = 0.8`
-- `background_sigma = 12.0`
-- `threshold = 900.0` on `gaussian(slice, 0.8) - gaussian(slice, 12.0)`
-- `min_intensity = 32000.0` on the smoothed slice
-- `closing_iters = 1`
-- `opening_iters = 0`
+- Baseline reference from the original segmentation workspace: `method=global`, `threshold=39000`, `sigma=1.0`
 
-## Iteration History
+The rerun itself was constrained exactly as requested. No CLAHE, local thresholding, background correction, hysteresis, or binary closing was used. No ground-truth image was inspected or used.
 
-Metric region for proxy scoring: slices `z = 372, 374, 376, 378, 380, 382, 384, 386, 388`
+Requested preview candidates:
 
-| Iteration | Parameters | Foreground Fraction (metric region) | 3D Proxy Evidence | Outcome |
-| --- | --- | ---: | --- | --- |
-| 1 | Global threshold `43000`, `sigma 0.8`, close `1` | `0.0411` | `120` components, largest `97.33%`, `116` small comps | Baseline only. Preserved bright nodes but dropped most struts. |
-| 2 | Global threshold `45000`, `sigma 0.8`, close `1` | `0.0303` | `612` components, largest `20.59%`, `532` small comps | Failed. Much more fragmented than iteration 1. |
-| 3 | Global threshold `47000`, `sigma 0.8`, close `1` | `0.0216` | `713` components, largest `2.91%`, `549` small comps | Failed. Severe under-segmentation. |
-| 4 | Global threshold `39000`, `sigma 0.8`, close `1` | `0.0690` | `26` components, largest `99.27%`, `15` small comps | Improved. Recovered many left-side struts and sharply reduced noise. |
-| 5 | Global threshold `40000`, `sigma 1.0`, close `1` | `0.0607` | `24` components, largest `99.29%`, `16` small comps | Failed. Slightly cleaner than iteration 4 but lost visible strut continuity. |
-| 6 | Global threshold `41000`, `sigma 1.0`, close `2` | `0.0537` | `21` components, largest `99.33%`, `18` small comps | Failed. Further under-segmented the lattice. |
-| 7 | Global threshold `36000`, `sigma 0.8`, close `1` | `0.1002` | `21` components, largest `99.76%`, `10` small comps | Improved. Best pure global-threshold result; recovered much more of the lattice but still missed dim right-side struts. |
-| 8 | Global threshold `37000`, `sigma 0.8`, close `1` | `0.0881` | `23` components, largest `99.26%`, `11` small comps | Failed. Less strut continuity than iteration 7. |
-| 9 | Global threshold `38000`, `sigma 0.8`, close `1` | `0.0779` | `23` components, largest `99.28%`, `11` small comps | Failed. Continued to lose lattice members. |
-| 10 | Background-corrected threshold `900`, `sigma 0.8`, background `12`, min intensity `32000`, close `1` | `0.1082` | `14` components, largest `99.72%`, `4` small comps | Improved and selected. Best balance of preserved lattice connectivity and limited isolated noise; recovered more dim right-side struts than any global threshold. |
+1. `threshold=39000`, `sigma=0.0`
+2. `threshold=39000`, `sigma=0.5`
+3. `threshold=40000`, `sigma=0.5`
+4. `threshold=41000`, `sigma=0.5`
+5. `threshold=40000`, `sigma=0.0`
 
-## Selection Evidence
+Selection emphasized reducing excessive strut thickness and merged junctions relative to the `sigma=1.0` baseline while avoiding unnecessary loss of visibly present thin diagonal links.
 
-The final selection used proxy measurements and slice `380` visual inspection rather than ground truth.
+## Iteration Table
 
-- Iteration `10` had the lowest small-component count in the metric slab: `4`
-- Iteration `10` had the lowest 3D component count among viable candidates: `14`
-- Iteration `10` retained a dominant connected structure in the metric slab: largest component `99.7223%` of foreground voxels
-- Iteration `10` produced the largest slice-380 connected foreground share among all attempts: `56.6558%`
-- Visual inspection showed that iteration `10` recovered more of the attenuated right-hand lattice struts without flooding the dark background
+Preview metrics below are for slice `380` only.
 
-## Final Volume Statistics
+| Iter | Method | Parameters | FG frac | FG count | BG count | Connectivity evidence | Visible missing structure | Visible extra structure | Improved |
+| --- | --- | --- | ---: | ---: | ---: | --- | --- | --- | --- |
+| 01 | `global` | `threshold=39000, sigma=0.0, min_size=8` | 0.056380 | 38,460 | 643,695 | 195 comps, largest 11.13% of FG | Right-half faint diagonals still mostly absent; a few left-side thin links look slightly brittle | Low; junctions are visibly thinner than the `sigma=1.0` baseline | No |
+| 02 | `global` | `threshold=39000, sigma=0.5, min_size=8` | 0.056354 | 38,442 | 643,713 | 192 comps, largest 8.44% of FG | Right side still loses the faintest diagonals, but the left and middle lattice keep the best thin-link continuity in this rerun set | Low to mild; less blur-driven thickening than the `sigma=1.0` baseline | Yes |
+| 03 | `global` | `threshold=40000, sigma=0.5, min_size=8` | 0.049323 | 33,646 | 648,509 | 197 comps, largest 5.69% of FG | More diagonal branches disappear in the left and middle field; right-side dots shrink further | Very low | No |
+| 04 | `global` | `threshold=41000, sigma=0.5, min_size=8` | 0.043911 | 29,954 | 652,201 | 192 comps, largest 4.45% of FG | Severe link loss, including breaks in struts still visible in the raw slice | Minimal | No |
+| 05 | `global` | `threshold=40000, sigma=0.0, min_size=8` | 0.049458 | 33,738 | 648,417 | 205 comps, largest 5.88% of FG | Similar link loss to iteration 03, with slightly rougher and more fragmented diagonals | Very low | No |
 
-- Total voxels: `519119955`
-- Foreground voxels: `52879955` (`10.1865%`)
-- Background voxels: `466240000` (`89.8135%`)
-- Final mask shape: `(761, 815, 837)`
-- Final mask dtype: `uint8`
+## Selected Method
 
-## Termination
+Selected iteration: `02`
 
-- Total iterations attempted: `10`
-- Failed attempts without improvement: `6`
-- Termination reason: reached the hard cap of `10` total iterations. The early-stop rule for `3` consecutive failed attempts was not triggered because improvements occurred before any three-failure streak formed.
+Final method:
+
+- `global`
+- `threshold=39000`
+- `sigma=0.5`
+- `min_size=8`
+
+Why it was chosen:
+
+- Compared with the original `sigma=1.0` baseline, it visibly reduces strut thickness and merged junctions along the bright left edge.
+- Compared with iteration `01`, it preserves slightly smoother and more continuous thin links through the left and middle lattice while staying materially thinner than the `sigma=1.0` baseline.
+- Iterations `03` through `05` suppress foreground more aggressively, but the raw slice shows that they remove thin diagonal material that is still visibly present, especially away from the bright left boundary.
+
+## Final Mask Statistics
+
+- Total voxels: `519,119,955`
+- Foreground voxels: `63,783,110` (`12.286777%`)
+- Background voxels: `455,336,845` (`87.713223%`)
+
+## Iteration Termination
+
+- Total iteration count: `5`
+- Consecutive non-improving attempts at termination: `3`
+- Termination reason: all five requested previews were generated before any full-volume run, iteration `02` was explicitly selected as the best preview, and iterations `03`, `04`, and `05` each failed to improve on it, leaving `3 consecutive attempts without improvement` at the end of the fixed five-candidate rerun.
+
+## Verification
+
+- `segment_lattice.py` exists and accepts the input TIFF path plus output directory.
+- `segmented_mask.tif` is readable.
+- The saved mask shape matches the input shape: `(761, 815, 837)`.
+- The saved mask dtype is `uint8`.
+- The saved mask values are binary `{0, 1}`.
+- `slice_380.png` matches mask slice `380`.
 
 ## Limitations
 
-- These proxy metrics are not a substitute for ground-truth evaluation.
-- The chosen method is only the best among the `10` attempted candidates, not a claim of global optimality.
-- The final mask still shows residual attenuation sensitivity on the far right side of slice `380`, so some dim struts may remain under-segmented.
+This selection was made without ground-truth evaluation, so it is limited to the visible tradeoff between thinning over-merged structures and preserving lattice connectivity in slice `380` plus the representative raw-slice inspection. The chosen global threshold can still over-segment bright junction cores, under-segment faint right-side branches, or behave differently in other depths where attenuation changes. Stronger validation would require trusted annotations or downstream geometric checks.
