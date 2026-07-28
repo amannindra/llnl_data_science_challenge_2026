@@ -1,0 +1,142 @@
+{
+  "coverage": {
+    "outside_fraction": 0.08942651740756177,
+    "points_outside": 52035625,
+    "surface_points": 581881376
+  },
+  "gates": {
+    "lattice_window_dice": {
+      "detail": "0.4448 >= 0.0 (full grid: 0.3753)",
+      "passed": true
+    },
+    "registration_rms": {
+      "detail": "3.327e-12 vox <= 1.0",
+      "passed": true
+    },
+    "surface_points_in_grid": {
+      "detail": "outside fraction 0.0894 <= 0.15",
+      "passed": true
+    }
+  },
+  "generated_utc": "2026-07-27T23:25:00Z",
+  "grid": {
+    "cell_mm": 0.11674974759074086,
+    "ct_cells": 7395916,
+    "downsample": 2,
+    "shape_zyx": [
+      381,
+      408,
+      419
+    ],
+    "stl_cells": 8567770,
+    "stl_filled": true
+  },
+  "inputs": {
+    "design_json": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/data/missing_struts/octet_truss_9x9x9.json",
+    "registered_json": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/data/missing_struts/registered_jsons/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.json",
+    "stl": {
+      "bounding_box_max": [
+        20.749141693115234,
+        25.520002365112305,
+        20.74677276611328
+      ],
+      "bounding_box_min": [
+        -20.743635177612305,
+        -25.520002365112305,
+        -20.74884605407715
+      ],
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/data/missing_struts/stls/0.5.stl",
+      "triangles": 3498656
+    },
+    "tiff": {
+      "axes": "ZYX",
+      "dtype": "uint16",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/data/missing_struts/tif_stacks/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.tif",
+      "shape": [
+        761,
+        815,
+        837
+      ]
+    }
+  },
+  "metrics": {
+    "ct_in_design_tolerant": 0.4712845575855648,
+    "design_in_ct_tolerant": 0.5885256023446007,
+    "lattice_window": {
+      "ct_in_design_tolerant": 0.700015444176732,
+      "design_in_ct_tolerant": 0.5940753219000169,
+      "dice": 0.4448355275322246,
+      "iou": 0.28603760914519094,
+      "slices_zyx": [
+        [
+          10,
+          372
+        ],
+        [
+          22,
+          385
+        ],
+        [
+          27,
+          390
+        ]
+      ]
+    },
+    "strict": {
+      "ct_in_design": 0.40498999718222867,
+      "design_in_ct": 0.34959761991743477,
+      "dice": 0.37526070106866294,
+      "iou": 0.23096671651599032
+    },
+    "tolerance_cells": 1
+  },
+  "orientation": {
+    "chosen": "-y-z+x",
+    "hit_fraction": 0.43986,
+    "requested": "auto",
+    "sample_points": 1600000,
+    "top_candidates": [
+      {
+        "name": "-y-z+x",
+        "score": 0.43986
+      },
+      {
+        "name": "+y+z+x",
+        "score": 0.438265625
+      },
+      {
+        "name": "+z-y+x",
+        "score": 0.436934375
+      }
+    ]
+  },
+  "registration": {
+    "implied_pitch_um": 58.37487379537043,
+    "max_error_voxels": 5.67867359184019e-12,
+    "mm_per_design_unit": 2.3051542705959744,
+    "mm_per_design_unit_source": "stl_bbox_x_extent",
+    "nominal_pitch_um": 58.1,
+    "pitch_deviation_percent": 0.47310463919179035,
+    "point_count": 10206,
+    "rms_error_voxels": 3.327465833905942e-12,
+    "rotation_degrees": 0.33510849611461374,
+    "scale_voxels_per_design_unit": 39.48880949493017,
+    "translation_voxels_xyz": [
+      59.3396041861709,
+      52.18289348673136,
+      26.46173195820745
+    ]
+  },
+  "runtime_seconds": 198.1,
+  "threshold": {
+    "source": "otsu",
+    "value": 40054.0
+  },
+  "volumes": {
+    "ct_mm3_implied_pitch": 11667.320557444937,
+    "ct_mm3_nominal_pitch": 11503.27926887881,
+    "ct_native_foreground_voxels": 58653410,
+    "stl_enclosed_mm3": 24324.730154149845,
+    "voxelized_stl_mm3": 13634.38805040798
+  }
+}
