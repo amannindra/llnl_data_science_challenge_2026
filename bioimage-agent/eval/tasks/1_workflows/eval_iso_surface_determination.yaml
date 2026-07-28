@@ -1,0 +1,22 @@
+# finding iso surface value for a dataset
+# These tests evaluate the agent's ability to recreate scientific figures from papers
+
+# Test: Iso surface determination for a target
+- vars:
+    question: |
+      Read the file "data/dataset_003/eval_iso_surface_determination_target_1.txt" to get the target iso-surface values for different tooth structures.
+      Load data/dataset_003\dataset_003.tif into napari. 
+      Switch to 3D view mode and set the rendering to iso. 
+      Find the iso surface value that shows the target clearly.
+      Rotate the camera to several angles and take a screenshot of the result each time to check if the target structure is clearly visible from different angles.
+      If the target structure is not clearly visible, adjust the iso surface value and take a screenshot again.
+      Stop when the target structure is clearly visible or you have tried five different iso surface values.
+      Respond with <1> if you clearly see the target structure, or <0> if you cannot see the target structure. Only respond with <1> or <0>.
+  assert:
+    - type: contains-all
+      value: "<1>"
+    - type: not-contains
+      value: "<0>"
+  options:
+    cache: false
+    runSerially: true

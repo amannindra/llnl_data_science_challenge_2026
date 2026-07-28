@@ -1,6 +1,6 @@
 {
-  "checks_passed": 385,
-  "checks_total": 385,
+  "checks_passed": 469,
+  "checks_total": 469,
   "expected_tests": [
     "test_paths.py",
     "test_asset_io.py",
@@ -9,6 +9,7 @@
     "test_lattice_graph.py",
     "test_segmentation.py",
     "test_tiff_mesh.py",
+    "test_tif2stl.py",
     "test_legacy_occupancy.py",
     "test_reporting.py",
     "test_testing.py",
@@ -86,7 +87,7 @@
             "passed": true
           },
           {
-            "name": "scripts_path uses Scripts base",
+            "name": "scripts_path uses Aman_Scripts base",
             "passed": true
           },
           {
@@ -1109,6 +1110,357 @@
       "total": 51
     },
     {
+      "passed": 84,
+      "status": "passed",
+      "summary": {
+        "failed": 0,
+        "minimum_satisfied": true,
+        "passed": 84,
+        "results": [
+          {
+            "name": "binary chunking yields 5+5+2 triangles",
+            "passed": true
+          },
+          {
+            "name": "binary vertices span the exact cube bounds",
+            "passed": true
+          },
+          {
+            "name": "ascii parse recovers all 12 facets",
+            "passed": true
+          },
+          {
+            "name": "ascii signed volume matches binary",
+            "passed": true
+          },
+          {
+            "name": "stl_enclosed_volume of 2x3x4 cube is 24",
+            "passed": true
+          },
+          {
+            "name": "missing STL raises FileNotFoundError",
+            "passed": true
+          },
+          {
+            "name": "directory path raises IsADirectoryError",
+            "passed": true
+          },
+          {
+            "name": "LFS pointer raises AssetNotMaterializedError",
+            "passed": true
+          },
+          {
+            "name": "nonfinite binary vertex raises ValueError",
+            "passed": true
+          },
+          {
+            "name": "ascii facet with 2 vertices raises ValueError",
+            "passed": true
+          },
+          {
+            "name": "chunk_faces=0 raises ValueError",
+            "passed": true
+          },
+          {
+            "name": "subdivision bounds every edge by max_edge",
+            "passed": true
+          },
+          {
+            "name": "subdivision preserves total area",
+            "passed": true
+          },
+          {
+            "name": "no split when edges already satisfy max_edge",
+            "passed": true
+          },
+          {
+            "name": "subdivide rejects nonpositive max_edge",
+            "passed": true
+          },
+          {
+            "name": "subdivide rejects malformed shapes",
+            "passed": true
+          },
+          {
+            "name": "subdivide rejects nonfinite triangles",
+            "passed": true
+          },
+          {
+            "name": "subdivide enforces the triangle budget",
+            "passed": true
+          },
+          {
+            "name": "surface points = 3 vertices + 1 centroid per triangle",
+            "passed": true
+          },
+          {
+            "name": "empty triangle set yields (0, 3) points",
+            "passed": true
+          },
+          {
+            "name": "identical masks score dice=iou=1",
+            "passed": true
+          },
+          {
+            "name": "disjoint masks score dice=0 with additive union",
+            "passed": true
+          },
+          {
+            "name": "known half overlap scores dice=0.5",
+            "passed": true
+          },
+          {
+            "name": "two empty masks agree perfectly by convention",
+            "passed": true
+          },
+          {
+            "name": "one empty mask scores zero everywhere",
+            "passed": true
+          },
+          {
+            "name": "mask shape mismatch raises ValueError",
+            "passed": true
+          },
+          {
+            "name": "NaN float mask raises ValueError",
+            "passed": true
+          },
+          {
+            "name": "string mask dtype raises ValueError",
+            "passed": true
+          },
+          {
+            "name": "mask bounds are half-open per axis",
+            "passed": true
+          },
+          {
+            "name": "empty mask has no bounds",
+            "passed": true
+          },
+          {
+            "name": "per-slab rows cover [0,2),[2,4),[4,5) with correct dice",
+            "passed": true
+          },
+          {
+            "name": "per-slab rejects nonpositive slab_depth",
+            "passed": true
+          },
+          {
+            "name": "per-slab rejects non-3D masks",
+            "passed": true
+          },
+          {
+            "name": "Umeyama recovers the known scale",
+            "passed": true
+          },
+          {
+            "name": "Umeyama recovers rotation and translation",
+            "passed": true
+          },
+          {
+            "name": "fit residuals vanish on exact correspondences",
+            "passed": true
+          },
+          {
+            "name": "fit matrix reproduces targets via apply_transform",
+            "passed": true
+          },
+          {
+            "name": "rotation_angle_degrees matches the axis-angle magnitude",
+            "passed": true
+          },
+          {
+            "name": "with_scale=False pins scale to 1 and still fits",
+            "passed": true
+          },
+          {
+            "name": "fewer than 3 correspondences raise ValueError",
+            "passed": true
+          },
+          {
+            "name": "mismatched point counts raise ValueError",
+            "passed": true
+          },
+          {
+            "name": "collinear correspondences raise ValueError",
+            "passed": true
+          },
+          {
+            "name": "coincident source points raise ValueError",
+            "passed": true
+          },
+          {
+            "name": "nonfinite coordinates raise ValueError",
+            "passed": true
+          },
+          {
+            "name": "stl_to_design maps centre to (9,9,9) and 2 mm to 1 unit",
+            "passed": true
+          },
+          {
+            "name": "stl_to_design rejects nonpositive mm scale",
+            "passed": true
+          },
+          {
+            "name": "paired junctions align by id and refit their transform",
+            "passed": true
+          },
+          {
+            "name": "graphs sharing <3 junction ids raise ValueError",
+            "passed": true
+          },
+          {
+            "name": "proper_cube_rotations yields 24 uniquely named candidates",
+            "passed": true
+          },
+          {
+            "name": "every candidate is orthogonal with determinant +1",
+            "passed": true
+          },
+          {
+            "name": "identity rotation '+x+y+z' is listed first",
+            "passed": true
+          },
+          {
+            "name": "'+x+z-y' maps (a, b, c) to (a, c, -b) as its name reads",
+            "passed": true
+          },
+          {
+            "name": "stl_to_design applies the rotation about the lattice centre",
+            "passed": true
+          },
+          {
+            "name": "stl_to_design rejects a malformed rotation",
+            "passed": true
+          },
+          {
+            "name": "fraction_inside_mask indexes XYZ points into the ZYX mask",
+            "passed": true
+          },
+          {
+            "name": "out-of-grid points count as misses in the denominator",
+            "passed": true
+          },
+          {
+            "name": "fraction_inside_mask rejects empty point sets",
+            "passed": true
+          },
+          {
+            "name": "fraction_inside_mask rejects nonpositive pitch",
+            "passed": true
+          },
+          {
+            "name": "window slices pad the point bounds in ZYX order",
+            "passed": true
+          },
+          {
+            "name": "window slices clamp to the grid bounds",
+            "passed": true
+          },
+          {
+            "name": "window rejects negative padding",
+            "passed": true
+          },
+          {
+            "name": "STL point sampling is deterministic and honours max_points",
+            "passed": true
+          },
+          {
+            "name": "orientation scoring recovers the planted y<->z rotation",
+            "passed": true
+          },
+          {
+            "name": "plane_rgb paints foreground with the color and background dark",
+            "passed": true
+          },
+          {
+            "name": "overlay_rgb follows the red/green/yellow/background convention",
+            "passed": true
+          },
+          {
+            "name": "overlay_rgb rejects mismatched plane shapes",
+            "passed": true
+          },
+          {
+            "name": "compose_panel lays out three tiles with margins and label band",
+            "passed": true
+          },
+          {
+            "name": "filled 16-cell cube volume is within 20% of 4096 cells",
+            "passed": true
+          },
+          {
+            "name": "no surface point falls outside an auto-fitted grid",
+            "passed": true
+          },
+          {
+            "name": "voxelized extent spans ~16 cells per axis",
+            "passed": true
+          },
+          {
+            "name": "fill=False leaves a hollow shell (fewer cells than solid)",
+            "passed": true
+          },
+          {
+            "name": "voxelization is deterministic across runs",
+            "passed": true
+          },
+          {
+            "name": "caller-supplied small grid counts escaping points",
+            "passed": true
+          },
+          {
+            "name": "voxelize rejects nonpositive pitch",
+            "passed": true
+          },
+          {
+            "name": "origin without grid shape raises ValueError",
+            "passed": true
+          },
+          {
+            "name": "grid voxel budget is enforced",
+            "passed": true
+          },
+          {
+            "name": "empty STL raises ValueError",
+            "passed": true
+          },
+          {
+            "name": "design and registered JSONs pair all 10,206 junctions",
+            "passed": true
+          },
+          {
+            "name": "design->CT scale is 39.4888 voxels per design unit",
+            "passed": true
+          },
+          {
+            "name": "design->CT registration is exact (rms < 0.01 voxel)",
+            "passed": true
+          },
+          {
+            "name": "part tilt in the CT frame is under 1 degree",
+            "passed": true
+          },
+          {
+            "name": "registered junctions sit inside the (837, 815, 761) XYZ grid",
+            "passed": true
+          },
+          {
+            "name": "0.5.stl is the expected 3,498,656-triangle binary mesh",
+            "passed": true
+          },
+          {
+            "name": "0.5.stl X extent implies ~2.305 mm per design unit",
+            "passed": true
+          }
+        ],
+        "suite": "tif2stl STL-vs-TIFF validation",
+        "total": 84
+      },
+      "test": "test_tif2stl.py",
+      "total": 84
+    },
+    {
       "passed": 30,
       "status": "passed",
       "summary": {
@@ -1720,5 +2072,5 @@
       "total": 41
     }
   ],
-  "tests_run": 11
+  "tests_run": 12
 }

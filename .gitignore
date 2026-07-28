@@ -172,3 +172,13 @@ ehthumbs.db
 Thumbs.db
 
 result
+
+aman
+CLAUDE.md
+.claude
+bioimage-agent
+paraview_mcp
+
+# Files over GitHub's 100MB limit (copies/regenerable artifacts; originals live in LFS-tracked data/)
+Aman_Scripts/Tilted_Brian_Tran_segmented.tiff
+Aman_Scripts/outputs/meshlab/
