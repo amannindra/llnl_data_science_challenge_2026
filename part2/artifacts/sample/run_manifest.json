@@ -1,0 +1,93 @@
+{
+  "artifacts": {
+    "alignment.json": {
+      "modified_time_ns": 1785186834020838644,
+      "path": "part2/artifacts/sample/alignment.json",
+      "size_bytes": 2690
+    },
+    "defect_cartographer_report.md": {
+      "modified_time_ns": 1785186834167368677,
+      "path": "part2/artifacts/sample/defect_cartographer_report.md",
+      "size_bytes": 7733
+    },
+    "lattice_scene.npz": {
+      "modified_time_ns": 1785186861940306224,
+      "path": "part2/artifacts/sample/lattice_scene.npz",
+      "size_bytes": 246895
+    },
+    "pipeline_metrics.json": {
+      "modified_time_ns": 1784926040162451683,
+      "path": "part2/artifacts/sample/pipeline_metrics.json",
+      "size_bytes": 1274
+    },
+    "sampled_struts.csv": {
+      "modified_time_ns": 1784926040151500740,
+      "path": "part2/artifacts/sample/sampled_struts.csv",
+      "size_bytes": 28709
+    },
+    "spatial_distribution.png": {
+      "modified_time_ns": 1784926040637254151,
+      "path": "part2/artifacts/sample/spatial_distribution.png",
+      "size_bytes": 151077
+    },
+    "thickness_histogram.png": {
+      "modified_time_ns": 1784926040458862045,
+      "path": "part2/artifacts/sample/thickness_histogram.png",
+      "size_bytes": 50756
+    },
+    "thickness_reference.json": {
+      "modified_time_ns": 1784926040152405416,
+      "path": "part2/artifacts/sample/thickness_reference.json",
+      "size_bytes": 287
+    },
+    "xray_context.npz": {
+      "modified_time_ns": 1784932105121865529,
+      "path": "part2/artifacts/sample/xray_context.npz",
+      "size_bytes": 127367
+    }
+  },
+  "candidate_labels_validated": false,
+  "config": {
+    "alignment_search_radius_vox": 4,
+    "alignment_struts": 600,
+    "analysis_search_radius_vox": 4,
+    "axis_permutation": [
+      2,
+      1,
+      0
+    ],
+    "ct_path": "data/missing_struts/tif_stacks/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.tif",
+    "design_diameter_um": 350.0,
+    "graph_path": "data/missing_struts/registered_jsons/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.json",
+    "output_dir": "part2/artifacts/sample",
+    "random_seed": 20260723,
+    "sample_size": 60,
+    "threshold_factors": [
+      0.97,
+      1.0,
+      1.03
+    ],
+    "voxel_spacing_um": [
+      58.09,
+      58.09,
+      58.09
+    ]
+  },
+  "ground_truth_available": false,
+  "inputs": {
+    "ct": {
+      "modified_time_ns": 1784583224605686292,
+      "path": "data/missing_struts/tif_stacks/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.tif",
+      "size_bytes": 1038433319
+    },
+    "graph": {
+      "modified_time_ns": 1784583084719963501,
+      "path": "data/missing_struts/registered_jsons/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.json",
+      "size_bytes": 4958672
+    }
+  },
+  "pipeline_scope": "deterministic_60_strut_mvp",
+  "registered_coordinates_include_specimen_tilt": true,
+  "schema_version": 1,
+  "status": "complete"
+}

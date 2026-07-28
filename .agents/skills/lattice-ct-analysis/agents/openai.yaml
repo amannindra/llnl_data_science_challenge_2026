@@ -1,0 +1,4 @@
+interface:
+  display_name: "Lattice CT Analysis"
+  short_description: "Run and inspect the lattice CT workflow"
+  default_prompt: "Use $lattice-ct-analysis to inspect the saved Part 2 evidence and explain the results."

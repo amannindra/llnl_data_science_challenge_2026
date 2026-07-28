@@ -1,0 +1,8 @@
+{
+  "design_reference_um_unconfirmed": 350.0,
+  "eligible_thickness_lower_10pct_um": 232.36,
+  "eligible_thickness_median_um": 328.6066633530124,
+  "eligible_thickness_robust_sigma_um": 29.553164912823874,
+  "thin_candidate_cutoff_um": 232.36,
+  "valid_thickness_measurement_count": 31
+}
