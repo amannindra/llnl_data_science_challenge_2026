@@ -1,0 +1,4 @@
+{
+  "reasoning": "The result is effectively identical to the ground truth: lattice connectivity, nodes, junctions, struts, and foreground regions are preserved with no meaningful false positives, false negatives, noise, or artifacts.",
+  "score": 5
+}

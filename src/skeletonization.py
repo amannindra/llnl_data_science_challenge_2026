@@ -11,26 +11,17 @@ def skeletonize_mask(file_path, output_path):
         output_path (str): Path to save the extracted skeleton (.npy).
     """
     if not os.path.exists(file_path):
-        print(f"Error: File not found at {file_path}")
-        return
+        return None
 
-    print(f"Loading mask from {file_path}...")
-    mask = np.load(file_path)
-    print(f"Original mask shape: {mask.shape}")
+    mask = np.load(file_path, allow_pickle=False)
     
     # Ensure the mask is boolean
     if mask.dtype != bool:
-        print("Converting mask to boolean array...")
         # Assuming background is 0 and object is > 0
         mask = mask > 0
 
-    print("Extracting skeleton (this may take a moment for 3D data)...")
     skeleton = skeletonize(mask)
-    
-    print(f"Skeleton extracted. Non-zero voxels: {np.count_nonzero(skeleton)}")
-    
-    np.save(output_path, skeleton)
-    print(f"Saved skeleton to: {output_path}")
+    np.save(output_path, skeleton, allow_pickle=False)
     
     return skeleton
 

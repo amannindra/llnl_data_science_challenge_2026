@@ -1,0 +1,6 @@
+iteration,method,threshold,foreground_pixels,foreground_fraction,components_4_connected,components_8_connected,largest_component_pixel_fraction,small_component_pixel_fraction,skeleton_pixels,skeleton_endpoints,skeleton_junction_pixels,high_confidence_node_retention,visual_assessment,selected
+1,fixed_35000,35000.0,75251,0.11031363839596572,241,205,0.5992478505269033,0.008943402745478465,8144,480,543,1.0,Rejected: extensive diagonal lattice; 59.9% of foreground is one 4-connected component.,False
+2,slice_li,36632.93334384612,55311,0.08108274512390878,304,263,0.43524796152664025,0.012583392091988936,5923,562,423,1.0,Rejected: many false-positive diagonals remain and largest component is 43.5%.,False
+3,fixed_37500,37500.0,48101,0.07051329976325028,292,256,0.32837155152699526,0.013845865990312052,4934,559,333,1.0,"Rejected: fewer diagonals, but central diagonal connectivity remains (largest component 32.8%).",False
+4,fixed_40000,40000.0,33941,0.04975555408961307,283,253,0.05848383960401874,0.01502607465896703,3023,527,248,1.0,Selected: isolated nodes preserved; central false diagonals largely removed; supported left struts retained.,True
+5,slice_otsu,40499.0,31961,0.04685298795728243,275,250,0.046337724101248395,0.015174744219517537,2727,525,249,1.0,Rejected: marginal topology gain versus 40000 but visibly removes additional supported left-edge struts.,False
