@@ -1,0 +1,19 @@
+name: defect-cartographer
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - numpy
+  - pandas
+  - scipy
+  - scikit-image
+  - tifffile
+  - matplotlib
+  - pytest
+  - psutil
+  - pip
+  - pip:
+      - fastmcp>=3.4,<4
+      - openai-agents>=0.18,<1
+      - streamlit>=1.50,<2
+      - plotly>=6,<7

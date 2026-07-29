@@ -1,0 +1,32 @@
+[specimen]
+name = "registered-0point5dash1"
+ct_path = "data/missing_struts/tif_stacks/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.tif"
+graph_path = "data/missing_struts/registered_jsons/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.json"
+voxel_spacing_um = [58.09, 58.09, 58.09]
+design_diameter_um_unconfirmed = 350.0
+
+[analysis]
+sample_size = 60
+random_seed = 20260723
+alignment_struts = 600
+alignment_search_radius_vox = 4
+analysis_search_radius_vox = 4
+threshold_factors = [0.97, 1.0, 1.03]
+
+[rules]
+missing_max_occupancy = 0.25
+broken_max_occupancy = 0.85
+broken_min_gap_fraction = 0.15
+maximum_alignment_error_vox = 3.0
+minimum_stability = 0.6666666666666666
+
+[outputs]
+sample_dir = "part2/artifacts/sample"
+runs_dir = "part2/artifacts/runs"
+
+[agents]
+default_model = "gpt-5.6-terra"
+max_turns = 8
+tracing_enabled = false
+raw_ct_access = false
+artifact_writes = false

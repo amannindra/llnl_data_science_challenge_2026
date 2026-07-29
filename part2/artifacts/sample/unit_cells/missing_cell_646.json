@@ -1,0 +1,73 @@
+{
+  "cell_id": 646,
+  "cell_indices": [
+    7,
+    8,
+    7
+  ],
+  "classification_scope": "exploratory candidate; visual evidence only",
+  "contour_artifact": "missing_cell_646_contours.png",
+  "coordinate_order": "zyx",
+  "crop_bounds_zyx": {
+    "lower_inclusive": [
+      569,
+      674,
+      606
+    ],
+    "upper_exclusive": [
+      666,
+      771,
+      704
+    ]
+  },
+  "display_selection_rule": "target strut plus the 23 graph struts whose midpoints are closest to the full registered cell centroid",
+  "display_strut_count": 24,
+  "display_strut_ids": [
+    16068,
+    16069,
+    16070,
+    16071,
+    16072,
+    16073,
+    16074,
+    16075,
+    16076,
+    16078,
+    16081,
+    16082,
+    16084,
+    16085,
+    16086,
+    16087,
+    16088,
+    16089,
+    16090,
+    16091,
+    16092,
+    16093,
+    16094,
+    16095
+  ],
+  "example_key": "missing",
+  "focus_method": "expected target-strut midpoint",
+  "focus_zyx": [
+    637.0437995099228,
+    761.7538585571576,
+    635.0371025774441
+  ],
+  "graph_cell_strut_count": 28,
+  "mesh_face_count": 60000,
+  "mesh_vertex_count": 44671,
+  "raw_ct_embedded": false,
+  "scene_artifact": "missing_cell_646.npz",
+  "scene_kind": "unit_cell",
+  "schema_version": 1,
+  "selected_mapping": "JSON (x,y,z) -> CT array (z,y,x)",
+  "specimen_tilt_preserved": true,
+  "target_gap_fraction": 1.0,
+  "target_label": "missing",
+  "target_strut_id": 16082,
+  "target_support_fraction": 0.0,
+  "threshold_otsu": 40333.0,
+  "title": "Missing example"
+}

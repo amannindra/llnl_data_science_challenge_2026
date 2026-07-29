@@ -1,0 +1,15 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.pytest_cache/
+node_modules/
+!defect_cartographer/dashboard/threejs_component/frontend/build/
+!defect_cartographer/dashboard/threejs_component/frontend/build/**
+.env
+.env.*
+!.env.example
+artifacts/runs/*
+!artifacts/runs/.gitkeep
+*.tmp
+*.tif
+*.tiff

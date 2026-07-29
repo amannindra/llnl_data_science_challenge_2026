@@ -1,0 +1,43 @@
+{
+  "classification_coverage": 0.95,
+  "diameter_std_um": 43.089231411085,
+  "evaluation_scope": "automated_internal_reliability_only",
+  "ground_truth_available": false,
+  "mean_runtime_seconds_per_strut": 0.10538524101672617,
+  "median_alignment_error_vox": 0.0,
+  "median_diameter_um": 328.6066633530124,
+  "median_threshold_stability": 1.0,
+  "p90_alignment_error_vox": 2.5631709573720833,
+  "prediction_counts": {
+    "broken": 1,
+    "intact": 49,
+    "missing": 2,
+    "thin": 5,
+    "uncertain": 3
+  },
+  "process_peak_rss_mb": 648.734375,
+  "provisional_rules": {
+    "broken_max_occupancy": 0.85,
+    "broken_min_gap_fraction": 0.15,
+    "maximum_alignment_error_vox": 3.0,
+    "minimum_stability": 0.6666666666666666,
+    "missing_max_occupancy": 0.25
+  },
+  "random_seed": 20260723,
+  "sample_size": 60,
+  "sample_strut_id_sha256": "792d26d516fe1dbae922eec3aa9405548d658f58dd7163b88dd0fc1c3cd48e1a",
+  "threshold_factors": [
+    0.97,
+    1.0,
+    1.03
+  ],
+  "total_runtime_seconds": 6.32311446100357,
+  "uncertain_fraction": 0.05,
+  "valid_thickness_measurement_count": 31,
+  "voxel_spacing_um": [
+    58.09,
+    58.09,
+    58.09
+  ],
+  "warning": "Predictions are exploratory candidates. Counts are not accuracy, precision, recall, or full-part prevalence."
+}
