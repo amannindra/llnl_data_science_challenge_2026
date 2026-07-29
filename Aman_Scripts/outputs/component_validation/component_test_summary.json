@@ -1,12 +1,13 @@
 {
-  "checks_passed": 469,
-  "checks_total": 469,
+  "checks_passed": 504,
+  "checks_total": 504,
   "expected_tests": [
     "test_paths.py",
     "test_asset_io.py",
     "test_real_assets.py",
     "test_coordinates.py",
     "test_lattice_graph.py",
+    "test_lattice_stl.py",
     "test_segmentation.py",
     "test_tiff_mesh.py",
     "test_tif2stl.py",
@@ -743,6 +744,160 @@
       },
       "test": "test_lattice_graph.py",
       "total": 39
+    },
+    {
+      "passed": 35,
+      "status": "passed",
+      "summary": {
+        "failed": 0,
+        "passed": 35,
+        "results": [
+          {
+            "name": "binary STL triangle record packs to exactly 50 bytes",
+            "passed": true
+          },
+          {
+            "name": "one strut at 8 segments yields 4*segments triangles",
+            "passed": true
+          },
+          {
+            "name": "triangle count scales linearly with strut count",
+            "passed": true
+          },
+          {
+            "name": "empty input returns an empty (0, 3, 3) array",
+            "passed": true
+          },
+          {
+            "name": "segments below six is rejected",
+            "passed": true
+          },
+          {
+            "name": "non-integer segments is rejected",
+            "passed": true
+          },
+          {
+            "name": "zero radius is rejected",
+            "passed": true
+          },
+          {
+            "name": "negative radius is rejected",
+            "passed": true
+          },
+          {
+            "name": "non-finite radius is rejected",
+            "passed": true
+          },
+          {
+            "name": "coincident endpoints are rejected",
+            "passed": true
+          },
+          {
+            "name": "non-finite endpoint is rejected",
+            "passed": true
+          },
+          {
+            "name": "mismatched start/end shapes are rejected",
+            "passed": true
+          },
+          {
+            "name": "every face normal is unit length",
+            "passed": true
+          },
+          {
+            "name": "side-wall normals point outward from the strut axis",
+            "passed": true
+          },
+          {
+            "name": "triangle_normals rejects wrong shape",
+            "passed": true
+          },
+          {
+            "name": "degenerate triangle yields a zero normal, not NaN",
+            "passed": true
+          },
+          {
+            "name": "serialized size is 84 + 50 * triangle_count",
+            "passed": true
+          },
+          {
+            "name": "header occupies exactly 80 bytes and is zero padded",
+            "passed": true
+          },
+          {
+            "name": "triangle count field matches the payload",
+            "passed": true
+          },
+          {
+            "name": "over-long header is truncated to 80 bytes",
+            "passed": true
+          },
+          {
+            "name": "binary_stl_bytes rejects wrong shape",
+            "passed": true
+          },
+          {
+            "name": "binary_stl_bytes rejects non-finite triangles",
+            "passed": true
+          },
+          {
+            "name": "zero-length strut is skipped and reported",
+            "passed": true
+          },
+          {
+            "name": "lattice_to_stl creates missing parent directories",
+            "passed": true
+          },
+          {
+            "name": "lattice_to_stl reports the skipped degenerate strut",
+            "passed": true
+          },
+          {
+            "name": "project inspect_stl reads the file back as binary STL",
+            "passed": true
+          },
+          {
+            "name": "inspect_stl triangle count matches what we wrote",
+            "passed": true
+          },
+          {
+            "name": "STL bounds span the strut length along X",
+            "passed": true
+          },
+          {
+            "name": "STL radial bounds match the requested radius",
+            "passed": true
+          },
+          {
+            "name": "larger radius widens the mesh bounds",
+            "passed": true
+          },
+          {
+            "name": "write_binary_stl output is world readable (0644)",
+            "passed": true
+          },
+          {
+            "name": "a lattice with no drawable struts is rejected",
+            "passed": true
+          },
+          {
+            "name": "real lattice draws all 18,468 struts with none skipped",
+            "passed": true
+          },
+          {
+            "name": "real lattice triangle count is struts * 4 * segments",
+            "passed": true
+          },
+          {
+            "name": "inspect_stl agrees on the real lattice triangle count",
+            "passed": true
+          }
+        ],
+        "suite": "lattice_stl",
+        "total": 35
+      },
+      "test": "test_lattice_stl.py",
+      "total": 35
     },
     {
       "passed": 33,
@@ -2072,5 +2227,5 @@
       "total": 41
     }
   ],
-  "tests_run": 12
+  "tests_run": 13
 }
