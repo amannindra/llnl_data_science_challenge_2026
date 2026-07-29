@@ -36,8 +36,11 @@ raw CT TIFF (ZYX, uint16)         STL design mesh (XYZ, mm, origin-centred)
 | `metrics.py` | Dice/IoU/containment, foreground bounds, per-slab rows, point-in-mask scoring, lattice-window slices |
 | `validate.py` | CLI orchestrating the whole run (incl. the orientation search) and writing artifacts via `Components/reporting.py` |
 | `visualize.py` | CLI writing three-up comparison panels per slice: STL design (expected) / CT scan (actual) / overlay |
+| `meshlab_export.py` | Reusable, memory-bounded exporter for colored CT/STL voxel evidence layers and MeshLab project files |
+| `meshlab_metrics.py` | CLI producing one MeshLab project per lattice-window metric, with exact counts and responsive display samples |
 
-Everything imports side-effect free; only `validate.py` writes files.
+Everything imports side-effect free; the CLI entry points (`validate.py`,
+`visualize.py`, and `meshlab_metrics.py`) write their requested artifacts.
 
 ## Run
 
@@ -46,6 +49,44 @@ conda run -n DSC python Aman_Scripts/tif2stl/validate.py            # defaults: 
 conda run -n DSC python Aman_Scripts/tif2stl/validate.py --downsample 2 --tolerance-cells 1
 conda run -n DSC python Aman_Scripts/tif2stl/visualize.py           # comparison panels -> outputs/tif2stl/visuals
 ```
+
+To inspect exactly ten evenly distributed axial CT/STL layers with the
+plate-consistent orientation, run:
+
+```bash
+conda run -n DSC python Aman_Scripts/tif2stl/visualize.py \
+  --stl-rotation +z+x+y \
+  --z-fractions 0.08 0.17 0.26 0.35 0.44 0.53 0.62 0.71 0.80 0.89 \
+  --no-cross-sections \
+  --output-dir Aman_Scripts/outputs/tif2stl_plate/ten_layers
+```
+
+This writes exactly ten `compare_z*.png` panels. Each panel is `[STL design |
+CT material | overlay]`; red means CT-only material, green means STL-only
+material, and yellow means agreement. The 120-degree modelling-frame rotation
+is explicit so this visual review matches the `tif2stl_plate` baseline rather
+than the known plate-inconsistent auto-orientation choice.
+
+To inspect the full 3-D evidence for each headline number directly in MeshLab,
+run:
+
+```bash
+conda run -n DSC python Aman_Scripts/tif2stl/meshlab_metrics.py \
+  --stl-rotation +z+x+y \
+  --output-dir Aman_Scripts/outputs/tif2stl_plate/meshlab_metrics
+```
+
+This writes three MeshLab projects: `01_exact_dice.mlp` (yellow = exact CT/STL
+overlap, red = CT-only, green = STL-only; Dice 44.83%),
+`02_ct_within_design.mlp` (blue = CT within one downsampled cell of STL,
+red = farther material; 73.47%), and `03_design_realized.mlp`
+(yellow = STL supported by nearby CT, green = unsupported STL; 60.36%).
+The percentages use every voxel in the lattice window. Each PLY contains a
+deterministic, capped point sample only for display responsiveness, and its
+layer name, PLY comments, and `metrics.json` retain the exact count.
+For the exact project, the visual yellow share of red+yellow+green is the
+**IoU** (28.89%), not the **Dice** (44.83%), because Dice counts the same
+intersection against both input masks. The layer label reports Dice explicitly.
 
 Artifacts land in `Aman_Scripts/outputs/tif2stl/`: `report.json`, `report.md`,
 `slab_overlap.csv`, `overlay_*.png` (red = CT only, green = STL only, yellow =
@@ -85,9 +126,11 @@ surface-point fraction ≤ `--max-outside-fraction` (0.15).
 
 ## Tests
 
-`Aman_Scripts/ComponentTests/test_tif2stl.py` (84 adversarial checks, registered
+`Aman_Scripts/ComponentTests/test_tif2stl.py` (99 adversarial checks, registered
 in `run_all.py`): streaming/LFS/NaN/truncation failure modes, subdivision area
 preservation, metric edge conventions, Umeyama recovery and degeneracy, the
 24-rotation orientation search (including recovery of a planted y↔z rotation),
 point-in-mask and window-slice conventions, voxel fill/determinism/budget, and
-real-asset registration invariants.
+real-asset registration invariants. It additionally checks MeshLab PLY sampling,
+native XYZ coordinate mapping, project-layer metadata, and invalid point-budget
+handling.

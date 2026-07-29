@@ -182,3 +182,41 @@ paraview_mcp
 # Files over GitHub's 100MB limit (copies/regenerable artifacts; originals live in LFS-tracked data/)
 Aman_Scripts/Tilted_Brian_Tran_segmented.tiff
 Aman_Scripts/outputs/meshlab/
+
+2026-07-28-104658-this-session-is-being-continued-from-a-previous-c.txt
+
+# Local agent/session configuration
+.agents/skills/nde-report/
+.codex/
+AGENTS.md
+
+# Separate local analysis workstream (not part of the MCP tools)
+Aman_Scripts/ComponentTests/test_collaboration_verify.py
+Aman_Scripts/Components/cad_strut_mapping.py
+Aman_Scripts/Components/ct_surface_metrology.py
+Aman_Scripts/Components/local_contrast.py
+Aman_Scripts/Components/stl_surface_index.py
+Aman_Scripts/Components/strut_comparison.py
+Aman_Scripts/Components/strut_control_statistics.py
+Aman_Scripts/Components/strut_control_validation.py
+Aman_Scripts/Components/strut_metrology.py
+Aman_Scripts/Components/strut_pipeline.py
+Aman_Scripts/STRUT_ERROR_DETECTION_PLAN.md
+Aman_Scripts/StrutComparisonTests/
+Aman_Scripts/StrutComparisonVisualTests/
+Aman_Scripts/StrutMetrologyTests/
+Aman_Scripts/analyze_tif.ipynb
+Aman_Scripts/collaboration/
+Aman_Scripts/collaboration_codex/
+Aman_Scripts/compare_stl_tiff_struts.py
+Aman_Scripts/diagnose_ct_spatial_thresholds.py
+Aman_Scripts/export_candidate_struts.py
+Aman_Scripts/run_simple_strut_metrology.py
+Aman_Scripts/tif2stl/meshlab_export.py
+Aman_Scripts/tif2stl/meshlab_metrics.py
+
+# Generated analysis and MCP artifacts
+Aman_Scripts/outputs/
+
+# Local damaged-copy fixture
+data/missing_struts/registered_jsons/210127_Brian_Tran_strut_lattices_0point5dash1\ 1\ Slices\ copy.json

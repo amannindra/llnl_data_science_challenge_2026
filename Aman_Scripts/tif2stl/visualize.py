@@ -78,6 +78,11 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--stl-rotation", default="auto")
     parser.add_argument("--z-fractions", type=float, nargs="+",
                         default=(0.15, 0.3, 0.5, 0.7, 0.85))
+    parser.add_argument(
+        "--no-cross-sections",
+        action="store_true",
+        help="write axial Z layers only; useful when --z-fractions selects an exact layer count",
+    )
     parser.add_argument("--scale", type=int, default=2,
                         help="integer upscale factor for readability")
     arguments = parser.parse_args(argv)
@@ -85,6 +90,10 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         parser.error("--downsample must be >= 1")
     if arguments.scale < 1:
         parser.error("--scale must be >= 1")
+    if not arguments.z_fractions:
+        parser.error("--z-fractions must contain at least one value")
+    if any(not 0.0 <= fraction <= 1.0 for fraction in arguments.z_fractions):
+        parser.error("each --z-fractions value must be in [0, 1]")
     return arguments
 
 
@@ -247,18 +256,19 @@ def main(argv: list[str] | None = None) -> int:
                           f"orientation {chosen_name}",
                           destination, arguments.scale)
         written.append(destination)
-    for axis, index, tag in (("y", y_size // 2, "coronal"), ("x", x_size // 2, "sagittal")):
-        if axis == "y":
-            stl_plane, ct_plane = stl_mask[:, index, :], ct_mask[:, index, :]
-        else:
-            stl_plane, ct_plane = stl_mask[:, :, index], ct_mask[:, :, index]
-        panel = compose_panel(stl_plane, ct_plane)
-        destination = output_directory / f"compare_{axis}{index * ds:04d}.png"
-        annotate_and_save(panel, titles,
-                          f"{tag} slice {axis}={index * ds} (native voxels), "
-                          f"orientation {chosen_name}",
-                          destination, arguments.scale)
-        written.append(destination)
+    if not arguments.no_cross_sections:
+        for axis, index, tag in (("y", y_size // 2, "coronal"), ("x", x_size // 2, "sagittal")):
+            if axis == "y":
+                stl_plane, ct_plane = stl_mask[:, index, :], ct_mask[:, index, :]
+            else:
+                stl_plane, ct_plane = stl_mask[:, :, index], ct_mask[:, :, index]
+            panel = compose_panel(stl_plane, ct_plane)
+            destination = output_directory / f"compare_{axis}{index * ds:04d}.png"
+            annotate_and_save(panel, titles,
+                              f"{tag} slice {axis}={index * ds} (native voxels), "
+                              f"orientation {chosen_name}",
+                              destination, arguments.scale)
+            written.append(destination)
 
     runtime = time.perf_counter() - started
     print(f"[5/5] wrote {len(written)} comparison panels to {output_directory} "

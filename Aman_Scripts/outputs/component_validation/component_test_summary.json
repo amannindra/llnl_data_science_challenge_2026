@@ -1,6 +1,6 @@
 {
-  "checks_passed": 469,
-  "checks_total": 469,
+  "checks_passed": 546,
+  "checks_total": 546,
   "expected_tests": [
     "test_paths.py",
     "test_asset_io.py",
@@ -10,6 +10,7 @@
     "test_segmentation.py",
     "test_tiff_mesh.py",
     "test_tif2stl.py",
+    "test_collaboration_verify.py",
     "test_legacy_occupancy.py",
     "test_reporting.py",
     "test_testing.py",
@@ -1110,12 +1111,12 @@
       "total": 51
     },
     {
-      "passed": 84,
+      "passed": 99,
       "status": "passed",
       "summary": {
         "failed": 0,
         "minimum_satisfied": true,
-        "passed": 84,
+        "passed": 99,
         "results": [
           {
             "name": "binary chunking yields 5+5+2 triangles",
@@ -1386,6 +1387,66 @@
             "passed": true
           },
           {
+            "name": "visualizer accepts exactly ten requested axial layers without cross sections",
+            "passed": true
+          },
+          {
+            "name": "visualizer rejects layer fractions outside the TIFF interval",
+            "passed": true
+          },
+          {
+            "name": "visualizer rejects an empty axial-layer request",
+            "passed": true
+          },
+          {
+            "name": "MeshLab point sampler preserves exact count while capping display points",
+            "passed": true
+          },
+          {
+            "name": "MeshLab point sampler converts ZYX grid cells to offset XYZ native voxels",
+            "passed": true
+          },
+          {
+            "name": "MeshLab point sampler honours a caller-shared display stride",
+            "passed": true
+          },
+          {
+            "name": "MeshLab metric partition chooses one stride from its largest class",
+            "passed": true
+          },
+          {
+            "name": "MeshLab point sampler rejects invalid RGB colors",
+            "passed": true
+          },
+          {
+            "name": "MeshLab point sampler rejects a nonpositive shared stride",
+            "passed": true
+          },
+          {
+            "name": "MeshLab layer export writes a nonempty colored binary PLY",
+            "passed": true
+          },
+          {
+            "name": "MeshLab direct-view PLY merges component layers and preserves RGB vertices",
+            "passed": true
+          },
+          {
+            "name": "MeshLab direct-view PLY rejects an empty source list",
+            "passed": true
+          },
+          {
+            "name": "MeshLab project names the metric layer and relative PLY file",
+            "passed": true
+          },
+          {
+            "name": "MeshLab metrics CLI accepts explicit plate orientation and point budget",
+            "passed": true
+          },
+          {
+            "name": "MeshLab metrics CLI rejects a nonpositive point budget",
+            "passed": true
+          },
+          {
             "name": "filled 16-cell cube volume is within 20% of 4096 cells",
             "passed": true
           },
@@ -1455,10 +1516,273 @@
           }
         ],
         "suite": "tif2stl STL-vs-TIFF validation",
-        "total": 84
+        "total": 99
       },
       "test": "test_tif2stl.py",
-      "total": 84
+      "total": 99
+    },
+    {
+      "passed": 62,
+      "status": "passed",
+      "summary": {
+        "failed": 0,
+        "minimum_satisfied": true,
+        "passed": 62,
+        "results": [
+          {
+            "name": "hash_file matches the known SHA-256 vector for b'hello'",
+            "passed": true
+          },
+          {
+            "name": "hash_file is block-size independent across many chunks",
+            "passed": true
+          },
+          {
+            "name": "hash_file refuses a missing file",
+            "passed": true
+          },
+          {
+            "name": "a well-formed panel filename parses into rank/edge/nodes",
+            "passed": true
+          },
+          {
+            "name": "every malformed panel filename is rejected",
+            "passed": true
+          },
+          {
+            "name": "panel_filename round-trips through parse_panel_filename",
+            "passed": true
+          },
+          {
+            "name": "panel_filename rejects a negative rank",
+            "passed": true
+          },
+          {
+            "name": "parse_edge_id splits a valid edge ID",
+            "passed": true
+          },
+          {
+            "name": "parse_edge_id rejects malformed edge IDs",
+            "passed": true
+          },
+          {
+            "name": "node_number extracts the padded integer",
+            "passed": true
+          },
+          {
+            "name": "node_number rejects malformed node IDs",
+            "passed": true
+          },
+          {
+            "name": "a contiguous 1..5 rank column reports no problems",
+            "passed": true
+          },
+          {
+            "name": "a gap in the rank column is reported as missing",
+            "passed": true
+          },
+          {
+            "name": "a duplicated rank is reported",
+            "passed": true
+          },
+          {
+            "name": "zero-based ranks are caught as an off-by-one",
+            "passed": true
+          },
+          {
+            "name": "an exact packet has no orphans",
+            "passed": true
+          },
+          {
+            "name": "unlisted files (including unicode names) are reported as orphans",
+            "passed": true
+          },
+          {
+            "name": "relative_files walks nested directories with POSIX separators",
+            "passed": true
+          },
+          {
+            "name": "a manifest entry with no file on disk is not mistaken for an orphan",
+            "passed": true
+          },
+          {
+            "name": "absolute and parent-escaping manifest paths are rejected",
+            "passed": true
+          },
+          {
+            "name": "plain CSV data rows are counted",
+            "passed": true
+          },
+          {
+            "name": "an empty CSV counts zero rows",
+            "passed": true
+          },
+          {
+            "name": "an empty CSV has an empty header",
+            "passed": true
+          },
+          {
+            "name": "a header-only CSV counts zero rows",
+            "passed": true
+          },
+          {
+            "name": "CRLF line endings do not inflate the row count",
+            "passed": true
+          },
+          {
+            "name": "CRLF headers are not polluted by the carriage return",
+            "passed": true
+          },
+          {
+            "name": "a quoted embedded newline counts as one row, not two",
+            "passed": true
+          },
+          {
+            "name": "a UTF-8 BOM does not corrupt the first header field",
+            "passed": true
+          },
+          {
+            "name": "a UTF-8 BOM does not change the row count",
+            "passed": true
+          },
+          {
+            "name": "a row count embedded in a filename is recovered",
+            "passed": true
+          },
+          {
+            "name": "the first embedded count wins for multi-number filenames",
+            "passed": true
+          },
+          {
+            "name": "a filename with no embedded count returns None",
+            "passed": true
+          },
+          {
+            "name": "reconcile accepts an exact match",
+            "passed": true
+          },
+          {
+            "name": "reconcile rejects an off-by-one",
+            "passed": true
+          },
+          {
+            "name": "reconcile honours an absolute tolerance",
+            "passed": true
+          },
+          {
+            "name": "reconcile rejects a value outside its tolerance",
+            "passed": true
+          },
+          {
+            "name": "reconcile rejects a negative tolerance",
+            "passed": true
+          },
+          {
+            "name": "relative src/href/url() paths are all extracted",
+            "passed": true
+          },
+          {
+            "name": "absolute-scheme URLs are classified as external, not local",
+            "passed": true
+          },
+          {
+            "name": "fetch() is detected as a network API",
+            "passed": true
+          },
+          {
+            "name": "a fetching page is not self-contained",
+            "passed": true
+          },
+          {
+            "name": "data: URIs and #anchors are never treated as files",
+            "passed": true
+          },
+          {
+            "name": "a page whose data is inline is reported self-contained",
+            "passed": true
+          },
+          {
+            "name": "the inline JSON script id is captured",
+            "passed": true
+          },
+          {
+            "name": "the inline JSON payload parses back to its object",
+            "passed": true
+          },
+          {
+            "name": "an unknown inline script id raises KeyError",
+            "passed": true
+          },
+          {
+            "name": "HTML entities inside a path are unescaped",
+            "passed": true
+          },
+          {
+            "name": "a malformed inline JSON body raises a decode error",
+            "passed": true
+          },
+          {
+            "name": "check_integrity flags a wrong file_count vs len(files)",
+            "passed": true
+          },
+          {
+            "name": "check_integrity flags a wrong file_count vs the on-disk count",
+            "passed": true
+          },
+          {
+            "name": "check_integrity flags a manifest entry with no file on disk",
+            "passed": true
+          },
+          {
+            "name": "check_integrity flags a size that disagrees with the manifest",
+            "passed": true
+          },
+          {
+            "name": "check_integrity flags a SHA-256 that disagrees with the manifest",
+            "passed": true
+          },
+          {
+            "name": "check_integrity flags an unlisted file on disk",
+            "passed": true
+          },
+          {
+            "name": "check_integrity records a blocking finding for each integrity failure",
+            "passed": true
+          },
+          {
+            "name": "check_integrity passes an untouched packet",
+            "passed": true
+          },
+          {
+            "name": "an untouched packet produces no non-informational findings",
+            "passed": true
+          },
+          {
+            "name": "CheckResult rejects an unknown status",
+            "passed": true
+          },
+          {
+            "name": "CheckResult rejects an unknown category",
+            "passed": true
+          },
+          {
+            "name": "a linkage failure does not trip the integrity gate",
+            "passed": true
+          },
+          {
+            "name": "an integrity failure trips the integrity gate",
+            "passed": true
+          },
+          {
+            "name": "ResultLog counts pass/fail/skip separately",
+            "passed": true
+          }
+        ],
+        "suite": "collaboration/verify_handoff helpers",
+        "total": 62
+      },
+      "test": "test_collaboration_verify.py",
+      "total": 62
     },
     {
       "passed": 30,
@@ -2072,5 +2396,5 @@
       "total": 41
     }
   ],
-  "tests_run": 12
+  "tests_run": 13
 }

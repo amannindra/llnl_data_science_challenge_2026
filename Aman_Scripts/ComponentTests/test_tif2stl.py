@@ -32,6 +32,17 @@ from tif2stl import (
 )
 from tif2stl.validate import sample_stl_points_mm, score_orientations
 from tif2stl import visualize as viz
+from tif2stl.meshlab_export import (
+    export_mask_layer,
+    merge_colored_points_ply,
+    read_colored_points_ply,
+    sampled_vertices_from_mask,
+    write_meshlab_project,
+)
+from tif2stl.meshlab_metrics import (
+    _shared_sampling_stride,
+    parse_args as parse_meshlab_metric_args,
+)
 
 _RECORD = np.dtype([
     ("normal", "<f4", (3,)),
@@ -416,6 +427,147 @@ def main() -> int:
         expected_height = 1 + 2 * viz.MARGIN + viz.LABEL_BAND
         checker.equal("compose_panel lays out three tiles with margins and label band",
                       panel.shape, (expected_height, expected_width, 3))
+        layer_args = viz.parse_args([
+            "--z-fractions", "0.08", "0.17", "0.26", "0.35", "0.44",
+            "0.53", "0.62", "0.71", "0.80", "0.89", "--no-cross-sections",
+        ])
+        checker.check(
+            "visualizer accepts exactly ten requested axial layers without cross sections",
+            len(layer_args.z_fractions) == 10 and layer_args.no_cross_sections,
+        )
+        checker.raises(
+            "visualizer rejects layer fractions outside the TIFF interval",
+            SystemExit, viz.parse_args, ["--z-fractions", "-0.01"],
+        )
+        checker.raises(
+            "visualizer rejects an empty axial-layer request",
+            SystemExit, viz.parse_args, ["--z-fractions"],
+        )
+
+        # --- MeshLab metric point layers ---------------------------------
+        display_mask = np.zeros((2, 3, 4), dtype=bool)
+        display_mask[0, 1, 2] = True
+        display_mask[1, 0, 0] = True
+        vertices, exact_count, stride = sampled_vertices_from_mask(
+            display_mask,
+            offset_zyx=(10, 20, 30),
+            native_voxels_per_cell=2,
+            color_rgb=(1, 2, 3),
+            max_points=1,
+        )
+        checker.check(
+            "MeshLab point sampler preserves exact count while capping display points",
+            exact_count == 2 and len(vertices) == 1 and stride == 2,
+        )
+        checker.equal(
+            "MeshLab point sampler converts ZYX grid cells to offset XYZ native voxels",
+            tuple(vertices[0][name] for name in ("x", "y", "z", "red", "green", "blue")),
+            (64.0, 42.0, 20.0, 1, 2, 3),
+        )
+        forced_vertices, forced_count, forced_stride = sampled_vertices_from_mask(
+            display_mask,
+            color_rgb=(1, 2, 3),
+            max_points=10,
+            sampling_stride=3,
+        )
+        checker.check(
+            "MeshLab point sampler honours a caller-shared display stride",
+            forced_count == 2 and forced_stride == 3 and len(forced_vertices) == 1,
+        )
+        checker.equal(
+            "MeshLab metric partition chooses one stride from its largest class",
+            _shared_sampling_stride(
+                (np.ones((1, 1, 7), dtype=bool), np.ones((1, 1, 14), dtype=bool)),
+                max_points_per_layer=5,
+            ),
+            3,
+        )
+        checker.raises(
+            "MeshLab point sampler rejects invalid RGB colors",
+            ValueError,
+            sampled_vertices_from_mask,
+            display_mask,
+            color_rgb=(256, 0, 0),
+            max_points=1,
+        )
+        checker.raises(
+            "MeshLab point sampler rejects a nonpositive shared stride",
+            ValueError,
+            sampled_vertices_from_mask,
+            display_mask,
+            color_rgb=(1, 2, 3),
+            max_points=1,
+            sampling_stride=0,
+        )
+        layer = export_mask_layer(
+            display_mask,
+            destination=scratch / "points.ply",
+            label="Synthetic yellow overlap",
+            color_rgb=(245, 225, 80),
+            offset_zyx=(0, 0, 0),
+            native_voxels_per_cell=1,
+            max_points=10,
+            metric_note="synthetic test",
+        )
+        checker.check(
+            "MeshLab layer export writes a nonempty colored binary PLY",
+            layer.path.is_file()
+            and layer.source_voxel_count == 2
+            and b"property uchar blue" in layer.path.read_bytes()[:512],
+        )
+        second_mask = np.zeros_like(display_mask)
+        second_mask[0, 0, 0] = True
+        second_layer = export_mask_layer(
+            second_mask,
+            destination=scratch / "points_green.ply",
+            label="Synthetic green mismatch",
+            color_rgb=(70, 205, 95),
+            offset_zyx=(0, 0, 0),
+            native_voxels_per_cell=1,
+            max_points=10,
+            metric_note="synthetic evidence",
+        )
+        direct_path, direct_count = merge_colored_points_ply(
+            scratch / "direct_metric.ply",
+            [layer.path, second_layer.path],
+            comments=("Direct synthetic metric view",),
+        )
+        direct_points = read_colored_points_ply(direct_path)
+        checker.check(
+            "MeshLab direct-view PLY merges component layers and preserves RGB vertices",
+            direct_count == len(direct_points)
+            == layer.sampled_point_count + second_layer.sampled_point_count
+            and {(int(row["red"]), int(row["green"]), int(row["blue"])) for row in direct_points}
+            == {(245, 225, 80), (70, 205, 95)},
+        )
+        checker.raises(
+            "MeshLab direct-view PLY rejects an empty source list",
+            ValueError,
+            merge_colored_points_ply,
+            scratch / "empty_direct.ply",
+            [],
+        )
+        project = write_meshlab_project(scratch / "synthetic.mlp", [layer])
+        checker.check(
+            "MeshLab project names the metric layer and relative PLY file",
+            project.is_file()
+            and "Synthetic yellow overlap" in project.read_text(encoding="utf-8")
+            and "points.ply" in project.read_text(encoding="utf-8"),
+        )
+        metric_args = parse_meshlab_metric_args(
+            ["--stl-rotation", "+z+x+y", "--max-points-per-layer", "123"]
+        )
+        checker.check(
+            "MeshLab metrics CLI accepts explicit plate orientation and point budget",
+            metric_args.stl_rotation == "+z+x+y"
+            and metric_args.max_points_per_layer == 123,
+        )
+        checker.raises(
+            "MeshLab metrics CLI rejects a nonpositive point budget",
+            SystemExit,
+            parse_meshlab_metric_args,
+            ["--max-points-per-layer", "0"],
+        )
 
         # --- voxelize -----------------------------------------------------
         solid_cube = write_binary_stl(scratch / "solid.stl",

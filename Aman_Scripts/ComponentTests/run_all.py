@@ -29,6 +29,7 @@ TESTS = (
     "test_segmentation.py",
     "test_tiff_mesh.py",
     "test_tif2stl.py",
+    "test_collaboration_verify.py",
     "test_legacy_occupancy.py",
     "test_reporting.py",
     "test_testing.py",
