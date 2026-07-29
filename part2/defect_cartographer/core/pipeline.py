@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 
 from .alignment import diagnose_alignment
-from .analysis import RuleSettings, analyze_sample
+from .analysis import RULE_VERSION, RuleSettings, analyze_sample
 from .config import DEFAULT_CONFIG, REPO_ROOT, DefectConfig
 from .geometry import build_strut_table, stratified_sample
 from .io import (
@@ -72,6 +72,8 @@ def _metadata(
             "voxel_spacing_um": list(config.voxel_spacing_um),
             "threshold_factors": list(config.threshold_factors),
             "provisional_rules": asdict(rules),
+            "label_source": "deterministic_rule_baseline",
+            "label_version": RULE_VERSION,
         }
     )
     return result
@@ -204,10 +206,12 @@ def write_manifest(config: DefectConfig = DEFAULT_CONFIG) -> Path:
         "lattice_scene.npz",
     )
     payload = {
-        "schema_version": 1,
+        "schema_version": 2,
         "status": "complete",
         "pipeline_scope": "deterministic_60_strut_mvp",
         "candidate_labels_validated": False,
+        "label_source": "deterministic_rule_baseline",
+        "label_version": RULE_VERSION,
         "ground_truth_available": False,
         "registered_coordinates_include_specimen_tilt": True,
         "config": {

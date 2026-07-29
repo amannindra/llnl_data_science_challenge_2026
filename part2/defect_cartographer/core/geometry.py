@@ -18,6 +18,22 @@ def junction_positions(graph: dict[str, Any]) -> dict[int, np.ndarray]:
     }
 
 
+def registered_junctions(
+    graph: dict[str, Any],
+    permutation: tuple[int, int, int] = (2, 1, 0),
+    residual_transform: np.ndarray | None = None,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Return sorted junction IDs and positions in registered CT `(z,y,x)` order."""
+
+    positions = junction_positions(graph)
+    ids = np.asarray(sorted(positions), dtype=np.int64)
+    points = np.asarray([positions[int(junction_id)] for junction_id in ids])
+    points = points[:, permutation]
+    if residual_transform is not None:
+        points = apply_homogeneous(points, residual_transform)
+    return ids, points
+
+
 def endpoints_for_struts(
     graph: dict[str, Any],
     strut_ids: Iterable[int] | None = None,

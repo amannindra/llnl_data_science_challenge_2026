@@ -12,13 +12,14 @@ from typing import Any
 
 import matplotlib
 import numpy as np
-from scipy.ndimage import gaussian_filter
+from scipy.ndimage import gaussian_filter, map_coordinates
 from skimage.measure import marching_cubes
 from skimage.morphology import skeletonize
 
 from .alignment import neighborhood_offsets
+from .colors import CANDIDATE_COLORS, SEGMENTATION_COLOR, SKELETON_COLOR
 from .config import DEFAULT_CONFIG, DefectConfig
-from .geometry import endpoints_for_struts, line_points
+from .geometry import endpoints_for_struts, line_points, registered_junctions
 from .io import load_graph, open_ct_memmap, read_json, write_json
 
 matplotlib.use("Agg")
@@ -26,7 +27,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
 
 
-UNIT_CELL_SCHEMA_VERSION = 1
+UNIT_CELL_SCHEMA_VERSION = 2
 UNIT_CELL_STRUT_COUNT = 24
 UNIT_CELL_DIRNAME = "unit_cells"
 
@@ -57,14 +58,26 @@ FIXED_UNIT_CELL_EXAMPLES = (
         target_strut_id=16082,
         expected_label="missing",
     ),
+    UnitCellExample(
+        key="thin",
+        title="Thin example",
+        cell_id=605,
+        target_strut_id=15040,
+        expected_label="thin",
+    ),
+    UnitCellExample(
+        key="intact",
+        title="Intact example",
+        cell_id=362,
+        target_strut_id=9000,
+        expected_label="intact",
+    ),
 )
 
 SEMANTIC_COLORS = {
-    "broken": "#C93400",
-    "missing": "#D70015",
+    label: CANDIDATE_COLORS[label]
+    for label in ("broken", "missing", "thin", "intact")
 }
-SKELETON_COLOR = "#248A3D"
-SEGMENTATION_COLOR = "#69C5EF"
 
 
 def _fixed_example(key: str) -> UnitCellExample:
@@ -90,11 +103,11 @@ def _select_display_struts(
     permutation: tuple[int, int, int],
     residual_transform: np.ndarray,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, int]:
-    """Select exactly 24 local struts while retaining a boundary target.
+    """Select the canonical 24 ordered struts for one registered unit cell.
 
-    The registered graph lists 28 struts for both approved boundary cells.
-    The display contract is fixed at 24, so the target is retained and the
-    other entries are ranked by midpoint distance to the full cell centroid.
+    Interior cell records contain exactly 24 struts. Boundary cell records append
+    four neighboring/boundary segments after those canonical entries; those
+    appended segments previously distorted the displayed cell and camera bounds.
     """
 
     cell = _cell_record(graph, cell_id)
@@ -103,26 +116,23 @@ def _select_display_struts(
         raise ValueError(
             f"Target strut {target_strut_id} is not listed in unit cell {cell_id}"
         )
+    canonical_ids = graph_ids[:UNIT_CELL_STRUT_COUNT]
+    if len(canonical_ids) != UNIT_CELL_STRUT_COUNT:
+        raise ValueError(
+            f"Unit cell {cell_id} has only {len(canonical_ids)} graph struts"
+        )
+    if target_strut_id not in canonical_ids:
+        raise ValueError(
+            f"Target strut {target_strut_id} is not in the canonical 24 struts "
+            f"for unit cell {cell_id}"
+        )
     ids, starts, ends = endpoints_for_struts(
         graph,
-        strut_ids=graph_ids,
+        strut_ids=canonical_ids,
         permutation=permutation,
         residual_transform=residual_transform,
     )
-    center = np.vstack((starts, ends)).mean(axis=0)
-    midpoint_distance = np.linalg.norm(((starts + ends) / 2.0) - center, axis=1)
-    target_index = int(np.flatnonzero(ids == target_strut_id)[0])
-    remaining = [index for index in np.argsort(midpoint_distance) if index != target_index]
-    selected_indices = np.asarray(
-        [target_index, *remaining[: UNIT_CELL_STRUT_COUNT - 1]], dtype=np.int64
-    )
-    selected_indices = selected_indices[np.argsort(ids[selected_indices])]
-    return (
-        ids[selected_indices],
-        starts[selected_indices],
-        ends[selected_indices],
-        int(len(graph_ids)),
-    )
+    return ids, starts, ends, int(len(graph_ids))
 
 
 def _longest_false_bounds(values: np.ndarray) -> tuple[int, int]:
@@ -172,7 +182,7 @@ def _bounded_mesh(
     *,
     threshold: float,
     maximum_faces: int,
-) -> tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     smoothed = gaussian_filter(np.asarray(crop, dtype=np.float32), sigma=0.65)
     vertices, faces, _, _ = marching_cubes(
         smoothed,
@@ -180,15 +190,30 @@ def _bounded_mesh(
         step_size=1,
         allow_degenerate=False,
     )
+    vertex_intensity = map_coordinates(
+        np.asarray(crop, dtype=np.float32),
+        vertices.T,
+        order=1,
+        mode="nearest",
+        prefilter=False,
+    )
+    low, high = np.quantile(vertex_intensity, [0.02, 0.98])
+    vertex_texture = np.clip(
+        (vertex_intensity - low) / max(float(high - low), 1.0),
+        0.0,
+        1.0,
+    )
     if len(faces) > maximum_faces:
         chosen = np.linspace(0, len(faces) - 1, maximum_faces, dtype=np.int64)
         faces = faces[chosen]
         used, inverse = np.unique(faces.reshape(-1), return_inverse=True)
         vertices = vertices[used]
+        vertex_texture = vertex_texture[used]
         faces = inverse.reshape(-1, 3)
     return (
         (vertices + origin[None, :]).astype(np.float32),
         faces.astype(np.int32),
+        vertex_texture.astype(np.float32),
     )
 
 
@@ -326,7 +351,7 @@ def build_fixed_unit_cell_example(
     *,
     maximum_faces: int = 60_000,
 ) -> dict[str, Any]:
-    """Build one of the two approved unit-cell examples and derived evidence."""
+    """Build one approved unit-cell example and its derived visual evidence."""
 
     example = _fixed_example(key)
     graph = load_graph(config.graph_path)
@@ -347,6 +372,31 @@ def build_fixed_unit_cell_example(
 
     target_index = int(np.flatnonzero(ids == example.target_strut_id)[0])
     target_segment = np.stack((starts[target_index], ends[target_index]))
+    strut_by_id = {int(item["id"]): item for item in graph["struts"]}
+    nominal_junction_ids = np.asarray(
+        [
+            [
+                int(strut_by_id[int(strut_id)]["junction0"]),
+                int(strut_by_id[int(strut_id)]["junction1"]),
+            ]
+            for strut_id in ids
+        ],
+        dtype=np.int32,
+    )
+    local_junction_ids = np.unique(nominal_junction_ids)
+    all_junction_ids, all_junction_positions = registered_junctions(
+        graph,
+        permutation=permutation,
+        residual_transform=residual,
+    )
+    junction_position_by_id = {
+        int(junction_id): all_junction_positions[index]
+        for index, junction_id in enumerate(all_junction_ids)
+    }
+    local_junction_positions = np.asarray(
+        [junction_position_by_id[int(junction_id)] for junction_id in local_junction_ids],
+        dtype=np.float32,
+    )
     lower = np.maximum(np.floor(np.minimum(starts.min(0), ends.min(0))).astype(int) - 8, 0)
     volume = open_ct_memmap(config.ct_path)
     upper = np.minimum(
@@ -377,7 +427,7 @@ def build_fixed_unit_cell_example(
         focus = target_segment.mean(axis=0)
         focus_method = "expected target-strut midpoint"
 
-    vertices, faces = _bounded_mesh(
+    vertices, faces, vertex_texture = _bounded_mesh(
         crop,
         lower,
         threshold=threshold,
@@ -400,12 +450,16 @@ def build_fixed_unit_cell_example(
         target_label=np.asarray(example.expected_label),
         nominal_strut_ids=ids.astype(np.int32),
         nominal_segments_zyx=np.stack((starts, ends), axis=1).astype(np.float32),
+        junction_ids=local_junction_ids.astype(np.int32),
+        junction_positions_zyx=local_junction_positions,
+        nominal_junction_ids=nominal_junction_ids,
         analyzed_strut_ids=np.asarray([example.target_strut_id], dtype=np.int32),
         analyzed_segments_zyx=target_segment[None, ...].astype(np.float32),
         analyzed_label_codes=np.asarray([0], dtype=np.uint8),
         label_names=np.asarray([example.expected_label]),
         xray_vertices_zyx=vertices,
         xray_faces=faces,
+        xray_vertex_texture=vertex_texture,
         focus_zyx=np.asarray(focus, dtype=np.float32),
     )
     _render_contours(
@@ -433,10 +487,7 @@ def build_fixed_unit_cell_example(
         "specimen_tilt_preserved": not bool(alignment["residual_correction_applied"]),
         "graph_cell_strut_count": graph_strut_count,
         "display_strut_count": int(len(ids)),
-        "display_selection_rule": (
-            "target strut plus the 23 graph struts whose midpoints are closest "
-            "to the full registered cell centroid"
-        ),
+        "display_selection_rule": "canonical first 24 ordered graph struts",
         "display_strut_ids": [int(value) for value in ids],
         "threshold_otsu": threshold,
         "crop_bounds_zyx": {
@@ -452,6 +503,10 @@ def build_fixed_unit_cell_example(
         ),
         "mesh_vertex_count": int(len(vertices)),
         "mesh_face_count": int(len(faces)),
+        "surface_texture": (
+            "CT-intensity shading on the registered segmented isosurface; "
+            "qualitative visualization, not calibrated roughness measurement"
+        ),
         "scene_artifact": scene_path.name,
         "contour_artifact": contour_path.name,
         "raw_ct_embedded": False,
@@ -463,7 +518,7 @@ def build_fixed_unit_cell_example(
 def build_all_fixed_unit_cell_examples(
     config: DefectConfig = DEFAULT_CONFIG,
 ) -> list[dict[str, Any]]:
-    """Build only the two fixed examples approved for the dashboard."""
+    """Build the four fixed exploratory examples approved for the dashboard."""
 
     return [
         build_fixed_unit_cell_example(example.key, config)
@@ -486,12 +541,16 @@ def load_unit_cell_scene(path: Path | str) -> dict[str, np.ndarray]:
             "target_label",
             "nominal_strut_ids",
             "nominal_segments_zyx",
+            "junction_ids",
+            "junction_positions_zyx",
+            "nominal_junction_ids",
             "analyzed_strut_ids",
             "analyzed_segments_zyx",
             "analyzed_label_codes",
             "label_names",
             "xray_vertices_zyx",
             "xray_faces",
+            "xray_vertex_texture",
             "focus_zyx",
         }
         missing = required.difference(payload.files)
@@ -508,12 +567,22 @@ def load_unit_cell_scene(path: Path | str) -> dict[str, np.ndarray]:
         raise ValueError("Unit-cell scene must contain exactly 24 nominal struts")
     if len(scene["nominal_strut_ids"]) != UNIT_CELL_STRUT_COUNT:
         raise ValueError("Unit-cell scene must contain exactly 24 nominal IDs")
+    if scene["junction_positions_zyx"].ndim != 2 or scene[
+        "junction_positions_zyx"
+    ].shape[1] != 3:
+        raise ValueError("Unit-cell junction positions must have shape (n, 3)")
+    if len(scene["junction_ids"]) != len(scene["junction_positions_zyx"]):
+        raise ValueError("Unit-cell junction IDs and positions have different lengths")
+    if scene["nominal_junction_ids"].shape != (UNIT_CELL_STRUT_COUNT, 2):
+        raise ValueError("Unit-cell nominal junction IDs must have shape (24, 2)")
     if int(scene["target_strut_id"]) not in scene["nominal_strut_ids"]:
         raise ValueError("Target strut is absent from unit-cell geometry")
     if scene["xray_vertices_zyx"].ndim != 2 or scene["xray_vertices_zyx"].shape[1] != 3:
         raise ValueError("Unit-cell CT surface vertices must have shape (n, 3)")
     if scene["xray_faces"].ndim != 2 or scene["xray_faces"].shape[1] != 3:
         raise ValueError("Unit-cell CT surface faces must have shape (n, 3)")
+    if scene["xray_vertex_texture"].shape != (len(scene["xray_vertices_zyx"]),):
+        raise ValueError("Unit-cell CT surface texture must match its vertices")
     return scene
 
 

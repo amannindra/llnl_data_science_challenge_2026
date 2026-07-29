@@ -40,6 +40,14 @@ def test_intact_and_broken_features_are_distinguishable() -> None:
 
 
 def _classify(row: dict) -> str:
+    row.setdefault("threshold_states", "intact|intact|intact")
+    row.setdefault("largest_gap_center_fraction", 0.5)
+    row.setdefault("start_z", 0.0)
+    row.setdefault("start_y", 0.0)
+    row.setdefault("start_x", 0.0)
+    row.setdefault("end_z", 1.0)
+    row.setdefault("end_y", 1.0)
+    row.setdefault("end_x", 1.0)
     classified, _ = classify_candidates(
         pd.DataFrame([row]),
         rules=RuleSettings(),
@@ -58,8 +66,85 @@ def test_rule_precedence_missing_before_alignment_uncertainty() -> None:
             "occupancy": 0.0,
             "gap_fraction": 1.0,
             "region": "interior",
+            "threshold_states": "missing|missing|missing",
         }
     ) == "missing"
+
+
+def test_missing_requires_almost_no_material_at_every_threshold() -> None:
+    for occupancy in (0.0, 0.10):
+        assert _classify(
+            {
+                "coarse_state": "missing",
+                "alignment_error_vox": float("nan"),
+                "threshold_stability": 1.0,
+                "diameter_median_um": float("nan"),
+                "occupancy": occupancy,
+                "gap_fraction": 1.0 - occupancy,
+                "region": "interior",
+                "threshold_states": "missing|missing|missing",
+            }
+        ) == "missing"
+
+
+def test_missing_threshold_disagreement_is_uncertain() -> None:
+    assert _classify(
+        {
+            "coarse_state": "missing",
+            "alignment_error_vox": float("nan"),
+            "threshold_stability": 2.0 / 3.0,
+            "diameter_median_um": float("nan"),
+            "occupancy": 0.10,
+            "gap_fraction": 0.90,
+            "region": "interior",
+            "threshold_states": "broken|missing|missing",
+        }
+    ) == "uncertain"
+
+
+def test_partial_internal_support_is_broken_not_missing() -> None:
+    assert _classify(
+        {
+            "coarse_state": "broken",
+            "alignment_error_vox": 1.0,
+            "threshold_stability": 1.0,
+            "diameter_median_um": 260.0,
+            "occupancy": 0.11,
+            "gap_fraction": 0.40,
+            "region": "interior",
+            "threshold_states": "broken|broken|broken",
+        }
+    ) == "broken"
+
+
+def test_candidate_output_exposes_replaceable_detector_contract() -> None:
+    row = {
+        "strut_id": 7,
+        "coarse_state": "intact",
+        "alignment_error_vox": 0.0,
+        "threshold_stability": 1.0,
+        "threshold_states": "intact|intact|intact",
+        "diameter_median_um": 340.0,
+        "occupancy": 1.0,
+        "gap_fraction": 0.0,
+        "largest_gap_center_fraction": 0.5,
+        "region": "interior",
+        "start_z": 0.0,
+        "start_y": 1.0,
+        "start_x": 2.0,
+        "end_z": 2.0,
+        "end_y": 3.0,
+        "end_x": 4.0,
+    }
+    classified, _ = classify_candidates(
+        pd.DataFrame([row]),
+        rules=RuleSettings(),
+        design_diameter_um=350.0,
+    )
+    assert classified.loc[0, "label"] == classified.loc[0, "prediction"]
+    assert classified.loc[0, "label_source"] == "deterministic_rule_baseline"
+    assert classified.loc[0, "label_version"] == "rules-v2-missing-0.10"
+    assert classified.loc[0, "evidence_focus_zyx"] == "[1.0,2.0,3.0]"
 
 
 def test_large_alignment_error_is_uncertain() -> None:

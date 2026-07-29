@@ -17,13 +17,15 @@ from defect_cartographer.dashboard.threejs_component import unit_cell_scene_payl
 UNIT_CELL_DIR = DEFAULT_CONFIG.output_dir / "unit_cells"
 
 
-def test_only_two_fixed_unit_cell_examples_are_declared() -> None:
+def test_four_fixed_unit_cell_examples_are_declared() -> None:
     assert [
         (item.key, item.cell_id, item.target_strut_id, item.expected_label)
         for item in FIXED_UNIT_CELL_EXAMPLES
     ] == [
         ("broken", 521, 12958, "broken"),
         ("missing", 646, 16082, "missing"),
+        ("thin", 605, 15040, "thin"),
+        ("intact", 362, 9000, "intact"),
     ]
 
 
@@ -42,11 +44,22 @@ def test_fixed_unit_cell_scenes_preserve_registered_geometry() -> None:
         )
         assert scene["nominal_strut_ids"].shape == (UNIT_CELL_STRUT_COUNT,)
         assert example.target_strut_id in scene["nominal_strut_ids"]
+        assert scene["nominal_junction_ids"].shape == (
+            UNIT_CELL_STRUT_COUNT,
+            2,
+        )
+        assert len(scene["junction_ids"]) == len(scene["junction_positions_zyx"])
         assert str(scene["selected_mapping"]) == (
             "JSON (x,y,z) -> CT array (z,y,x)"
         )
         assert scene["xray_vertices_zyx"].shape[1] == 3
         assert scene["xray_faces"].shape[1] == 3
+        assert scene["xray_vertex_texture"].shape == (
+            len(scene["xray_vertices_zyx"]),
+        )
+        assert np.all((scene["xray_vertex_texture"] >= 0) & (
+            scene["xray_vertex_texture"] <= 1
+        ))
         assert "volume" not in scene
         assert "voxels" not in scene
 
@@ -57,11 +70,15 @@ def test_unit_cell_metadata_and_contours_are_traceable() -> None:
         metadata = read_json(UNIT_CELL_DIR / f"{stem}.json")
 
         assert metadata["display_strut_count"] == UNIT_CELL_STRUT_COUNT
-        assert metadata["graph_cell_strut_count"] == 28
+        assert metadata["graph_cell_strut_count"] in {24, 28}
         assert metadata["target_strut_id"] == example.target_strut_id
         assert metadata["specimen_tilt_preserved"] is True
         assert metadata["raw_ct_embedded"] is False
+        assert "not calibrated roughness" in metadata["surface_texture"]
         assert "visual evidence only" in metadata["classification_scope"]
+        assert metadata["display_selection_rule"] == (
+            "canonical first 24 ordered graph struts"
+        )
         assert (UNIT_CELL_DIR / f"{stem}_contours.png").stat().st_size > 100_000
 
     broken = read_json(UNIT_CELL_DIR / "broken_cell_521.json")
@@ -82,6 +99,7 @@ def test_unit_cell_browser_payload_contains_no_raw_ct() -> None:
         assert payload["cellId"] == example.cell_id
         assert payload["targetStrutId"] == example.target_strut_id
         assert len(payload["nominalStrutIds"]) == UNIT_CELL_STRUT_COUNT
+        assert len(payload["xrayVertexTexture"]) == len(payload["xrayVerticesZyx"]) // 3
         assert "volume" not in serialized
         assert "voxelvalues" not in serialized
         assert "tiff" not in serialized

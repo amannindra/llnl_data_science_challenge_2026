@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from .analysis import DISPLAY_COLORS
+from .analysis import DISPLAY_COLORS, RULE_VERSION, RuleSettings
 
 
 def plot_thickness(
@@ -95,13 +95,7 @@ def render_report(
     """Write a human-readable report without overstating unvalidated results."""
 
     counts = Counter(table["prediction"].astype(str))
-    default_rules = {
-        "missing_max_occupancy": 0.25,
-        "broken_max_occupancy": 0.85,
-        "broken_min_gap_fraction": 0.15,
-        "maximum_alignment_error_vox": 3.0,
-        "minimum_stability": 2.0 / 3.0,
-    }
+    default_rules = RuleSettings().__dict__
     lines = [
         "# Lattice CT Analysis — 60-Strut Report",
         "",
@@ -114,6 +108,7 @@ def render_report(
         f"- Alignment gate passed: **{alignment['reliable']}**",
         f"- Sampled expected struts: **{len(table)}** of 18,468",
         f"- Axis mapping: `{alignment['selected_mapping']}`",
+        f"- Provisional rule version: `{RULE_VERSION}`",
         "- Residual correction: none; registered coordinates already include specimen tilt.",
         "",
         "## Alignment evidence",
@@ -181,8 +176,9 @@ def render_report(
         "",
         "| Candidate | Automated rule | Interpretation |",
         "|---|---|---|",
-        f"| Missing | occupancy ≤ `{default_rules['missing_max_occupancy']:.2f}` | "
-        "Little or no CT material follows the expected strut. |",
+        f"| Missing | occupancy ≤ `{default_rules['missing_max_occupancy']:.2f}` "
+        "at all three tested thresholds | Almost no CT material follows the "
+        "expected strut. |",
         f"| Broken | occupancy ≤ `{default_rules['broken_max_occupancy']:.2f}` and "
         f"gap fraction ≥ `{default_rules['broken_min_gap_fraction']:.2f}` | "
         "Some material exists, but a long internal interruption is present. |",
@@ -261,8 +257,9 @@ def render_report(
             "- The JSON describes nominal expected struts and contains no defect labels.",
             "- Intentional versus manufacturing-caused missing struts cannot be inferred.",
             "- Candidate percentages are not defect prevalence estimates for the full part.",
-            "- The provisional 25% occupancy, 15% gap, and related rule boundaries were "
-            "not supplied by the instructors and have not been scientifically calibrated.",
+            "- The provisional 10% all-threshold missing boundary, 15% gap boundary, "
+            "and related rules were not supplied by the instructors and have not "
+            "been scientifically calibrated.",
             "- Thin classification remains exploratory until experts define or validate a criterion.",
             "- The configured 350 µm design reference is unconfirmed; recent literature on "
             "a related specimen family reports 424 µm, so the applicable CAD revision must "

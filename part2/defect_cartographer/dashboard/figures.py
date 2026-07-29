@@ -7,14 +7,9 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
+from ..core.colors import CANDIDATE_COLORS
 
-CANDIDATE_COLORS = {
-    "intact": "#248A3D",
-    "missing": "#D70015",
-    "broken": "#C93400",
-    "thin": "#8944AB",
-    "uncertain": "#0066CC",
-}
+
 CHART_PALETTE = {
     "blue": ("#215290", "#507DAB", "#89A8C6", "#C3D4E3"),
     "green": ("#A8C75D", "#BED583", "#D3E3AB", "#E9F1D4"),
@@ -22,11 +17,7 @@ CHART_PALETTE = {
     "cyan": ("#69C5EF", "#88D3F2", "#ADE1F7", "#D6F0FB"),
 }
 CHART_CLASS_COLORS = {
-    "missing": CHART_PALETTE["red"][0],
-    "broken": CHART_PALETTE["blue"][0],
-    "thin": CHART_PALETTE["green"][0],
-    "uncertain": CHART_PALETTE["cyan"][0],
-    "intact": CHART_PALETTE["blue"][2],
+    label: color for label, color in CANDIDATE_COLORS.items()
 }
 CANDIDATE_ORDER = ["missing", "broken", "thin", "uncertain", "intact"]
 SYSTEM_FONT = '-apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif'
@@ -55,6 +46,8 @@ def class_count_figure(table: pd.DataFrame) -> go.Figure:
             x=[label.title() for label in counts.index],
             y=counts.values,
             marker_color=[CHART_CLASS_COLORS[label] for label in counts.index],
+            marker_line_color="#1D1D1F",
+            marker_line_width=0.5,
             text=counts.values,
             textposition="outside",
             hovertemplate="%{x}: %{y} struts<extra></extra>",
@@ -111,7 +104,11 @@ def lattice_3d_figure(
             ys.extend([row.start_y, row.end_y, None])
             zs.extend([row.start_z, row.end_z, None])
             hover.extend([details, details, None])
-        trace_color = "#86868B" if mute_intact and label == "intact" else CANDIDATE_COLORS[label]
+        trace_color = (
+            CANDIDATE_COLORS["intact"]
+            if mute_intact and label == "intact"
+            else CANDIDATE_COLORS[label]
+        )
         trace_width = 3 if mute_intact and label == "intact" else 7
         figure.add_trace(
             go.Scatter3d(

@@ -6,37 +6,37 @@
       "size_bytes": 2690
     },
     "defect_cartographer_report.md": {
-      "modified_time_ns": 1785186834167368677,
+      "modified_time_ns": 1785350688253215827,
       "path": "part2/artifacts/sample/defect_cartographer_report.md",
-      "size_bytes": 7733
+      "size_bytes": 7833
     },
     "lattice_scene.npz": {
-      "modified_time_ns": 1785186861940306224,
+      "modified_time_ns": 1785350688421872368,
       "path": "part2/artifacts/sample/lattice_scene.npz",
-      "size_bytes": 246895
+      "size_bytes": 345653
     },
     "pipeline_metrics.json": {
-      "modified_time_ns": 1784926040162451683,
+      "modified_time_ns": 1785350682755131650,
       "path": "part2/artifacts/sample/pipeline_metrics.json",
-      "size_bytes": 1274
+      "size_bytes": 1367
     },
     "sampled_struts.csv": {
-      "modified_time_ns": 1784926040151500740,
+      "modified_time_ns": 1785350682752369558,
       "path": "part2/artifacts/sample/sampled_struts.csv",
-      "size_bytes": 28709
+      "size_bytes": 34333
     },
     "spatial_distribution.png": {
-      "modified_time_ns": 1784926040637254151,
+      "modified_time_ns": 1785350683020296761,
       "path": "part2/artifacts/sample/spatial_distribution.png",
-      "size_bytes": 151077
+      "size_bytes": 153404
     },
     "thickness_histogram.png": {
-      "modified_time_ns": 1784926040458862045,
+      "modified_time_ns": 1785350682879286559,
       "path": "part2/artifacts/sample/thickness_histogram.png",
       "size_bytes": 50756
     },
     "thickness_reference.json": {
-      "modified_time_ns": 1784926040152405416,
+      "modified_time_ns": 1785350682752787082,
       "path": "part2/artifacts/sample/thickness_reference.json",
       "size_bytes": 287
     },
@@ -86,8 +86,10 @@
       "size_bytes": 4958672
     }
   },
+  "label_source": "deterministic_rule_baseline",
+  "label_version": "rules-v2-missing-0.10",
   "pipeline_scope": "deterministic_60_strut_mvp",
   "registered_coordinates_include_specimen_tilt": true,
-  "schema_version": 1,
+  "schema_version": 2,
   "status": "complete"
 }

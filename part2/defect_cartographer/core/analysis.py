@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
 from time import perf_counter
 from typing import Any
 
@@ -11,23 +12,20 @@ import pandas as pd
 from scipy.ndimage import distance_transform_edt
 
 from .alignment import neighborhood_offsets
+from .colors import CANDIDATE_COLORS
 from .geometry import line_points
 
 
-DISPLAY_COLORS = {
-    "intact": "#2ca02c",
-    "missing": "#d62728",
-    "broken": "#ff7f0e",
-    "thin": "#7f3fbf",
-    "uncertain": "#1f77b4",
-}
+DISPLAY_COLORS = dict(CANDIDATE_COLORS)
+RULE_VERSION = "rules-v2-missing-0.10"
+BASELINE_LABEL_SOURCE = "deterministic_rule_baseline"
 
 
 @dataclass(frozen=True)
 class RuleSettings:
     """Transparent provisional candidate rules for the unlabeled MVP."""
 
-    missing_max_occupancy: float = 0.25
+    missing_max_occupancy: float = 0.10
     broken_max_occupancy: float = 0.85
     broken_min_gap_fraction: float = 0.15
     maximum_alignment_error_vox: float = 3.0
@@ -45,6 +43,24 @@ def longest_false_run(values: np.ndarray) -> int:
             current += 1
             longest = max(longest, current)
     return longest
+
+
+def longest_false_run_bounds(values: np.ndarray) -> tuple[int, int]:
+    """Return half-open bounds for the longest consecutive false run."""
+
+    best_start = best_end = current_start = 0
+    in_gap = False
+    for index, value in enumerate(np.asarray(values, dtype=bool)):
+        if not value and not in_gap:
+            current_start = index
+            in_gap = True
+        elif value and in_gap:
+            if index - current_start > best_end - best_start:
+                best_start, best_end = current_start, index
+            in_gap = False
+    if in_gap and len(values) - current_start > best_end - best_start:
+        best_start, best_end = current_start, len(values)
+    return best_start, best_end
 
 
 def _roi_for_line(
@@ -123,9 +139,16 @@ def _single_threshold_features(
     central_diameter = diameter[central]
     finite_diameter = central_diameter[np.isfinite(central_diameter)]
     finite_nearest = nearest[np.isfinite(nearest)]
+    gap_start, gap_end = longest_false_run_bounds(support)
+    gap_center_fraction = (
+        float(((gap_start + gap_end - 1) / 2) / max(count - 1, 1))
+        if gap_end > gap_start
+        else 0.5
+    )
     return {
         "occupancy": float(support.mean()),
         "gap_fraction": float(longest_false_run(support) / max(count, 1)),
+        "largest_gap_center_fraction": gap_center_fraction,
         "start_support": float(support[:endpoint_count].mean()),
         "end_support": float(support[-endpoint_count:].mean()),
         "alignment_error_vox": (
@@ -284,14 +307,21 @@ def classify_candidates(
     reasons: list[str] = []
     for _, row in result.iterrows():
         state = str(row["coarse_state"])
+        threshold_states = tuple(str(row["threshold_states"]).split("|"))
+        all_thresholds_missing = bool(threshold_states) and all(
+            item == "missing" for item in threshold_states
+        )
         alignment = float(row["alignment_error_vox"])
         stability = float(row["threshold_stability"])
         diameter = float(row["diameter_median_um"])
         reason = f"occupancy={row['occupancy']:.3f}; gap={row['gap_fraction']:.3f}"
 
-        if state == "missing":
+        if state == "missing" and all_thresholds_missing:
             prediction = "missing"
-            reason += "; negligible material along the expected strut"
+            reason += "; negligible material at all three tested thresholds"
+        elif state == "missing":
+            prediction = "uncertain"
+            reason += "; missing-state evidence changes with threshold"
         elif state == "broken":
             prediction = "broken"
             reason += "; material support contains a long internal gap"
@@ -335,9 +365,33 @@ def classify_candidates(
         reasons.append(reason)
 
     result["prediction"] = predictions
+    # Stable teammate-integration field. `prediction` is retained for the
+    # current dashboard while future detectors may replace `label` by strut_id.
+    result["label"] = predictions
     result["confidence_percent_uncalibrated"] = confidences
     result["prediction_reason"] = reasons
     result["thin_candidate_cutoff_um"] = cutoff
+    result["label_source"] = BASELINE_LABEL_SOURCE
+    result["label_version"] = RULE_VERSION
+    result["evidence_focus_zyx"] = result.apply(
+        lambda row: json.dumps(
+            [
+                round(
+                    float(row[f"start_{axis}"])
+                    + (
+                        float(row["largest_gap_center_fraction"])
+                        if row["prediction"] == "broken"
+                        else 0.5
+                    )
+                    * (float(row[f"end_{axis}"]) - float(row[f"start_{axis}"])),
+                    4,
+                )
+                for axis in ("z", "y", "x")
+            ],
+            separators=(",", ":"),
+        ),
+        axis=1,
+    )
     return result, {
         "thin_candidate_cutoff_um": cutoff,
         "eligible_thickness_median_um": thickness_reference["median_um"],

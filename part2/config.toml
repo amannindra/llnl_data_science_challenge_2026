@@ -14,7 +14,7 @@ analysis_search_radius_vox = 4
 threshold_factors = [0.97, 1.0, 1.03]
 
 [rules]
-missing_max_occupancy = 0.25
+missing_max_occupancy = 0.10
 broken_max_occupancy = 0.85
 broken_min_gap_fraction = 0.15
 maximum_alignment_error_vox = 3.0

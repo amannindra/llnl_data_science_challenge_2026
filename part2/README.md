@@ -10,6 +10,14 @@ The classifications are exploratory candidates, not validated defect labels.
 The registered JSON specifies where complete nominal struts are expected; it
 does not provide defect ground truth.
 
+Baseline rule version `rules-v2-missing-0.10` calls a strut missing only when
+material coverage is at most 10% at 97%, 100%, and 103% of the saved Otsu
+threshold. Partial support with a substantial internal unsupported run is
+broken; unstable or poorly aligned evidence is uncertain. Thin remains an
+exploratory lower-tail measurement. Detector and validator outputs can replace
+the baseline through `strut_id`, `label`, `label_source`, `label_version`, and
+`evidence_focus_zyx`.
+
 ## Environment and core commands
 
 Create the declared environment once, then run commands from the repository
@@ -68,29 +76,47 @@ PYTHONPATH=part2 streamlit run part2/app.py
 ```
 
 The dashboard provides top navigation for Overview, Strut Explorer, Visual
-Analysis, System Design, and Copilot. The header uses the challenge and LLNL
-logos, while charts and controls use the supplied poster palette. The Strut
+Analysis, System Design, and Copilot. Its visual system combines a compact
+scientific workstation layout with restrained Challenge and LLNL identity.
+The Strut
 Explorer separates missing, broken, thin, and uncertain candidates into
-filterable, paginated tabs and excludes intact rows.
+filterable, paginated tabs and excludes intact rows. It is the table and export
+workspace; selected rows open in Visual Analysis for 3D inspection.
 
 ## Three.js visualization
 
 The compiled Three.js component loads `artifacts/sample/lattice_scene.npz`
 through the Python dashboard boundary. It renders all 18,468 nominal struts as
-one efficient steel-gray line buffer, a compact CT-derived context mesh, and
-thicker candidate overlays. Intact overlays are hidden by default. Selecting an
-analyzed strut returns only its ID to Streamlit, which then displays the saved
-deterministic measurements.
+one efficient blue line buffer, 10,206 registered junction nodes, a compact
+CT-derived context mesh, and thicker candidate overlays. Intact overlays are
+hidden by default. Users can filter the analyzed 60 by candidate class, search
+by strut number, click an overlay, focus the camera, and open the model
+full-screen.
 
-Visual Analysis also exposes exactly two fixed unit-cell scenes under
-`artifacts/sample/unit_cells/`: broken candidate cell 521 / strut 12958 and
-missing candidate cell 646 / strut 16082. Each scene displays 24 registered
-struts as cylinders and a compact CT-derived surface. A paired PNG shows axial,
-coronal, and sagittal grayscale CT crops with segmentation boundaries, the
-expected target strut, and deterministic skeleton evidence. The raw TIFF and
-raw CT voxel arrays are never sent to the browser or to an agent.
+Selecting an analyzed strut reads one bounded CT crop on demand and displays
+a strut-aligned longitudinal view or one enlarged axial, coronal, or sagittal
+view beside the model. The default is a locally enhanced 9-voxel maximum
+projection; an exact single-voxel plane remains available. Brightness, contrast,
+context zoom, five-position slice scrubbing, material boundaries, endpoint/focus
+markers, the expected centerline, and a target-corridor observed material
+centerline can be controlled independently. The dashboard caches this derived
+evidence in memory; it does not write slice files or send the complete TIFF/CT
+volume to the browser. The agent and MCP interfaces remain restricted to saved
+evidence and never receive raw CT voxels.
 
-Rebuild the two derived examples from the repository root with:
+Visual Analysis also exposes four fixed exploratory unit-cell scenes under
+`artifacts/sample/unit_cells/`: broken cell 521 / strut 12958, missing cell
+646 / strut 16082, thin cell 605 / strut 15040, and intact cell 362 / strut
+9000. Each scene displays the canonical 24 registered struts as cylinders,
+every canonical junction, one semantic target overlay, and a registered
+segmented CT isosurface shaded by normalized CT intensity. This surface texture
+is qualitative visualization, not a calibrated roughness measurement. Only the
+selected strut's two actual endpoint nodes are enlarged. The remaining 23
+nominal struts are not assigned a class. The same linked CT evidence panel is
+used for unit cells and the full lattice. The raw TIFF and raw CT voxel arrays
+are never sent to the browser or an agent.
+
+Rebuild the four derived examples from the repository root with:
 
 ```bash
 PYTHONPATH=part2 python -m defect_cartographer.core.unit_cell

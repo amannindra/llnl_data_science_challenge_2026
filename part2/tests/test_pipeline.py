@@ -23,6 +23,7 @@ def test_output_schema_and_metadata_are_traceable() -> None:
     output = _metadata(metrics, table, DEFAULT_CONFIG, RuleSettings())
     assert output["random_seed"] == 20260723
     assert len(output["sample_strut_id_sha256"]) == 64
-    assert output["provisional_rules"]["missing_max_occupancy"] == 0.25
+    assert output["provisional_rules"]["missing_max_occupancy"] == 0.10
+    assert output["label_version"] == "rules-v2-missing-0.10"
     assert not LEGACY_COLUMNS.intersection(table.columns)
     assert Path(DEFAULT_CONFIG.output_dir).name == "sample"

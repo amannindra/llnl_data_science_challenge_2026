@@ -10,6 +10,7 @@ import streamlit as st
 
 from ..agents import copilot_status, run_copilot
 from ..core.io import read_json
+from ..core.slice_evidence import get_strut_slice_evidence
 from .data import DashboardArtifacts
 from .figures import (
     CANDIDATE_COLORS,
@@ -23,8 +24,9 @@ from .threejs_component import lattice_threejs_viewer, unit_cell_threejs_viewer
 
 def _candidate_badge(label: str) -> str:
     color = CANDIDATE_COLORS[label]
+    text_color = "#1D1D1F" if label == "broken" else color
     return (
-        f'<span style="background:{color}12;color:{color};'
+        f'<span style="background:{color}26;color:{text_color};'
         'padding:8px 16px;border-radius:98px;font-weight:650;">'
         f"{html.escape(label.title())}</span>"
     )
@@ -114,6 +116,21 @@ The evidence is therefore not stable enough for a stronger classification.
 
 
 DEFECT_TABS = ("missing", "broken", "thin", "uncertain")
+UNIT_CELL_EXAMPLES = {
+    "Broken": ("broken", 521, 12958),
+    "Missing": ("missing", 646, 16082),
+    "Thin": ("thin", 605, 15040),
+    "Intact": ("intact", 362, 9000),
+}
+
+
+def _open_strut_in_visual_analysis(strut_id: int) -> None:
+    """Synchronize one Explorer selection with the Three.js inspection page."""
+
+    st.session_state["selected_strut_id"] = int(strut_id)
+    st.session_state["_viewer_selection_pending"] = True
+    st.session_state["_pending_primary_navigation"] = "Visual Analysis"
+    st.session_state["_pending_visualization"] = "X-ray 3D view"
 
 
 def _render_defect_tab(table: pd.DataFrame, label: str) -> None:
@@ -182,11 +199,14 @@ def _render_defect_tab(table: pd.DataFrame, label: str) -> None:
         "gap_fraction",
         "diameter_median_um",
     ]
-    st.dataframe(
+    table_event = st.dataframe(
         visible[display_columns],
         width="stretch",
         height=420,
         hide_index=True,
+        key=f"{label}-candidate-table",
+        on_select="rerun",
+        selection_mode="single-row",
         column_config={
             "strut_id": "Strut",
             "region": "Region",
@@ -202,6 +222,20 @@ def _render_defect_tab(table: pd.DataFrame, label: str) -> None:
             ),
         },
     )
+    selected_rows = (
+        list(table_event.selection.rows)
+        if hasattr(table_event, "selection")
+        else []
+    )
+    if selected_rows:
+        selected_row = int(selected_rows[0])
+        if 0 <= selected_row < len(visible):
+            selected_table_id = int(visible.iloc[selected_row]["strut_id"])
+            guard_key = f"_last_opened_{label}_strut"
+            if st.session_state.get(guard_key) != selected_table_id:
+                st.session_state[guard_key] = selected_table_id
+                _open_strut_in_visual_analysis(selected_table_id)
+                st.rerun()
 
     if filtered.empty:
         st.info(f"No {label} candidates match the current filters.")
@@ -227,6 +261,13 @@ def _render_defect_tab(table: pd.DataFrame, label: str) -> None:
         "Not eligible" if pd.isna(diameter) else f"{diameter:.1f} µm",
     )
     st.caption(f"Evidence: {details['prediction_reason']}")
+    if st.button(
+        "Inspect in Visual Analysis",
+        key=f"{label}-inspect-selected",
+        type="primary",
+    ):
+        _open_strut_in_visual_analysis(int(selected_id))
+        st.rerun()
 
 
 def render_explorer(artifacts: DashboardArtifacts) -> None:
@@ -235,13 +276,10 @@ def render_explorer(artifacts: DashboardArtifacts) -> None:
     defect_table = artifacts.table[
         artifacts.table["prediction"].isin(DEFECT_TABS)
     ].copy()
-
-    st.plotly_chart(
-        lattice_3d_figure(defect_table),
-        width="stretch",
-        config={"displaylogo": False, "scrollZoom": True},
+    st.caption(
+        "Filter and download candidate records here, then open a selected strut "
+        "in the Visual Analysis workspace for registered 3D and CT inspection."
     )
-    _measurement_guide()
     tabs = st.tabs([label.title() for label in DEFECT_TABS])
     for tab, label in zip(tabs, DEFECT_TABS):
         with tab:
@@ -251,15 +289,20 @@ def render_explorer(artifacts: DashboardArtifacts) -> None:
 def render_thickness_spatial(artifacts: DashboardArtifacts) -> None:
     st.title("Visual Analysis")
     st.caption("Explore measurements, registered geometry, and CT context")
+    pending_visualization = st.session_state.pop("_pending_visualization", None)
+    visualization_options = [
+        "X-ray 3D view",
+        "Unit cell examples (Three.js)",
+        "Thickness distribution",
+        "Spatial distribution",
+        "Classification counts",
+    ]
+    if pending_visualization in visualization_options:
+        st.session_state["visualization-selector"] = pending_visualization
     visualization = st.selectbox(
         "Visualization",
-        [
-            "X-ray 3D view",
-            "Unit cell examples (Three.js)",
-            "Thickness distribution",
-            "Spatial distribution",
-            "Classification counts",
-        ],
+        visualization_options,
+        key="visualization-selector",
     )
 
     if visualization == "X-ray 3D view":
@@ -286,7 +329,8 @@ def render_thickness_spatial(artifacts: DashboardArtifacts) -> None:
         )
         st.caption(
             "The translucent surface is a bounded, downsampled CT-derived context. "
-            "Gray lines are intact classifications; colored lines are findings."
+            "Muted blue lines are intact candidates; semantic colors identify the "
+            "other exploratory candidate classes."
         )
         _threejs_inspector(artifacts)
     elif visualization == "Unit cell examples (Three.js)":
@@ -331,24 +375,59 @@ def render_thickness_spatial(artifacts: DashboardArtifacts) -> None:
 def _threejs_inspector(artifacts: DashboardArtifacts) -> None:
     st.subheader("Interactive Full-Lattice Inspector (Three.js)")
     st.caption(
-        "Three.js renders all 18,468 registered nominal struts in one steel-gray "
-        "buffer. Exploratory defect candidates are thicker overlays; intact "
-        "analyzed struts start hidden."
+        "Three.js renders all 18,468 registered nominal struts in one blue buffer. "
+        "The 60 analyzed struts are selectable overlays with linked registered CT "
+        "slice evidence; all other struts remain visual context only."
     )
     scene_path = artifacts.sample_dir / "lattice_scene.npz"
     if not scene_path.is_file():
         st.warning("The compact lattice scene artifact is unavailable.")
         return
+    requested_id = st.session_state.get("selected_strut_id")
+    valid_ids = set(artifacts.table["strut_id"].astype(int))
+    if requested_id is not None and int(requested_id) not in valid_ids:
+        requested_id = None
+        st.session_state.pop("selected_strut_id", None)
+    slice_evidence = None
+    if requested_id is not None:
+        try:
+            slice_evidence = get_strut_slice_evidence(
+                int(requested_id),
+                crop_size=128,
+            )
+        except (FileNotFoundError, RuntimeError, ValueError) as exc:
+            st.warning(f"Linked CT slice evidence is unavailable: {exc}")
     try:
-        result = lattice_threejs_viewer(scene_path)
+        result = lattice_threejs_viewer(
+            scene_path,
+            selected_strut_id=(
+                None if requested_id is None else int(requested_id)
+            ),
+            slice_evidence=slice_evidence,
+        )
     except RuntimeError as exc:
         st.error(f"The interactive lattice inspector could not load: {exc}")
         return
 
-    selected_id = getattr(result, "selected_strut_id", None)
+    component_id = getattr(result, "selected_strut_id", None)
+    pending_sync = bool(st.session_state.get("_viewer_selection_pending", False))
+    if component_id is not None:
+        component_id = int(component_id)
+    if pending_sync:
+        if component_id == requested_id:
+            st.session_state.pop("_viewer_selection_pending", None)
+    elif component_id != requested_id:
+        if component_id is None:
+            st.session_state.pop("selected_strut_id", None)
+        elif component_id in valid_ids:
+            st.session_state["selected_strut_id"] = component_id
+        st.rerun()
+
+    selected_id = requested_id
     if selected_id is None:
         st.caption(
-            "Select one of the 60 colored analyzed struts to inspect its saved evidence."
+            "Choose a candidate class and strut number, or click one of the 60 "
+            "analyzed overlays, to inspect saved measurements and linked CT slices."
         )
         return
 
@@ -392,62 +471,60 @@ def _unit_cell_inspector(artifacts: DashboardArtifacts) -> None:
     st.subheader("Interactive Unit Cell Inspector (Three.js)")
     st.caption(
         "Three.js renders one compact registered cell at a time using 24 nominal "
-        "strut cylinders and a translucent CT-derived surface. Only the two fixed "
-        "examples below are available."
+        "strut cylinders and the registered segmented CT isosurface. CT-intensity "
+        "shading provides qualitative surface texture—not a calibrated roughness "
+        "measurement. The selected target is exploratory; the other 23 blue "
+        "struts are unclassified nominal context."
     )
-    selected = st.radio(
+    selected_label = st.radio(
         "Example",
-        ["Broken · cell 521 · strut 12958", "Missing · cell 646 · strut 16082"],
+        list(UNIT_CELL_EXAMPLES),
         horizontal=True,
         key="unit-cell-example",
     )
-    if selected.startswith("Broken"):
-        key, cell_id = "broken", 521
-    else:
-        key, cell_id = "missing", 646
+    key, cell_id, target_strut_id = UNIT_CELL_EXAMPLES[selected_label]
     unit_cell_dir = artifacts.sample_dir / "unit_cells"
     scene_path = unit_cell_dir / f"{key}_cell_{cell_id}.npz"
     metadata_path = unit_cell_dir / f"{key}_cell_{cell_id}.json"
-    contour_path = unit_cell_dir / f"{key}_cell_{cell_id}_contours.png"
     missing = [
         path.name
-        for path in (scene_path, metadata_path, contour_path)
+        for path in (scene_path, metadata_path)
         if not path.is_file()
     ]
     if missing:
         st.warning(f"Unit-cell artifacts are unavailable: {', '.join(missing)}")
         return
     metadata = read_json(metadata_path)
-    metrics = st.columns(4)
-    metrics[0].metric("Unit cell", metadata["cell_id"])
-    metrics[1].metric("Target strut", metadata["target_strut_id"])
-    metrics[2].metric(
-        "Material coverage", f"{metadata['target_support_fraction']:.1%}"
+    if int(metadata["target_strut_id"]) != target_strut_id:
+        st.error("Unit-cell metadata does not match the approved target strut.")
+        return
+    st.markdown(
+        '<div class="workbench-status">'
+        f'<span><strong>{html.escape(selected_label)}</strong> exploratory candidate</span>'
+        f'<span>Cell {cell_id}</span><span>Target strut {target_strut_id}</span>'
+        '<span>24 canonical nominal struts</span>'
+        "</div>",
+        unsafe_allow_html=True,
     )
-    metrics[3].metric("Longest gap", f"{metadata['target_gap_fraction']:.1%}")
+    try:
+        slice_evidence = get_strut_slice_evidence(target_strut_id, crop_size=128)
+    except (FileNotFoundError, RuntimeError, ValueError) as exc:
+        st.warning(f"Linked CT evidence is unavailable: {exc}")
+        slice_evidence = None
     try:
         unit_cell_threejs_viewer(
             scene_path,
+            slice_evidence=slice_evidence,
             key=f"unit-cell-threejs-{key}",
         )
     except RuntimeError as exc:
         st.error(f"The unit-cell inspector could not load: {exc}")
         return
 
-    st.subheader("Synchronized CT contour evidence")
-    st.image(
-        contour_path,
-        caption=(
-            "Raw CT grayscale with the segmentation boundary, expected target "
-            "strut, and deterministic skeleton overlaid in axial, coronal, and "
-            "sagittal views."
-        ),
-        width="stretch",
-    )
     st.caption(
-        f"Focus: {metadata['focus_method']}. Registered mapping: "
-        f"{metadata['selected_mapping']}. Segmentation and skeletonization are "
-        "shown as visual evidence, not as validation."
+        f"Registered mapping: {metadata['selected_mapping']}. The specimen tilt is "
+        "preserved. Linked views are locally contrast-scaled supporting evidence, "
+        "not ground-truth validation."
     )
 
 
@@ -587,15 +664,52 @@ alignment offset, threshold agreement, and eligible thickness, then applies:
         )
 
 
+COPILOT_PROMPTS = (
+    "Compare the saved missing and broken candidates.",
+    "Explain how thickness is measured and when it is excluded.",
+    "Summarize the registered CT-to-JSON evidence workflow.",
+)
+
+
+def _run_copilot_exchange(prompt: str) -> None:
+    """Store one live, evidence-bounded Copilot exchange in session state."""
+
+    history = st.session_state.setdefault("copilot-history", [])
+    history.append({"role": "user", "content": prompt})
+    with st.spinner("Reviewing saved evidence"):
+        response = run_copilot(prompt, page_context={"page": "copilot"})
+    history.append(
+        {
+            "role": "assistant",
+            "content": response["answer"],
+            "evidence": response["evidence"],
+            "warnings": response["warnings"],
+            "selected_strut_id": response.get("selected_strut_id"),
+        }
+    )
+
+
 def render_copilot(_: DashboardArtifacts) -> None:
     st.title("Analysis Copilot")
+    st.caption("A read-only conversational interface for saved lattice evidence")
     status = copilot_status()
-    if status["available"]:
-        st.caption(f"Live agent mode · {status['model']}")
-    else:
-        st.info(
-            "Live agent mode requires OPENAI_API_KEY. The dashboard and evidence "
-            "tools remain available without it."
+    state = "Live" if status["available"] else "Interface ready"
+    st.markdown(
+        '<div class="copilot-status">'
+        f'<span><strong>Coordinator</strong><small>{state}</small></span>'
+        f'<span><strong>Measurement and QA</strong><small>{state}</small></span>'
+        f'<span><strong>Visualization and reporting</strong><small>{state}</small></span>'
+        f'<span><strong>Model</strong><small>{html.escape(status["model"])}</small></span>'
+        "</div>",
+        unsafe_allow_html=True,
+    )
+    if not status["available"]:
+        st.markdown(
+            '<div class="system-notice"><strong>Live calls are disabled.</strong> '
+            "The conversation interface and read-only integration boundary are "
+            "prepared, but no API key is configured and no external call will be made."
+            "</div>",
+            unsafe_allow_html=True,
         )
     st.markdown(
         """
@@ -605,19 +719,51 @@ The **Analysis Coordinator** delegates measurement questions to the
 read-only MCP tools.
 """
     )
-    prompt = st.text_area(
+    st.markdown("**Suggested evidence questions**")
+    prompt_columns = st.columns(3)
+    for column, suggestion in zip(prompt_columns, COPILOT_PROMPTS):
+        if column.button(
+            suggestion,
+            key=f"copilot-suggestion-{suggestion}",
+            disabled=not status["available"],
+            width="stretch",
+        ):
+            _run_copilot_exchange(suggestion)
+            st.rerun()
+
+    history = st.session_state.setdefault("copilot-history", [])
+    if not history:
+        st.markdown(
+            '<div class="copilot-empty"><strong>No conversation yet</strong>'
+            "<span>Responses will cite saved evidence and retain exploratory "
+            "classification boundaries.</span></div>",
+            unsafe_allow_html=True,
+        )
+    for message in history:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+            evidence = message.get("evidence", [])
+            warnings = message.get("warnings", [])
+            if evidence:
+                with st.expander("Evidence used"):
+                    for item in evidence:
+                        st.markdown(f"- {item}")
+            if warnings:
+                st.caption(" ".join(warnings))
+
+    prompt = st.chat_input(
         "Ask about the saved analysis",
-        placeholder=(
-            "Compare missing and broken classifications and explain which "
-            "measurements triggered each rule."
-        ),
-        height=120,
+        disabled=not status["available"],
     )
-    if st.button("Ask copilot", type="primary", disabled=not prompt.strip()):
-        with st.spinner("Reviewing the evidence"):
-            response = run_copilot(prompt, page_context={"page": "copilot"})
-        st.markdown(response["answer"])
-        for evidence in response["evidence"]:
-            st.markdown(f"- {evidence}")
-        if response["warnings"]:
-            st.caption(" ".join(response["warnings"]))
+    if prompt:
+        _run_copilot_exchange(prompt)
+        st.rerun()
+
+    st.markdown(
+        '<div class="integration-contract"><strong>Future integration contract</strong>'
+        "<span>Detector, validator, clustering, measurement, and reporting outputs "
+        "will join through stable <code>strut_id</code> references. Unavailable "
+        "teammate outputs remain explicitly unavailable rather than inferred.</span>"
+        "</div>",
+        unsafe_allow_html=True,
+    )

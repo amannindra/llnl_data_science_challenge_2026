@@ -9,12 +9,12 @@ import numpy as np
 import pandas as pd
 
 from .config import DEFAULT_CONFIG, DefectConfig
-from .geometry import endpoints_for_struts
+from .geometry import endpoints_for_struts, registered_junctions
 from .io import load_graph, read_json
 from .xray_context import load_xray_context
 
 
-SCENE_SCHEMA_VERSION = 1
+SCENE_SCHEMA_VERSION = 2
 LABEL_NAMES = ("intact", "missing", "broken", "thin", "uncertain")
 LABEL_TO_CODE = {name: index for index, name in enumerate(LABEL_NAMES)}
 
@@ -38,6 +38,22 @@ def build_lattice_scene(
         graph,
         permutation=permutation,
         residual_transform=residual,
+    )
+    junction_ids, junction_positions = registered_junctions(
+        graph,
+        permutation=permutation,
+        residual_transform=residual,
+    )
+    strut_by_id = {int(item["id"]): item for item in graph["struts"]}
+    nominal_junction_ids = np.asarray(
+        [
+            [
+                int(strut_by_id[int(strut_id)]["junction0"]),
+                int(strut_by_id[int(strut_id)]["junction1"]),
+            ]
+            for strut_id in nominal_ids
+        ],
+        dtype=np.int32,
     )
 
     table = (
@@ -102,6 +118,9 @@ def build_lattice_scene(
         "selected_mapping": np.asarray(str(alignment["selected_mapping"])),
         "nominal_strut_ids": nominal_ids.astype(np.int32),
         "nominal_segments_zyx": nominal_segments.astype(np.float32),
+        "junction_ids": junction_ids.astype(np.int32),
+        "junction_positions_zyx": junction_positions.astype(np.float32),
+        "nominal_junction_ids": nominal_junction_ids,
         "analyzed_strut_ids": analyzed_ids,
         "analyzed_segments_zyx": analyzed_segments.astype(np.float32),
         "analyzed_label_codes": np.asarray(
@@ -137,6 +156,9 @@ def load_lattice_scene(path: Path | str) -> dict[str, np.ndarray]:
             "selected_mapping",
             "nominal_strut_ids",
             "nominal_segments_zyx",
+            "junction_ids",
+            "junction_positions_zyx",
+            "nominal_junction_ids",
             "analyzed_strut_ids",
             "analyzed_segments_zyx",
             "analyzed_label_codes",
@@ -161,6 +183,20 @@ def load_lattice_scene(path: Path | str) -> dict[str, np.ndarray]:
         raise ValueError("analyzed_segments_zyx must have shape (n, 2, 3)")
     if len(scene["nominal_strut_ids"]) != len(nominal):
         raise ValueError("Nominal IDs and segments have different lengths")
+    if scene["junction_positions_zyx"].ndim != 2 or scene[
+        "junction_positions_zyx"
+    ].shape[1] != 3:
+        raise ValueError("junction_positions_zyx must have shape (n, 3)")
+    if len(scene["junction_ids"]) != len(scene["junction_positions_zyx"]):
+        raise ValueError("Junction IDs and positions have different lengths")
+    if scene["nominal_junction_ids"].shape != (len(nominal), 2):
+        raise ValueError("nominal_junction_ids must have shape (n_struts, 2)")
+    known_junctions = set(int(value) for value in scene["junction_ids"])
+    referenced_junctions = set(
+        int(value) for value in scene["nominal_junction_ids"].reshape(-1)
+    )
+    if not referenced_junctions.issubset(known_junctions):
+        raise ValueError("Nominal struts reference unknown junction IDs")
     if not (
         len(scene["analyzed_strut_ids"])
         == len(analyzed)

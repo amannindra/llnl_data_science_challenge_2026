@@ -20,7 +20,7 @@
       781
     ]
   },
-  "display_selection_rule": "target strut plus the 23 graph struts whose midpoints are closest to the full registered cell centroid",
+  "display_selection_rule": "canonical first 24 ordered graph struts",
   "display_strut_count": 24,
   "display_strut_ids": [
     12948,
@@ -28,9 +28,13 @@
     12950,
     12951,
     12952,
+    12953,
+    12954,
+    12955,
     12956,
     12957,
     12958,
+    12959,
     12960,
     12961,
     12962,
@@ -42,11 +46,7 @@
     12968,
     12969,
     12970,
-    12971,
-    12972,
-    12973,
-    12974,
-    12975
+    12971
   ],
   "example_key": "broken",
   "focus_method": "center of largest unsupported centerline run",
@@ -61,9 +61,10 @@
   "raw_ct_embedded": false,
   "scene_artifact": "broken_cell_521.npz",
   "scene_kind": "unit_cell",
-  "schema_version": 1,
+  "schema_version": 2,
   "selected_mapping": "JSON (x,y,z) -> CT array (z,y,x)",
   "specimen_tilt_preserved": true,
+  "surface_texture": "CT-intensity shading on the registered segmented isosurface; qualitative visualization, not calibrated roughness measurement",
   "target_gap_fraction": 0.40707964601769914,
   "target_label": "broken",
   "target_strut_id": 12958,

@@ -3,6 +3,7 @@
 from .analysis import DISPLAY_COLORS, RuleSettings, analyze_sample, analyze_strut
 from .scene import build_lattice_scene, load_lattice_scene, save_lattice_scene
 from .config import DEFAULT_CONFIG, DefectConfig
+from .slice_evidence import get_strut_slice_evidence
 
 __all__ = [
     "DEFAULT_CONFIG",
@@ -12,6 +13,7 @@ __all__ = [
     "analyze_sample",
     "analyze_strut",
     "build_lattice_scene",
+    "get_strut_slice_evidence",
     "load_lattice_scene",
     "save_lattice_scene",
 ]

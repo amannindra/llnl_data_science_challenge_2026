@@ -16,6 +16,7 @@ from defect_cartographer.dashboard.figures import (
     class_count_figure,
     lattice_3d_figure,
 )
+from defect_cartographer.dashboard.pages import UNIT_CELL_EXAMPLES
 
 
 def test_dashboard_data_filters_without_mutation() -> None:
@@ -55,6 +56,15 @@ def test_dashboard_figures_use_consistent_candidate_colors() -> None:
     }
 
 
+def test_dashboard_declares_four_traceable_unit_cell_examples() -> None:
+    assert UNIT_CELL_EXAMPLES == {
+        "Broken": ("broken", 521, 12958),
+        "Missing": ("missing", 646, 16082),
+        "Thin": ("thin", 605, 15040),
+        "Intact": ("intact", 362, 9000),
+    }
+
+
 def test_streamlit_overview_renders_without_exception() -> None:
     app_path = Path(__file__).resolve().parents[1] / "app.py"
     app = AppTest.from_file(str(app_path), default_timeout=20).run()
@@ -62,6 +72,11 @@ def test_streamlit_overview_renders_without_exception() -> None:
     assert not app.exception
     assert app.title[0].value == "Lattice CT Explorer"
     assert len(app.metric) >= 5
+    assert any(
+        "Haseeb Ahmad · Ulices Ramirez · Anthony Ching · Aman Nindra"
+        in markdown.value
+        for markdown in app.markdown
+    )
     assets = app_path.parent / "assets" / "branding"
     assert (assets / "dsc-logo.png").stat().st_size > 0
     assert (assets / "llnl-logo.webp").stat().st_size > 0

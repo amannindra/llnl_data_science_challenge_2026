@@ -7,6 +7,7 @@
 - Alignment gate passed: **True**
 - Sampled expected struts: **60** of 18,468
 - Axis mapping: `JSON (x,y,z) -> CT array (z,y,x)`
+- Provisional rule version: `rules-v2-missing-0.10`
 - Residual correction: none; registered coordinates already include specimen tilt.
 
 ## Alignment evidence
@@ -48,7 +49,7 @@
 
 | Candidate | Automated rule | Interpretation |
 |---|---|---|
-| Missing | occupancy ≤ `0.25` | Little or no CT material follows the expected strut. |
+| Missing | occupancy ≤ `0.10` at all three tested thresholds | Almost no CT material follows the expected strut. |
 | Broken | occupancy ≤ `0.85` and gap fraction ≥ `0.15` | Some material exists, but a long internal interruption is present. |
 | Uncertain | alignment error > `3.0` voxels or threshold stability < `0.667` | The geometry or segmentation is not stable enough for a stronger label. |
 | Thin | valid interior intact measurement and diameter is at or below the sample-derived lower-tail cutoff | Supported material is unusually narrow relative to this exploratory sample. |
@@ -70,7 +71,7 @@ The CSV confidence value is an **uncalibrated rule-strength score**, not a proba
 
 - Classification coverage: `95.0%`
 - Median threshold stability: `100.0%`
-- Mean processing time: `0.105` seconds/strut
+- Mean processing time: `0.054` seconds/strut
 
 These are automated exploratory classifications and continuous measurements.
 
@@ -108,7 +109,7 @@ The JSON files can be opened directly in Cursor. The CSV is easiest to inspect w
 - The JSON describes nominal expected struts and contains no defect labels.
 - Intentional versus manufacturing-caused missing struts cannot be inferred.
 - Candidate percentages are not defect prevalence estimates for the full part.
-- The provisional 25% occupancy, 15% gap, and related rule boundaries were not supplied by the instructors and have not been scientifically calibrated.
+- The provisional 10% all-threshold missing boundary, 15% gap boundary, and related rules were not supplied by the instructors and have not been scientifically calibrated.
 - Thin classification remains exploratory until experts define or validate a criterion.
 - The configured 350 µm design reference is unconfirmed; recent literature on a related specimen family reports 424 µm, so the applicable CAD revision must be checked before final thickness conclusions.
 - Use the automated alignment, stability, coverage, runtime, and uncertainty evidence to decide whether the method is suitable for scaling.
