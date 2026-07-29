@@ -15,7 +15,9 @@ def skeletonize_mask(file_path, output_path):
         return
 
     print(f"Loading mask from {file_path}...")
-    mask = np.load(file_path)
+    # Keep large source masks disk-backed until conversion to the boolean input
+    # required by skimage. This avoids an unnecessary full uint8 resident copy.
+    mask = np.load(file_path, mmap_mode="r", allow_pickle=False)
     print(f"Original mask shape: {mask.shape}")
     
     # Ensure the mask is boolean
