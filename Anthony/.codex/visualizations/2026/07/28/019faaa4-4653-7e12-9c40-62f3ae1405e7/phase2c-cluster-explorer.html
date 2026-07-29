@@ -1,0 +1,821 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Phase 2C Defect Cluster Explorer</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --background: #ffffff;
+      --foreground: #172033;
+      --card: #f7f8fb;
+      --card-foreground: #172033;
+      --muted-foreground: #657083;
+      --border: #d7dce5;
+      --input: #c9d0dc;
+      --viz-series-1: #2563eb;
+      --viz-series-2: #d97706;
+      --viz-series-3: #059669;
+      --viz-series-4: #dc2626;
+      --viz-series-5: #7c3aed;
+      --viz-series-6: #0891b2;
+      --font-size-base: 16px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #111827;
+        --foreground: #e5e7eb;
+        --card: #182132;
+        --card-foreground: #e5e7eb;
+        --muted-foreground: #aab3c2;
+        --border: #374151;
+        --input: #4b5563;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 20px;
+      background: var(--background);
+      color: var(--foreground);
+      font: 400 var(--font-size-base)/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .viz-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      gap: 12px;
+    }
+    .form-label {
+      display: grid;
+      gap: 5px;
+      min-width: 150px;
+      font-weight: 500;
+    }
+    .form-select, .btn {
+      min-height: 38px;
+      border: 1px solid var(--input);
+      border-radius: 7px;
+      padding: 7px 10px;
+      background: var(--background);
+      color: var(--foreground);
+      font: inherit;
+    }
+    .btn { cursor: pointer; }
+    .btn-ghost { border-color: transparent; }
+    .card {
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--card);
+      color: var(--card-foreground);
+    }
+    .table-responsive { overflow-x: auto; }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    .table th, .table td {
+      padding: 8px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+    .table .text-end { text-align: right; }
+    .text-small { font-size: 0.82em; }
+    .text-muted { color: var(--muted-foreground); }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+<div id="phase2c-cluster-explorer">
+  <div class="viz-controls" aria-label="Cluster visualization controls">
+    <label class="form-label" for="p2c-color-mode">
+      Color by
+      <select class="form-select" id="p2c-color-mode">
+        <option value="dbscan">DBSCAN cluster (4.56 mm)</option>
+        <option value="graph">Graph cluster</option>
+        <option value="defect">Defect class</option>
+      </select>
+    </label>
+    <label class="form-label" for="p2c-knn-k" hidden>
+      K neighbors
+      <select class="form-select" id="p2c-knn-k">
+        <option value="1">1</option>
+        <option value="3" selected>3</option>
+        <option value="5">5</option>
+        <option value="10">10</option>
+      </select>
+    </label>
+    <label class="form-label" for="p2c-knn-target" hidden>
+      KNN target
+      <select class="form-select" id="p2c-knn-target">
+        <option value="present" selected>Present</option>
+        <option value="unintentional_missing">Unintentional missing</option>
+        <option value="unintentional_broken">Unintentional broken</option>
+        <option value="intentional_missing">Intentional missing</option>
+      </select>
+    </label>
+    <label class="form-label" for="p2c-knn-links" hidden>
+      Neighbor links
+      <select class="form-select" id="p2c-knn-links">
+        <option value="selected" selected>Selected strut</option>
+        <option value="mutual">Mutual KNN</option>
+        <option value="off">Off</option>
+      </select>
+    </label>
+    <label class="form-label" for="p2c-cluster-filter">
+      Show
+      <select class="form-select" id="p2c-cluster-filter"></select>
+    </label>
+    <button class="btn" id="p2c-reset-view" type="button">Reset view</button>
+  </div>
+
+  <div class="p2c-plot-wrap">
+    <canvas id="p2c-cluster-canvas" role="img" aria-label="Interactive three-dimensional view of 228 Phase 2C candidate struts"></canvas>
+    <div class="p2c-plot-note text-small text-muted">Drag to rotate · scroll to zoom · click a strut</div>
+  </div>
+
+  <div id="p2c-legend" class="p2c-legend" aria-label="Color legend"></div>
+
+  <div id="p2c-selection" class="card p2c-selection" aria-live="polite">
+    <span class="text-muted">Selected strut</span>
+    <span id="p2c-selection-value">Click a strut or choose a cluster below.</span>
+    <span class="text-small text-muted" id="p2c-knn-detail"></span>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th scope="col" id="p2c-category-heading">DBSCAN cluster</th>
+          <th scope="col" class="text-end">Struts</th>
+          <th scope="col" class="text-end">Share</th>
+        </tr>
+      </thead>
+      <tbody id="p2c-cluster-table"></tbody>
+    </table>
+  </div>
+
+  <div class="table-responsive" id="p2c-knn-comparison" hidden>
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th scope="col">Direction</th>
+          <th scope="col" class="text-end">Observed</th>
+          <th scope="col" class="text-end">Stratified null</th>
+          <th scope="col" class="text-end">Attraction q</th>
+          <th scope="col" class="text-end">Avoidance q</th>
+        </tr>
+      </thead>
+      <tbody id="p2c-knn-comparison-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+  #phase2c-cluster-explorer {
+    width: 100%;
+    color: var(--foreground);
+  }
+  #phase2c-cluster-explorer .p2c-plot-wrap {
+    position: relative;
+    width: 100%;
+    margin-top: 12px;
+  }
+  #phase2c-cluster-explorer canvas {
+    display: block;
+    width: 100%;
+    height: 500px;
+    touch-action: none;
+    cursor: grab;
+  }
+  #phase2c-cluster-explorer canvas:active {
+    cursor: grabbing;
+  }
+  #phase2c-cluster-explorer .p2c-plot-note {
+    position: absolute;
+    left: 8px;
+    bottom: 4px;
+    pointer-events: none;
+  }
+  #phase2c-cluster-explorer .p2c-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    align-items: center;
+    margin: 10px 0;
+  }
+  #phase2c-cluster-explorer .p2c-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+  #phase2c-cluster-explorer .p2c-swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex: 0 0 auto;
+  }
+  #phase2c-cluster-explorer .p2c-selection {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    align-items: baseline;
+    margin: 10px 0;
+  }
+  #phase2c-cluster-explorer #p2c-knn-detail {
+    flex-basis: 100%;
+  }
+  #phase2c-cluster-explorer .p2c-cluster-button {
+    min-width: 72px;
+    justify-content: flex-start;
+  }
+  @media (max-width: 520px) {
+    #phase2c-cluster-explorer canvas {
+      height: 390px;
+    }
+  }
+</style>
+
+<script>
+(() => {
+  const root = document.getElementById("phase2c-cluster-explorer");
+  if (!root) return;
+
+  const DATA = [["E_N000251_N000361","broken","G0001","D0001",[36.48,11.4,2.28],[38.76,9.12,2.28],"XY","edge"],["E_N000358_N001495","broken","G0002","D0001",[36.48,11.4,6.84],[34.2,11.4,4.56],"XZ","interior"],["E_N000361_N000363","broken","G0001","D0001",[36.48,11.4,2.28],[34.2,13.68,2.28],"XY","face"],["E_N001010_N001021","missing","G0003","D0002",[4.56,41.04,0],[2.28,41.04,2.28],"XZ","corner"],["E_N001010_N001035","missing","G0003","D0002",[4.56,41.04,0],[6.84,41.04,2.28],"XZ","edge"],["E_N001011_N001021","missing","G0003","D0002",[0,41.04,0],[2.28,41.04,2.28],"XZ","corner"],["E_N001012_N001016","missing","G0003","D0002",[0,41.04,4.56],[2.28,38.76,4.56],"XY","corner"],["E_N001012_N001021","missing","G0003","D0002",[0,41.04,4.56],[2.28,41.04,2.28],"XZ","corner"],["E_N001012_N002152","missing","G0003","D0002",[0,41.04,4.56],[0,38.76,6.84],"YZ","edge"],["E_N001012_N002155","missing","G0003","D0002",[0,41.04,4.56],[2.28,41.04,6.84],"XZ","edge"],["E_N001015_N001021","missing","G0003","D0002",[4.56,41.04,4.56],[2.28,41.04,2.28],"XZ","corner"],["E_N001015_N001035","missing","G0003","D0002",[4.56,41.04,4.56],[6.84,41.04,2.28],"XZ","edge"],["E_N001015_N002155","missing","G0003","D0002",[4.56,41.04,4.56],[2.28,41.04,6.84],"XZ","edge"],["E_N001015_N002169","missing","G0003","D0002",[4.56,41.04,4.56],[6.84,41.04,6.84],"XZ","face"],["E_N001024_N001035","missing","G0003","D0002",[9.12,41.04,0],[6.84,41.04,2.28],"XZ","edge"],["E_N001024_N001049","missing","G0003","D0002",[9.12,41.04,0],[11.4,41.04,2.28],"XZ","edge"],["E_N001029_N001035","missing","G0003","D0002",[9.12,41.04,4.56],[6.84,41.04,2.28],"XZ","edge"],["E_N001029_N001049","missing","G0003","D0002",[9.12,41.04,4.56],[11.4,41.04,2.28],"XZ","edge"],["E_N001029_N002169","missing","G0003","D0002",[9.12,41.04,4.56],[6.84,41.04,6.84],"XZ","face"],["E_N001029_N002183","missing","G0003","D0002",[9.12,41.04,4.56],[11.4,41.04,6.84],"XZ","face"],["E_N001038_N001049","missing","G0003","D0002",[13.68,41.04,0],[11.4,41.04,2.28],"XZ","edge"],["E_N001038_N001063","missing","G0003","D0002",[13.68,41.04,0],[15.96,41.04,2.28],"XZ","edge"],["E_N001043_N001049","missing","G0003","D0002",[13.68,41.04,4.56],[11.4,41.04,2.28],"XZ","edge"],["E_N001043_N001063","missing","G0003","D0002",[13.68,41.04,4.56],[15.96,41.04,2.28],"XZ","edge"],["E_N001043_N002183","missing","G0003","D0002",[13.68,41.04,4.56],[11.4,41.04,6.84],"XZ","face"],["E_N001043_N002197","missing","G0003","D0002",[13.68,41.04,4.56],[15.96,41.04,6.84],"XZ","face"],["E_N001057_N001063","missing","G0003","D0002",[18.24,41.04,4.56],[15.96,41.04,2.28],"XZ","edge"],["E_N001057_N001077","missing","G0003","D0002",[18.24,41.04,4.56],[20.52,41.04,2.28],"XZ","edge"],["E_N001057_N002197","missing","G0003","D0002",[18.24,41.04,4.56],[15.96,41.04,6.84],"XZ","face"],["E_N001057_N002211","missing","G0003","D0002",[18.24,41.04,4.56],[20.52,41.04,6.84],"XZ","face"],["E_N001071_N001077","missing","G0003","D0002",[22.8,41.04,4.56],[20.52,41.04,2.28],"XZ","edge"],["E_N001071_N001091","missing","G0003","D0002",[22.8,41.04,4.56],[25.08,41.04,2.28],"XZ","edge"],["E_N001071_N002211","missing","G0003","D0002",[22.8,41.04,4.56],[20.52,41.04,6.84],"XZ","face"],["E_N001085_N002225","missing","G0003","D0002",[27.36,41.04,4.56],[25.08,41.04,6.84],"XZ","face"],["E_N001365_N001380","missing","G0004","D0001",[36.48,9.12,9.12],[38.76,6.84,9.12],"XY","face"],["E_N001379_N001506","missing","G0005","D0001",[41.04,9.12,9.12],[38.76,11.4,9.12],"XY","face"],["E_N001491_N001506","missing","G0005","D0001",[36.48,13.68,9.12],[38.76,11.4,9.12],"XY","face"],["E_N002146_N002155","missing","G0003","D0002",[0,41.04,9.12],[2.28,41.04,6.84],"XZ","edge"],["E_N002146_N003289","missing","G0003","D0002",[0,41.04,9.12],[2.28,41.04,11.4],"XZ","edge"],["E_N002149_N002155","missing","G0003","D0002",[4.56,41.04,9.12],[2.28,41.04,6.84],"XZ","edge"],["E_N002149_N002169","missing","G0003","D0002",[4.56,41.04,9.12],[6.84,41.04,6.84],"XZ","face"],["E_N002149_N003289","missing","G0003","D0002",[4.56,41.04,9.12],[2.28,41.04,11.4],"XZ","edge"],["E_N002149_N003303","missing","G0003","D0002",[4.56,41.04,9.12],[6.84,41.04,11.4],"XZ","face"],["E_N002163_N002169","missing","G0003","D0002",[9.12,41.04,9.12],[6.84,41.04,6.84],"XZ","face"],["E_N002163_N002183","missing","G0003","D0002",[9.12,41.04,9.12],[11.4,41.04,6.84],"XZ","face"],["E_N002163_N003303","missing","G0003","D0002",[9.12,41.04,9.12],[6.84,41.04,11.4],"XZ","face"],["E_N002163_N003317","missing","G0003","D0002",[9.12,41.04,9.12],[11.4,41.04,11.4],"XZ","face"],["E_N002177_N002183","missing","G0003","D0002",[13.68,41.04,9.12],[11.4,41.04,6.84],"XZ","face"],["E_N002177_N002197","missing","G0003","D0002",[13.68,41.04,9.12],[15.96,41.04,6.84],"XZ","face"],["E_N002177_N003317","missing","G0003","D0002",[13.68,41.04,9.12],[11.4,41.04,11.4],"XZ","face"],["E_N002177_N003331","missing","G0003","D0002",[13.68,41.04,9.12],[15.96,41.04,11.4],"XZ","face"],["E_N002191_N002197","missing","G0003","D0002",[18.24,41.04,9.12],[15.96,41.04,6.84],"XZ","face"],["E_N002191_N002211","missing","G0003","D0002",[18.24,41.04,9.12],[20.52,41.04,6.84],"XZ","face"],["E_N002191_N003331","missing","G0003","D0002",[18.24,41.04,9.12],[15.96,41.04,11.4],"XZ","face"],["E_N002205_N002225","missing","G0003","D0002",[22.8,41.04,9.12],[25.08,41.04,6.84],"XZ","face"],["E_N002205_N003345","missing","G0003","D0002",[22.8,41.04,9.12],[20.52,41.04,11.4],"XZ","face"],["E_N002205_N003359","missing","G0003","D0002",[22.8,41.04,9.12],[25.08,41.04,11.4],"XZ","face"],["E_N002219_N003359","missing","G0003","D0002",[27.36,41.04,9.12],[25.08,41.04,11.4],"XZ","face"],["E_N003280_N003289","missing","G0003","D0002",[0,41.04,13.68],[2.28,41.04,11.4],"XZ","edge"],["E_N003280_N004423","missing","G0003","D0002",[0,41.04,13.68],[2.28,41.04,15.96],"XZ","edge"],["E_N003283_N003289","missing","G0003","D0002",[4.56,41.04,13.68],[2.28,41.04,11.4],"XZ","edge"],["E_N003283_N003303","missing","G0003","D0002",[4.56,41.04,13.68],[6.84,41.04,11.4],"XZ","face"],["E_N003283_N004423","missing","G0003","D0002",[4.56,41.04,13.68],[2.28,41.04,15.96],"XZ","edge"],["E_N003283_N004437","missing","G0003","D0002",[4.56,41.04,13.68],[6.84,41.04,15.96],"XZ","face"],["E_N003297_N003303","missing","G0003","D0002",[9.12,41.04,13.68],[6.84,41.04,11.4],"XZ","face"],["E_N003297_N003317","missing","G0003","D0002",[9.12,41.04,13.68],[11.4,41.04,11.4],"XZ","face"],["E_N003297_N004437","missing","G0003","D0002",[9.12,41.04,13.68],[6.84,41.04,15.96],"XZ","face"],["E_N003297_N004451","missing","G0003","D0002",[9.12,41.04,13.68],[11.4,41.04,15.96],"XZ","face"],["E_N003311_N003317","missing","G0003","D0002",[13.68,41.04,13.68],[11.4,41.04,11.4],"XZ","face"],["E_N003311_N003331","missing","G0003","D0002",[13.68,41.04,13.68],[15.96,41.04,11.4],"XZ","face"],["E_N003311_N004451","missing","G0003","D0002",[13.68,41.04,13.68],[11.4,41.04,15.96],"XZ","face"],["E_N003311_N004465","missing","G0003","D0002",[13.68,41.04,13.68],[15.96,41.04,15.96],"XZ","face"],["E_N003325_N003331","missing","G0003","D0002",[18.24,41.04,13.68],[15.96,41.04,11.4],"XZ","face"],["E_N003325_N003345","missing","G0003","D0002",[18.24,41.04,13.68],[20.52,41.04,11.4],"XZ","face"],["E_N003325_N004465","missing","G0003","D0002",[18.24,41.04,13.68],[15.96,41.04,15.96],"XZ","face"],["E_N003325_N004479","missing","G0003","D0002",[18.24,41.04,13.68],[20.52,41.04,15.96],"XZ","face"],["E_N003339_N003345","missing","G0003","D0002",[22.8,41.04,13.68],[20.52,41.04,11.4],"XZ","face"],["E_N003339_N003359","missing","G0003","D0002",[22.8,41.04,13.68],[25.08,41.04,11.4],"XZ","face"],["E_N003339_N004479","missing","G0003","D0002",[22.8,41.04,13.68],[20.52,41.04,15.96],"XZ","face"],["E_N003353_N004493","missing","G0003","D0002",[27.36,41.04,13.68],[25.08,41.04,15.96],"XZ","face"],["E_N003436_N003452","missing","G0006","D0003",[13.68,0,18.24],[15.96,2.28,18.24],"XY","face"],["E_N003450_N003455","broken","G0007","D0003",[18.24,0,18.24],[18.24,2.28,15.96],"YZ","face"],["E_N003450_N003466","broken","G0007","D0003",[18.24,0,18.24],[20.52,2.28,18.24],"XY","face"],["E_N003450_N004589","missing","G0007","D0003",[18.24,0,18.24],[18.24,2.28,20.52],"YZ","face"],["E_N003452_N003456","broken","G0006","D0003",[15.96,0,15.96],[15.96,2.28,18.24],"YZ","face"],["E_N003466_N003471","broken","G0007","D0003",[20.52,4.56,15.96],[20.52,2.28,18.24],"YZ","face"],["E_N003466_N004589","broken","G0007","D0003",[18.24,2.28,20.52],[20.52,2.28,18.24],"XZ","face"],["E_N003511_N003526","missing","G0008",-1,[36.48,2.28,15.96],[38.76,0,15.96],"XY","edge"],["E_N004414_N004423","missing","G0003","D0002",[0,41.04,18.24],[2.28,41.04,15.96],"XZ","edge"],["E_N004414_N005557","missing","G0003","D0002",[0,41.04,18.24],[2.28,41.04,20.52],"XZ","edge"],["E_N004417_N004423","missing","G0003","D0002",[4.56,41.04,18.24],[2.28,41.04,15.96],"XZ","edge"],["E_N004417_N004437","missing","G0003","D0002",[4.56,41.04,18.24],[6.84,41.04,15.96],"XZ","face"],["E_N004417_N005557","missing","G0003","D0002",[4.56,41.04,18.24],[2.28,41.04,20.52],"XZ","edge"],["E_N004417_N005571","missing","G0003","D0002",[4.56,41.04,18.24],[6.84,41.04,20.52],"XZ","face"],["E_N004431_N004437","missing","G0003","D0002",[9.12,41.04,18.24],[6.84,41.04,15.96],"XZ","face"],["E_N004431_N004451","missing","G0003","D0002",[9.12,41.04,18.24],[11.4,41.04,15.96],"XZ","face"],["E_N004431_N005571","missing","G0003","D0002",[9.12,41.04,18.24],[6.84,41.04,20.52],"XZ","face"],["E_N004431_N005585","missing","G0003","D0002",[9.12,41.04,18.24],[11.4,41.04,20.52],"XZ","face"],["E_N004445_N004451","missing","G0003","D0002",[13.68,41.04,18.24],[11.4,41.04,15.96],"XZ","face"],["E_N004445_N004465","missing","G0003","D0002",[13.68,41.04,18.24],[15.96,41.04,15.96],"XZ","face"],["E_N004445_N005585","missing","G0003","D0002",[13.68,41.04,18.24],[11.4,41.04,20.52],"XZ","face"],["E_N004445_N005599","missing","G0003","D0002",[13.68,41.04,18.24],[15.96,41.04,20.52],"XZ","face"],["E_N004459_N004465","missing","G0003","D0002",[18.24,41.04,18.24],[15.96,41.04,15.96],"XZ","face"],["E_N004459_N004479","missing","G0003","D0002",[18.24,41.04,18.24],[20.52,41.04,15.96],"XZ","face"],["E_N004459_N005599","missing","G0003","D0002",[18.24,41.04,18.24],[15.96,41.04,20.52],"XZ","face"],["E_N004459_N005613","missing","G0003","D0002",[18.24,41.04,18.24],[20.52,41.04,20.52],"XZ","face"],["E_N004473_N004479","missing","G0003","D0002",[22.8,41.04,18.24],[20.52,41.04,15.96],"XZ","face"],["E_N004473_N004493","missing","G0003","D0002",[22.8,41.04,18.24],[25.08,41.04,15.96],"XZ","face"],["E_N004473_N005613","missing","G0003","D0002",[22.8,41.04,18.24],[20.52,41.04,20.52],"XZ","face"],["E_N004473_N005627","missing","G0003","D0002",[22.8,41.04,18.24],[25.08,41.04,20.52],"XZ","face"],["E_N004584_N004604","broken","G0009","D0003",[18.24,0,22.8],[20.52,0,20.52],"XZ","face"],["E_N005369_N005375","broken","G0010",-1,[27.36,31.92,22.8],[25.08,31.92,20.52],"XZ","interior"],["E_N005471_N005482","broken","G0011",-1,[18.24,34.2,20.52],[20.52,34.2,22.8],"XZ","interior"],["E_N005548_N005557","missing","G0003","D0002",[0,41.04,22.8],[2.28,41.04,20.52],"XZ","edge"],["E_N005548_N006691","missing","G0003","D0002",[0,41.04,22.8],[2.28,41.04,25.08],"XZ","edge"],["E_N005551_N005557","missing","G0003","D0002",[4.56,41.04,22.8],[2.28,41.04,20.52],"XZ","edge"],["E_N005551_N005571","missing","G0003","D0002",[4.56,41.04,22.8],[6.84,41.04,20.52],"XZ","face"],["E_N005551_N006691","missing","G0003","D0002",[4.56,41.04,22.8],[2.28,41.04,25.08],"XZ","edge"],["E_N005551_N006705","missing","G0003","D0002",[4.56,41.04,22.8],[6.84,41.04,25.08],"XZ","face"],["E_N005565_N005571","missing","G0003","D0002",[9.12,41.04,22.8],[6.84,41.04,20.52],"XZ","face"],["E_N005565_N005585","missing","G0003","D0002",[9.12,41.04,22.8],[11.4,41.04,20.52],"XZ","face"],["E_N005565_N006705","missing","G0003","D0002",[9.12,41.04,22.8],[6.84,41.04,25.08],"XZ","face"],["E_N005565_N006719","missing","G0003","D0002",[9.12,41.04,22.8],[11.4,41.04,25.08],"XZ","face"],["E_N005579_N005585","missing","G0003","D0002",[13.68,41.04,22.8],[11.4,41.04,20.52],"XZ","face"],["E_N005579_N005599","missing","G0003","D0002",[13.68,41.04,22.8],[15.96,41.04,20.52],"XZ","face"],["E_N005579_N006719","missing","G0003","D0002",[13.68,41.04,22.8],[11.4,41.04,25.08],"XZ","face"],["E_N005579_N006733","missing","G0003","D0002",[13.68,41.04,22.8],[15.96,41.04,25.08],"XZ","face"],["E_N005593_N005599","missing","G0003","D0002",[18.24,41.04,22.8],[15.96,41.04,20.52],"XZ","face"],["E_N005593_N005613","missing","G0003","D0002",[18.24,41.04,22.8],[20.52,41.04,20.52],"XZ","face"],["E_N005593_N006733","missing","G0003","D0002",[18.24,41.04,22.8],[15.96,41.04,25.08],"XZ","face"],["E_N005593_N006747","missing","G0003","D0002",[18.24,41.04,22.8],[20.52,41.04,25.08],"XZ","face"],["E_N005607_N005613","missing","G0003","D0002",[22.8,41.04,22.8],[20.52,41.04,20.52],"XZ","face"],["E_N005607_N005627","missing","G0003","D0002",[22.8,41.04,22.8],[25.08,41.04,20.52],"XZ","face"],["E_N005607_N006747","missing","G0003","D0002",[22.8,41.04,22.8],[20.52,41.04,25.08],"XZ","face"],["E_N005607_N006761","missing","G0003","D0002",[22.8,41.04,22.8],[25.08,41.04,25.08],"XZ","face"],["E_N005621_N005627","missing","G0003","D0002",[27.36,41.04,22.8],[25.08,41.04,20.52],"XZ","face"],["E_N005621_N006761","missing","G0003","D0002",[27.36,41.04,22.8],[25.08,41.04,25.08],"XZ","face"],["E_N006559_N007697","missing","G0012",-1,[4.56,36.48,27.36],[4.56,34.2,29.64],"YZ","face"],["E_N006682_N006691","missing","G0003","D0002",[0,41.04,27.36],[2.28,41.04,25.08],"XZ","edge"],["E_N006682_N007825","missing","G0003","D0002",[0,41.04,27.36],[2.28,41.04,29.64],"XZ","edge"],["E_N006685_N006691","missing","G0003","D0002",[4.56,41.04,27.36],[2.28,41.04,25.08],"XZ","edge"],["E_N006685_N006705","missing","G0003","D0002",[4.56,41.04,27.36],[6.84,41.04,25.08],"XZ","face"],["E_N006685_N007825","missing","G0003","D0002",[4.56,41.04,27.36],[2.28,41.04,29.64],"XZ","edge"],["E_N006685_N007839","missing","G0003","D0002",[4.56,41.04,27.36],[6.84,41.04,29.64],"XZ","face"],["E_N006699_N006705","missing","G0003","D0002",[9.12,41.04,27.36],[6.84,41.04,25.08],"XZ","face"],["E_N006699_N006719","missing","G0003","D0002",[9.12,41.04,27.36],[11.4,41.04,25.08],"XZ","face"],["E_N006699_N007839","missing","G0003","D0002",[9.12,41.04,27.36],[6.84,41.04,29.64],"XZ","face"],["E_N006699_N007853","missing","G0003","D0002",[9.12,41.04,27.36],[11.4,41.04,29.64],"XZ","face"],["E_N006713_N006719","missing","G0003","D0002",[13.68,41.04,27.36],[11.4,41.04,25.08],"XZ","face"],["E_N006713_N006733","missing","G0003","D0002",[13.68,41.04,27.36],[15.96,41.04,25.08],"XZ","face"],["E_N006713_N007853","missing","G0003","D0002",[13.68,41.04,27.36],[11.4,41.04,29.64],"XZ","face"],["E_N006713_N007867","missing","G0003","D0002",[13.68,41.04,27.36],[15.96,41.04,29.64],"XZ","face"],["E_N006727_N006733","missing","G0003","D0002",[18.24,41.04,27.36],[15.96,41.04,25.08],"XZ","face"],["E_N006727_N006747","missing","G0003","D0002",[18.24,41.04,27.36],[20.52,41.04,25.08],"XZ","face"],["E_N006727_N007867","missing","G0003","D0002",[18.24,41.04,27.36],[15.96,41.04,29.64],"XZ","face"],["E_N006727_N007881","missing","G0003","D0002",[18.24,41.04,27.36],[20.52,41.04,29.64],"XZ","face"],["E_N006741_N006747","missing","G0003","D0002",[22.8,41.04,27.36],[20.52,41.04,25.08],"XZ","face"],["E_N006741_N006761","missing","G0003","D0002",[22.8,41.04,27.36],[25.08,41.04,25.08],"XZ","face"],["E_N006741_N007881","missing","G0003","D0002",[22.8,41.04,27.36],[20.52,41.04,29.64],"XZ","face"],["E_N006741_N007895","missing","G0003","D0002",[22.8,41.04,27.36],[25.08,41.04,29.64],"XZ","face"],["E_N006755_N006761","missing","G0003","D0002",[27.36,41.04,27.36],[25.08,41.04,25.08],"XZ","face"],["E_N006755_N007895","missing","G0003","D0002",[27.36,41.04,27.36],[25.08,41.04,29.64],"XZ","face"],["E_N007816_N007825","missing","G0003","D0002",[0,41.04,31.92],[2.28,41.04,29.64],"XZ","edge"],["E_N007816_N008959","missing","G0003","D0002",[0,41.04,31.92],[2.28,41.04,34.2],"XZ","edge"],["E_N007819_N007825","missing","G0003","D0002",[4.56,41.04,31.92],[2.28,41.04,29.64],"XZ","edge"],["E_N007819_N007839","missing","G0003","D0002",[4.56,41.04,31.92],[6.84,41.04,29.64],"XZ","face"],["E_N007819_N008959","missing","G0003","D0002",[4.56,41.04,31.92],[2.28,41.04,34.2],"XZ","edge"],["E_N007819_N008973","missing","G0003","D0002",[4.56,41.04,31.92],[6.84,41.04,34.2],"XZ","face"],["E_N007833_N007839","missing","G0003","D0002",[9.12,41.04,31.92],[6.84,41.04,29.64],"XZ","face"],["E_N007833_N007853","missing","G0003","D0002",[9.12,41.04,31.92],[11.4,41.04,29.64],"XZ","face"],["E_N007833_N008973","missing","G0003","D0002",[9.12,41.04,31.92],[6.84,41.04,34.2],"XZ","face"],["E_N007833_N008987","missing","G0003","D0002",[9.12,41.04,31.92],[11.4,41.04,34.2],"XZ","face"],["E_N007847_N007853","missing","G0003","D0002",[13.68,41.04,31.92],[11.4,41.04,29.64],"XZ","face"],["E_N007847_N007867","missing","G0003","D0002",[13.68,41.04,31.92],[15.96,41.04,29.64],"XZ","face"],["E_N007847_N008987","missing","G0003","D0002",[13.68,41.04,31.92],[11.4,41.04,34.2],"XZ","face"],["E_N007847_N009001","missing","G0003","D0002",[13.68,41.04,31.92],[15.96,41.04,34.2],"XZ","face"],["E_N007861_N007867","missing","G0003","D0002",[18.24,41.04,31.92],[15.96,41.04,29.64],"XZ","face"],["E_N007861_N007881","missing","G0003","D0002",[18.24,41.04,31.92],[20.52,41.04,29.64],"XZ","face"],["E_N007861_N009001","missing","G0003","D0002",[18.24,41.04,31.92],[15.96,41.04,34.2],"XZ","face"],["E_N007861_N009015","missing","G0003","D0002",[18.24,41.04,31.92],[20.52,41.04,34.2],"XZ","face"],["E_N007875_N007881","missing","G0003","D0002",[22.8,41.04,31.92],[20.52,41.04,29.64],"XZ","face"],["E_N007875_N007895","missing","G0003","D0002",[22.8,41.04,31.92],[25.08,41.04,29.64],"XZ","face"],["E_N007875_N009015","missing","G0003","D0002",[22.8,41.04,31.92],[20.52,41.04,34.2],"XZ","face"],["E_N007875_N009029","missing","G0003","D0002",[22.8,41.04,31.92],[25.08,41.04,34.2],"XZ","face"],["E_N007889_N007895","missing","G0003","D0002",[27.36,41.04,31.92],[25.08,41.04,29.64],"XZ","face"],["E_N007889_N009029","missing","G0003","D0002",[27.36,41.04,31.92],[25.08,41.04,34.2],"XZ","face"],["E_N008309_N008313","missing","G0013",-1,[41.04,13.68,36.48],[41.04,11.4,34.2],"YZ","face"],["E_N008950_N008959","missing","G0003","D0002",[0,41.04,36.48],[2.28,41.04,34.2],"XZ","edge"],["E_N008950_N010093","missing","G0003","D0002",[0,41.04,36.48],[2.28,41.04,38.76],"XZ","corner"],["E_N008953_N008959","missing","G0003","D0002",[4.56,41.04,36.48],[2.28,41.04,34.2],"XZ","edge"],["E_N008953_N008973","missing","G0003","D0002",[4.56,41.04,36.48],[6.84,41.04,34.2],"XZ","face"],["E_N008953_N010093","missing","G0003","D0002",[4.56,41.04,36.48],[2.28,41.04,38.76],"XZ","corner"],["E_N008953_N010107","missing","G0003","D0002",[4.56,41.04,36.48],[6.84,41.04,38.76],"XZ","edge"],["E_N008967_N008973","missing","G0003","D0002",[9.12,41.04,36.48],[6.84,41.04,34.2],"XZ","face"],["E_N008967_N008987","missing","G0003","D0002",[9.12,41.04,36.48],[11.4,41.04,34.2],"XZ","face"],["E_N008967_N010105","broken","G0003","D0002",[9.12,41.04,36.48],[9.12,38.76,38.76],"YZ","edge"],["E_N008967_N010107","missing","G0003","D0002",[9.12,41.04,36.48],[6.84,41.04,38.76],"XZ","edge"],["E_N008967_N010121","missing","G0003","D0002",[9.12,41.04,36.48],[11.4,41.04,38.76],"XZ","edge"],["E_N008981_N008987","missing","G0003","D0002",[13.68,41.04,36.48],[11.4,41.04,34.2],"XZ","face"],["E_N008981_N009001","missing","G0003","D0002",[13.68,41.04,36.48],[15.96,41.04,34.2],"XZ","face"],["E_N008981_N010121","missing","G0003","D0002",[13.68,41.04,36.48],[11.4,41.04,38.76],"XZ","edge"],["E_N008981_N010135","missing","G0003","D0002",[13.68,41.04,36.48],[15.96,41.04,38.76],"XZ","edge"],["E_N008995_N008996","missing","G0003","D0002",[18.24,41.04,36.48],[15.96,38.76,36.48],"XY","edge"],["E_N008995_N009001","missing","G0003","D0002",[18.24,41.04,36.48],[15.96,41.04,34.2],"XZ","face"],["E_N008995_N009015","missing","G0003","D0002",[18.24,41.04,36.48],[20.52,41.04,34.2],"XZ","face"],["E_N008995_N010135","missing","G0003","D0002",[18.24,41.04,36.48],[15.96,41.04,38.76],"XZ","edge"],["E_N008995_N010149","missing","G0003","D0002",[18.24,41.04,36.48],[20.52,41.04,38.76],"XZ","edge"],["E_N009009_N009015","missing","G0003","D0002",[22.8,41.04,36.48],[20.52,41.04,34.2],"XZ","face"],["E_N009009_N009029","missing","G0003","D0002",[22.8,41.04,36.48],[25.08,41.04,34.2],"XZ","face"],["E_N009009_N010149","missing","G0003","D0002",[22.8,41.04,36.48],[20.52,41.04,38.76],"XZ","edge"],["E_N009009_N010163","missing","G0003","D0002",[22.8,41.04,36.48],[25.08,41.04,38.76],"XZ","edge"],["E_N009023_N009029","missing","G0003","D0002",[27.36,41.04,36.48],[25.08,41.04,34.2],"XZ","face"],["E_N009023_N010163","missing","G0003","D0002",[27.36,41.04,36.48],[25.08,41.04,38.76],"XZ","edge"],["E_N009317_N009321","missing","G0014","D0004",[41.04,9.12,41.04],[41.04,6.84,38.76],"YZ","edge"],["E_N009443_N009447","missing","G0015","D0004",[41.04,13.68,41.04],[41.04,11.4,38.76],"YZ","edge"],["E_N010084_N010093","missing","G0003","D0002",[0,41.04,41.04],[2.28,41.04,38.76],"XZ","corner"],["E_N010087_N010093","missing","G0003","D0002",[4.56,41.04,41.04],[2.28,41.04,38.76],"XZ","corner"],["E_N010087_N010107","missing","G0003","D0002",[4.56,41.04,41.04],[6.84,41.04,38.76],"XZ","edge"],["E_N010101_N010107","missing","G0003","D0002",[9.12,41.04,41.04],[6.84,41.04,38.76],"XZ","edge"],["E_N010101_N010121","missing","G0003","D0002",[9.12,41.04,41.04],[11.4,41.04,38.76],"XZ","edge"],["E_N010102_N010107","broken","G0003","D0002",[6.84,41.04,38.76],[6.84,38.76,41.04],"YZ","edge"],["E_N010115_N010121","missing","G0003","D0002",[13.68,41.04,41.04],[11.4,41.04,38.76],"XZ","edge"],["E_N010115_N010135","missing","G0003","D0002",[13.68,41.04,41.04],[15.96,41.04,38.76],"XZ","edge"],["E_N010129_N010135","missing","G0003","D0002",[18.24,41.04,41.04],[15.96,41.04,38.76],"XZ","edge"],["E_N010129_N010149","missing","G0003","D0002",[18.24,41.04,41.04],[20.52,41.04,38.76],"XZ","edge"],["E_N010143_N010149","missing","G0003","D0002",[22.8,41.04,41.04],[20.52,41.04,38.76],"XZ","edge"],["E_N010143_N010163","missing","G0003","D0002",[22.8,41.04,41.04],[25.08,41.04,38.76],"XZ","edge"],["E_N010157_N010163","missing","G0003","D0002",[27.36,41.04,41.04],[25.08,41.04,38.76],"XZ","edge"]];
+  const edges = DATA.map(row => ({
+    id: row[0],
+    defect: row[1],
+    graph: row[2],
+    dbscan: String(row[3]),
+    a: row[4],
+    b: row[5],
+    orientation: row[6],
+    region: row[7]
+  }));
+  const KNN_DATA = window.KNN_ALL_STRUT_DATA || {
+    edges: [],
+    neighbors: {},
+    association: [],
+    target_categories: []
+  };
+  const knnEdges = KNN_DATA.edges.map(row => ({
+    id: row[0],
+    category: row[1],
+    a: row[2],
+    b: row[3],
+    sourceClass: row[4]
+  }));
+  const knnEdgeById = new Map(knnEdges.map(edge => [edge.id, edge]));
+
+  const canvas = root.querySelector("#p2c-cluster-canvas");
+  const ctx = canvas.getContext("2d");
+  const modeSelect = root.querySelector("#p2c-color-mode");
+  const knnKSelect = root.querySelector("#p2c-knn-k");
+  const knnTargetSelect = root.querySelector("#p2c-knn-target");
+  const knnLinksSelect = root.querySelector("#p2c-knn-links");
+  const filterSelect = root.querySelector("#p2c-cluster-filter");
+  const legend = root.querySelector("#p2c-legend");
+  const tableBody = root.querySelector("#p2c-cluster-table");
+  const categoryHeading = root.querySelector("#p2c-category-heading");
+  const selectionValue = root.querySelector("#p2c-selection-value");
+  const knnDetail = root.querySelector("#p2c-knn-detail");
+  const knnComparison = root.querySelector("#p2c-knn-comparison");
+  const knnComparisonBody = root.querySelector("#p2c-knn-comparison-body");
+  const resetButton = root.querySelector("#p2c-reset-view");
+
+  const state = {
+    mode: "dbscan",
+    filter: "all",
+    yaw: -0.68,
+    pitch: 0.5,
+    zoom: 1,
+    k: 3,
+    knnTarget: "present",
+    knnLinks: "selected",
+    selected: null,
+    drag: null,
+    moved: false,
+    projected: []
+  };
+
+  const modeMeta = {
+    defect: { label: "Defect class", all: "All defect classes" },
+    graph: { label: "Graph cluster", all: "All graph clusters" },
+    dbscan: { label: "DBSCAN cluster", all: "All DBSCAN clusters" },
+    knn: { label: "KNN target-neighbor share", all: "All KNN shares" }
+  };
+
+  const seriesVars = [
+    "--viz-series-1",
+    "--viz-series-2",
+    "--viz-series-3",
+    "--viz-series-4",
+    "--viz-series-5",
+    "--viz-series-6"
+  ];
+
+  function midpoint(edge) {
+    return [
+      (edge.a[0] + edge.b[0]) / 2,
+      (edge.a[1] + edge.b[1]) / 2,
+      (edge.a[2] + edge.b[2]) / 2
+    ];
+  }
+
+  const neighborOrder = new Map();
+  Object.entries(KNN_DATA.neighbors).forEach(([sourceId, rows]) => {
+    neighborOrder.set(sourceId, rows.map(row => ({
+      edge: knnEdgeById.get(row[0]),
+      distance: row[1]
+    })).filter(item => item.edge));
+  });
+
+  function neighbors(edge, k = state.k) {
+    return (neighborOrder.get(edge.id) || []).slice(0, k);
+  }
+
+  function knnShare(edge) {
+    const selected = neighbors(edge);
+    return selected.filter(item => item.edge.category === state.knnTarget).length / state.k;
+  }
+
+  function knnBin(edge) {
+    const share = knnShare(edge);
+    if (share === 0) return "0%";
+    if (share <= 0.25) return "1–25%";
+    if (share <= 0.5) return "26–50%";
+    if (share <= 0.75) return "51–75%";
+    return "76–100%";
+  }
+
+  function mutualNeighbors() {
+    const pairs = [];
+    const seen = new Set();
+    edges.forEach(source => {
+      neighbors(source).forEach(item => {
+        const target = item.edge;
+        if (!neighbors(target).some(candidate => candidate.edge.id === source.id)) return;
+        const key = [source.id, target.id].sort().join("|");
+        if (seen.has(key)) return;
+        seen.add(key);
+        pairs.push([source, target]);
+      });
+    });
+    return pairs;
+  }
+
+  function category(edge) {
+    if (state.mode === "defect") return edge.defect;
+    if (state.mode === "graph") return edge.graph;
+    if (state.mode === "knn") return knnBin(edge);
+    return edge.dbscan;
+  }
+
+  function displayCategory(value) {
+    if (state.mode === "dbscan" && value === "-1") return "Noise (−1)";
+    if (state.mode === "defect") {
+      return value.charAt(0).toUpperCase() + value.slice(1);
+    }
+    return value;
+  }
+
+  function displayKnnCategory(value) {
+    if (value == null || value === "") return "Unresolved—not classified";
+    return value.replaceAll("_", " ").replace(/\b\w/g, letter => letter.toUpperCase());
+  }
+
+  function knnCategoryColorRef(value) {
+    return {
+      present: "--muted-foreground",
+      unintentional_missing: "--viz-series-1",
+      unintentional_broken: "--viz-series-2",
+      intentional_missing: "--viz-series-3"
+    }[value] || "--muted-foreground";
+  }
+
+  function categoryCounts() {
+    const counts = new Map();
+    edges.forEach(edge => counts.set(category(edge), (counts.get(category(edge)) || 0) + 1));
+    return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  }
+
+  function categoryColorRef(value, counts) {
+    if (state.mode === "dbscan" && value === "-1") return "--muted-foreground";
+    if (state.mode === "knn") {
+      return {
+        "0%": "--muted-foreground",
+        "1–25%": "--viz-series-1",
+        "26–50%": "--viz-series-2",
+        "51–75%": "--viz-series-3",
+        "76–100%": "--viz-series-4"
+      }[value];
+    }
+    const index = Math.max(0, counts.findIndex(item => item[0] === value));
+    return seriesVars[index % seriesVars.length];
+  }
+
+  function themeColor(variable) {
+    return getComputedStyle(root).getPropertyValue(variable).trim() || getComputedStyle(root).color;
+  }
+
+  function updateControls() {
+    const counts = categoryCounts();
+    const previous = state.filter;
+    filterSelect.replaceChildren();
+
+    const allOption = document.createElement("option");
+    allOption.value = "all";
+    allOption.textContent = `${modeMeta[state.mode].all} (${edges.length})`;
+    filterSelect.appendChild(allOption);
+
+    counts.forEach(([value, count]) => {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = `${displayCategory(value)} (${count})`;
+      filterSelect.appendChild(option);
+    });
+
+    state.filter = counts.some(([value]) => value === previous) ? previous : "all";
+    filterSelect.value = state.filter;
+    categoryHeading.textContent = modeMeta[state.mode].label;
+    const knnActive = state.mode === "knn";
+    knnKSelect.closest("label").hidden = !knnActive;
+    knnTargetSelect.closest("label").hidden = !knnActive;
+    knnLinksSelect.closest("label").hidden = !knnActive;
+    knnComparison.hidden = !knnActive;
+    updateLegend(counts);
+    updateTable(counts);
+    updateKnnComparison();
+  }
+
+  function updateKnnComparison() {
+    knnComparisonBody.replaceChildren();
+    if (state.mode !== "knn") return;
+    KNN_DATA.association
+      .filter(value => value.k === state.k && value.target === state.knnTarget)
+      .sort((left, right) => left.source.localeCompare(right.source))
+      .forEach(value => {
+      const row = document.createElement("tr");
+      const directionCell = document.createElement("td");
+      directionCell.textContent =
+        `${displayKnnCategory(value.source)} → ${displayKnnCategory(value.target)}`;
+      const observedCell = document.createElement("td");
+      observedCell.className = "text-end";
+      observedCell.textContent = `${(value.observed * 100).toFixed(2)}%`;
+      const nullCell = document.createElement("td");
+      nullCell.className = "text-end";
+      nullCell.textContent = `${(value.null_mean * 100).toFixed(2)}%`;
+      const attractionCell = document.createElement("td");
+      attractionCell.className = "text-end";
+      attractionCell.textContent = Number(value.attraction_q).toFixed(4);
+      const avoidanceCell = document.createElement("td");
+      avoidanceCell.className = "text-end";
+      avoidanceCell.textContent = Number(value.avoidance_q).toFixed(4);
+      row.append(
+        directionCell,
+        observedCell,
+        nullCell,
+        attractionCell,
+        avoidanceCell
+      );
+      knnComparisonBody.appendChild(row);
+    });
+  }
+
+  function updateLegend(counts) {
+    legend.replaceChildren();
+    counts.forEach(([value, count]) => {
+      const item = document.createElement("span");
+      item.className = "p2c-legend-item text-small";
+
+      const swatch = document.createElement("span");
+      swatch.className = "p2c-swatch";
+      swatch.style.background = `var(${categoryColorRef(value, counts)})`;
+      swatch.setAttribute("aria-hidden", "true");
+
+      const text = document.createElement("span");
+      text.textContent = `${displayCategory(value)} · ${count}`;
+      item.append(swatch, text);
+      legend.appendChild(item);
+    });
+  }
+
+  function updateTable(counts) {
+    tableBody.replaceChildren();
+    counts.forEach(([value, count]) => {
+      const row = document.createElement("tr");
+      const nameCell = document.createElement("td");
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "btn btn-ghost p2c-cluster-button";
+      button.textContent = displayCategory(value);
+      button.setAttribute("aria-pressed", String(state.filter === value));
+      button.addEventListener("click", () => {
+        state.filter = state.filter === value ? "all" : value;
+        filterSelect.value = state.filter;
+        state.selected = null;
+        updateSelection();
+        updateControls();
+        draw();
+      });
+      nameCell.appendChild(button);
+
+      const countCell = document.createElement("td");
+      countCell.className = "text-end";
+      countCell.textContent = String(count);
+
+      const shareCell = document.createElement("td");
+      shareCell.className = "text-end";
+      shareCell.textContent = `${(count / edges.length * 100).toFixed(1)}%`;
+      row.append(nameCell, countCell, shareCell);
+      tableBody.appendChild(row);
+    });
+  }
+
+  function updateSelection() {
+    if (!state.selected) {
+      const visible = state.filter === "all"
+        ? edges.length
+        : edges.filter(edge => category(edge) === state.filter).length;
+      selectionValue.textContent = `${visible} of ${edges.length} candidate struts visible.`;
+      knnDetail.textContent = state.mode === "knn"
+        ? "Select a strut to inspect its nearest candidate neighbors."
+        : "";
+      return;
+    }
+    const edge = state.selected;
+    selectionValue.textContent =
+      `${edge.id} · ${edge.defect} · ${edge.graph} · ${edge.dbscan === "-1" ? "DBSCAN noise" : edge.dbscan} · ${edge.orientation} · ${edge.region}`;
+    if (state.mode === "knn") {
+      const detail = neighbors(edge)
+        .map((item, index) =>
+          `${index + 1}. ${item.edge.id} (${displayKnnCategory(item.edge.category)}, ${item.distance.toFixed(2)} mm)`
+        )
+        .join(" · ");
+      const targetCount = neighbors(edge).filter(
+        item => item.edge.category === state.knnTarget
+      ).length;
+      knnDetail.textContent =
+        `${targetCount}/${state.k} ${displayKnnCategory(state.knnTarget)} neighbors (${(100 * targetCount / state.k).toFixed(1)}%) · ${detail}`;
+    } else {
+      knnDetail.textContent = "";
+    }
+  }
+
+  function rotated(point) {
+    const x = point[0] - 20.52;
+    const y = point[1] - 20.52;
+    const z = point[2] - 20.52;
+    const cy = Math.cos(state.yaw);
+    const sy = Math.sin(state.yaw);
+    const cp = Math.cos(state.pitch);
+    const sp = Math.sin(state.pitch);
+    const x1 = x * cy - z * sy;
+    const z1 = x * sy + z * cy;
+    const y1 = y * cp - z1 * sp;
+    const z2 = y * sp + z1 * cp;
+    return [x1, y1, z2];
+  }
+
+  function makeProjector(width, height) {
+    const scale = Math.min(width, height) / 68 * state.zoom;
+    const cx = width / 2;
+    const cy = height / 2 - 4;
+    return point => {
+      const rotatedPoint = rotated(point);
+      return [cx + rotatedPoint[0] * scale, cy - rotatedPoint[1] * scale, rotatedPoint[2]];
+    };
+  }
+
+  function drawSegment(a, b, color, width, alpha) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(a[0], a[1]);
+    ctx.lineTo(b[0], b[1]);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawBounds(project) {
+    const corners = [
+      [0,0,0], [41.04,0,0], [0,41.04,0], [41.04,41.04,0],
+      [0,0,41.04], [41.04,0,41.04], [0,41.04,41.04], [41.04,41.04,41.04]
+    ];
+    const links = [[0,1],[0,2],[0,4],[1,3],[1,5],[2,3],[2,6],[3,7],[4,5],[4,6],[5,7],[6,7]];
+    const projectedCorners = corners.map(project);
+    const border = themeColor("--border");
+    links.forEach(([a, b]) => drawSegment(projectedCorners[a], projectedCorners[b], border, 1, 0.8));
+
+    const origin = project([0,0,0]);
+    const axes = [
+      { end: project([8,0,0]), label: "X" },
+      { end: project([0,8,0]), label: "Y" },
+      { end: project([0,0,8]), label: "Z" }
+    ];
+    const foreground = themeColor("--muted-foreground");
+    ctx.save();
+    ctx.fillStyle = foreground;
+    ctx.strokeStyle = foreground;
+    ctx.font = getComputedStyle(root).font;
+    axes.forEach(axis => {
+      drawSegment(origin, axis.end, foreground, 1.5, 0.9);
+      ctx.fillText(axis.label, axis.end[0] + 4, axis.end[1] - 4);
+    });
+    ctx.restore();
+  }
+
+  function resizeCanvas() {
+    const rect = canvas.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const width = Math.max(320, rect.width);
+    const height = rect.height;
+    const pixelWidth = Math.round(width * dpr);
+    const pixelHeight = Math.round(height * dpr);
+    if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+      canvas.width = pixelWidth;
+      canvas.height = pixelHeight;
+    }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { width, height };
+  }
+
+  function draw() {
+    const { width, height } = resizeCanvas();
+    ctx.clearRect(0, 0, width, height);
+    const project = makeProjector(width, height);
+    drawBounds(project);
+    const counts = categoryCounts();
+
+    if (state.mode === "knn" && state.knnLinks !== "off") {
+      const linkColor = themeColor("--muted-foreground");
+      const activeColor = themeColor("--viz-series-5");
+      const pairs = state.knnLinks === "mutual"
+        ? mutualNeighbors()
+        : state.selected
+          ? neighbors(state.selected).map(item => [state.selected, item.edge])
+          : [];
+      pairs.forEach(([source, target]) => {
+        const a = project(midpoint(source));
+        const b = project(midpoint(target));
+        drawSegment(a, b, state.knnLinks === "selected" ? activeColor : linkColor, 1.5, 0.7);
+      });
+      if (state.selected) {
+        neighbors(state.selected).forEach(item => {
+          const a = project(item.edge.a);
+          const b = project(item.edge.b);
+          const color = themeColor(knnCategoryColorRef(item.edge.category));
+          drawSegment(a, b, color, 4, 0.95);
+        });
+      }
+    }
+
+    const projected = edges.map(edge => {
+      const a = project(edge.a);
+      const b = project(edge.b);
+      return { edge, a, b, depth: (a[2] + b[2]) / 2 };
+    }).sort((a, b) => a.depth - b.depth);
+    state.projected = projected;
+
+    projected.forEach(item => {
+      const value = category(item.edge);
+      const visible = state.filter === "all" || value === state.filter;
+      const selected = state.selected && state.selected.id === item.edge.id;
+      const color = themeColor(categoryColorRef(value, counts));
+      drawSegment(item.a, item.b, color, selected ? 5 : 3, visible ? 0.95 : 0.08);
+    });
+
+    const visibleCount = state.filter === "all"
+      ? edges.length
+      : edges.filter(edge => category(edge) === state.filter).length;
+    canvas.setAttribute(
+      "aria-label",
+      `Three-dimensional view colored by ${modeMeta[state.mode].label}; ${visibleCount} of ${edges.length} candidate struts visible`
+    );
+  }
+
+  function distanceToSegment(point, a, b) {
+    const dx = b[0] - a[0];
+    const dy = b[1] - a[1];
+    const lengthSquared = dx * dx + dy * dy;
+    if (!lengthSquared) return Math.hypot(point[0] - a[0], point[1] - a[1]);
+    const t = Math.max(0, Math.min(1, ((point[0] - a[0]) * dx + (point[1] - a[1]) * dy) / lengthSquared));
+    return Math.hypot(point[0] - (a[0] + t * dx), point[1] - (a[1] + t * dy));
+  }
+
+  function selectAt(x, y) {
+    let best = null;
+    let bestDistance = 9;
+    state.projected.forEach(item => {
+      const value = category(item.edge);
+      if (state.filter !== "all" && value !== state.filter) return;
+      const distance = distanceToSegment([x, y], item.a, item.b);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best = item.edge;
+      }
+    });
+    state.selected = best;
+    updateSelection();
+    draw();
+  }
+
+  modeSelect.addEventListener("change", () => {
+    state.mode = modeSelect.value;
+    state.filter = "all";
+    state.selected = null;
+    updateControls();
+    updateSelection();
+    draw();
+  });
+
+  knnKSelect.addEventListener("change", () => {
+    state.k = Number(knnKSelect.value);
+    state.filter = "all";
+    updateControls();
+    updateSelection();
+    draw();
+  });
+
+  knnTargetSelect.addEventListener("change", () => {
+    state.knnTarget = knnTargetSelect.value;
+    state.filter = "all";
+    updateControls();
+    updateSelection();
+    draw();
+  });
+
+  knnLinksSelect.addEventListener("change", () => {
+    state.knnLinks = knnLinksSelect.value;
+    draw();
+  });
+
+  filterSelect.addEventListener("change", () => {
+    state.filter = filterSelect.value;
+    state.selected = null;
+    updateControls();
+    updateSelection();
+    draw();
+  });
+
+  resetButton.addEventListener("click", () => {
+    state.yaw = -0.68;
+    state.pitch = 0.5;
+    state.zoom = 1;
+    state.selected = null;
+    updateSelection();
+    draw();
+  });
+
+  canvas.addEventListener("pointerdown", event => {
+    canvas.setPointerCapture(event.pointerId);
+    state.drag = { x: event.clientX, y: event.clientY, yaw: state.yaw, pitch: state.pitch };
+    state.moved = false;
+  });
+
+  canvas.addEventListener("pointermove", event => {
+    if (!state.drag) return;
+    const dx = event.clientX - state.drag.x;
+    const dy = event.clientY - state.drag.y;
+    if (Math.abs(dx) + Math.abs(dy) > 3) state.moved = true;
+    state.yaw = state.drag.yaw + dx * 0.009;
+    state.pitch = Math.max(-1.35, Math.min(1.35, state.drag.pitch + dy * 0.009));
+    draw();
+  });
+
+  canvas.addEventListener("pointerup", event => {
+    if (!state.drag) return;
+    const rect = canvas.getBoundingClientRect();
+    if (!state.moved) selectAt(event.clientX - rect.left, event.clientY - rect.top);
+    state.drag = null;
+  });
+
+  canvas.addEventListener("pointercancel", () => {
+    state.drag = null;
+  });
+
+  canvas.addEventListener("wheel", event => {
+    event.preventDefault();
+    state.zoom = Math.max(0.55, Math.min(2.6, state.zoom * Math.exp(-event.deltaY * 0.001)));
+    draw();
+  }, { passive: false });
+
+  const resizeObserver = new ResizeObserver(draw);
+  resizeObserver.observe(canvas);
+  const themeObserver = new MutationObserver(draw);
+  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["class", "data-theme", "style"] });
+
+  updateControls();
+  updateSelection();
+  requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>

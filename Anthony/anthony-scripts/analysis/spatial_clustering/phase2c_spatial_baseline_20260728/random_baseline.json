@@ -1,0 +1,365 @@
+{
+  "interpretation_guardrail": "Uniform-3D is a sensitivity baseline, not a physical opportunity model. Manufacturing conclusions require validated defect labels and persistence under the boundary-orientation-stratified graph baseline.",
+  "main_candidate_count": 228,
+  "models": {
+    "boundary_orientation_stratified": {
+      "adjacent_to_intentional_count": {
+        "model": "boundary_orientation_stratified",
+        "null_95_interval": [
+          9.0,
+          23.0
+        ],
+        "null_mean": 15.2444,
+        "observed": 9.0,
+        "one_sided_concentration_p_value": 0.9763023697630236,
+        "permutation_count": 10000,
+        "standardized_effect": -1.721437821985365
+      },
+      "dbscan_clustered_fraction": {
+        "model": "boundary_orientation_stratified",
+        "null_95_interval": [
+          0.6973684210526315,
+          0.8157894736842105
+        ],
+        "null_mean": 0.7563122807017544,
+        "observed": 0.9780701754385965,
+        "one_sided_concentration_p_value": 9.999000099990002e-05,
+        "permutation_count": 10000,
+        "standardized_effect": 7.345005144502829
+      },
+      "dbscan_largest_cluster": {
+        "model": "boundary_orientation_stratified",
+        "null_95_interval": [
+          8.0,
+          22.0
+        ],
+        "null_mean": 13.0612,
+        "observed": 207.0,
+        "one_sided_concentration_p_value": 9.999000099990002e-05,
+        "permutation_count": 10000,
+        "standardized_effect": 51.92912430096869
+      },
+      "graph_adjacent_pairs": {
+        "model": "boundary_orientation_stratified",
+        "null_95_interval": [
+          27.0,
+          50.0
+        ],
+        "null_mean": 38.2231,
+        "observed": 563.0,
+        "one_sided_concentration_p_value": 9.999000099990002e-05,
+        "permutation_count": 10000,
+        "standardized_effect": 88.99519908171035
+      },
+      "graph_clustered_fraction": {
+        "model": "boundary_orientation_stratified",
+        "null_95_interval": [
+          0.2149122807017544,
+          0.3684210526315789
+        ],
+        "null_mean": 0.2896543859649123,
+        "observed": 0.956140350877193,
+        "one_sided_concentration_p_value": 9.999000099990002e-05,
+        "permutation_count": 10000,
+        "standardized_effect": 17.37139430708494
+      },
+      "graph_largest_component": {
+        "model": "boundary_orientation_stratified",
+        "null_95_interval": [
+          3.0,
+          6.0
+        ],
+        "null_mean": 4.0033,
+        "observed": 207.0,
+        "one_sided_concentration_p_value": 9.999000099990002e-05,
+        "permutation_count": 10000,
+        "standardized_effect": 224.40658262617862
+      },
+      "mean_nearest_intentional_mm": {
+        "model": "boundary_orientation_stratified",
+        "null_95_interval": [
+          6.071340960579845,
+          6.648824616790224
+        ],
+        "null_mean": 6.364741837860673,
+        "observed": 6.535185367033824,
+        "one_sided_concentration_p_value": 0.8757124287571243,
+        "permutation_count": 10000,
+        "standardized_effect": 1.1477690830165759
+      },
+      "mean_nearest_neighbor_mm": {
+        "model": "boundary_orientation_stratified",
+        "null_95_interval": [
+          3.4681046717842183,
+          3.831407684084508
+        ],
+        "null_mean": 3.650241724727416,
+        "observed": 2.383195804561073,
+        "one_sided_concentration_p_value": 9.999000099990002e-05,
+        "permutation_count": 10000,
+        "standardized_effect": -13.678597390562063
+      },
+      "pair_count_within_2.28_mm": {
+        "model": "boundary_orientation_stratified",
+        "null_95_interval": [
+          9.0,
+          24.0
+        ],
+        "null_mean": 16.304,
+        "observed": 148.0,
+        "one_sided_concentration_p_value": 9.999000099990002e-05,
+        "permutation_count": 10000,
+        "standardized_effect": 33.648311290824786
+      },
+      "pair_count_within_4.56_mm": {
+        "model": "boundary_orientation_stratified",
+        "null_95_interval": [
+          137.0,
+          185.0
+        ],
+        "null_mean": 159.8917,
+        "observed": 1037.0,
+        "one_sided_concentration_p_value": 9.999000099990002e-05,
+        "permutation_count": 10000,
+        "standardized_effect": 71.80926718989859
+      },
+      "pair_count_within_6.84_mm": {
+        "model": "boundary_orientation_stratified",
+        "null_95_interval": [
+          383.0,
+          462.0
+        ],
+        "null_mean": 420.7343,
+        "observed": 2372.0,
+        "one_sided_concentration_p_value": 9.999000099990002e-05,
+        "permutation_count": 10000,
+        "standardized_effect": 95.92231325470239
+      }
+    },
+    "graph_opportunity": {
+      "adjacent_to_intentional_count": {
+        "model": "graph_opportunity",
+        "null_95_interval": [
+          11.0,
+          27.0
+        ],
+        "null_mean": 18.4065,
+        "observed": 9.0,
+        "one_sided_concentration_p_value": 0.996000399960004,
+        "permutation_count": 10000,
+        "standardized_effect": -2.292260699405992
+      },
+      "dbscan_clustered_fraction": {
+        "model": "graph_opportunity",
+        "null_95_interval": [
+          0.5921052631578947,
+          0.7324561403508771
+        ],
+        "null_mean": 0.6638600877192983,
+        "observed": 0.9780701754385965,
+        "one_sided_concentration_p_value": 9.999000099990002e-05,
+        "permutation_count": 10000,
+        "standardized_effect": 8.762687202561459
+      },
+      "dbscan_largest_cluster": {
+        "model": "graph_opportunity",
+        "null_95_interval": [
+          7.0,
+          21.0
+        ],
+        "null_mean": 11.5431,
+        "observed": 207.0,
+        "one_sided_concentration_p_value": 9.999000099990002e-05,
+        "permutation_count": 10000,
+        "standardized_effect": 53.57710386084584
+      },
+      "graph_adjacent_pairs": {
+        "model": "graph_opportunity",
+        "null_95_interval": [
+          19.0,
+          39.0
+        ],
+        "null_mean": 28.4466,
+        "observed": 563.0,
+        "one_sided_concentration_p_value": 9.999000099990002e-05,
+        "permutation_count": 10000,
+        "standardized_effect": 100.09389551752103
+      },
+      "graph_clustered_fraction": {
+        "model": "graph_opportunity",
+        "null_95_interval": [
+          0.14912280701754385,
+          0.29385964912280704
+        ],
+        "null_mean": 0.2215644736842105,
+        "observed": 0.956140350877193,
+        "one_sided_concentration_p_value": 9.999000099990002e-05,
+        "permutation_count": 10000,
+        "standardized_effect": 19.86596427088922
+      },
+      "graph_largest_component": {
+        "model": "graph_opportunity",
+        "null_95_interval": [
+          3.0,
+          5.0
+        ],
+        "null_mean": 3.5526,
+        "observed": 207.0,
+        "one_sided_concentration_p_value": 9.999000099990002e-05,
+        "permutation_count": 10000,
+        "standardized_effect": 261.33881736555765
+      },
+      "mean_nearest_intentional_mm": {
+        "model": "graph_opportunity",
+        "null_95_interval": [
+          5.583541660322306,
+          6.145841526865822
+        ],
+        "null_mean": 5.86660048533316,
+        "observed": 6.535185367033824,
+        "one_sided_concentration_p_value": 1.0,
+        "permutation_count": 10000,
+        "standardized_effect": 4.62699672860008
+      },
+      "mean_nearest_neighbor_mm": {
+        "model": "graph_opportunity",
+        "null_95_interval": [
+          3.8253812088088424,
+          4.264977258606999
+        ],
+        "null_mean": 4.041757116559193,
+        "observed": 2.383195804561073,
+        "one_sided_concentration_p_value": 9.999000099990002e-05,
+        "permutation_count": 10000,
+        "standardized_effect": -14.774896190829837
+      },
+      "pair_count_within_2.28_mm": {
+        "model": "graph_opportunity",
+        "null_95_interval": [
+          7.0,
+          21.0
+        ],
+        "null_mean": 13.8372,
+        "observed": 148.0,
+        "one_sided_concentration_p_value": 9.999000099990002e-05,
+        "permutation_count": 10000,
+        "standardized_effect": 36.64187669196705
+      },
+      "pair_count_within_4.56_mm": {
+        "model": "graph_opportunity",
+        "null_95_interval": [
+          104.0,
+          149.0
+        ],
+        "null_mean": 126.0623,
+        "observed": 1037.0,
+        "one_sided_concentration_p_value": 9.999000099990002e-05,
+        "permutation_count": 10000,
+        "standardized_effect": 78.44305068467717
+      },
+      "pair_count_within_6.84_mm": {
+        "model": "graph_opportunity",
+        "null_95_interval": [
+          345.0,
+          435.0
+        ],
+        "null_mean": 387.7895,
+        "observed": 2372.0,
+        "one_sided_concentration_p_value": 9.999000099990002e-05,
+        "permutation_count": 10000,
+        "standardized_effect": 86.5239973268733
+      }
+    },
+    "uniform_3d": {
+      "dbscan_clustered_fraction": {
+        "model": "uniform_3d",
+        "null_95_interval": [
+          0.6052631578947368,
+          0.7412280701754386
+        ],
+        "null_mean": 0.6738837719298245,
+        "observed": 0.9780701754385965,
+        "one_sided_concentration_p_value": 9.999000099990002e-05,
+        "permutation_count": 10000,
+        "standardized_effect": 8.530964386673803
+      },
+      "dbscan_largest_cluster": {
+        "model": "uniform_3d",
+        "null_95_interval": [
+          7.0,
+          21.024999999999636
+        ],
+        "null_mean": 11.9956,
+        "observed": 207.0,
+        "one_sided_concentration_p_value": 9.999000099990002e-05,
+        "permutation_count": 10000,
+        "standardized_effect": 51.03676568879153
+      },
+      "mean_nearest_neighbor_mm": {
+        "model": "uniform_3d",
+        "null_95_interval": [
+          3.7178290360118114,
+          4.165547610735432
+        ],
+        "null_mean": 3.9410179307494486,
+        "observed": 2.383195804561073,
+        "one_sided_concentration_p_value": 9.999000099990002e-05,
+        "permutation_count": 10000,
+        "standardized_effect": -13.71962064722436
+      },
+      "pair_count_within_2.28_mm": {
+        "model": "uniform_3d",
+        "null_95_interval": [
+          10.0,
+          26.0
+        ],
+        "null_mean": 17.3997,
+        "observed": 148.0,
+        "one_sided_concentration_p_value": 9.999000099990002e-05,
+        "permutation_count": 10000,
+        "standardized_effect": 31.125019592440037
+      },
+      "pair_count_within_4.56_mm": {
+        "model": "uniform_3d",
+        "null_95_interval": [
+          109.0,
+          156.0
+        ],
+        "null_mean": 130.6782,
+        "observed": 1037.0,
+        "one_sided_concentration_p_value": 9.999000099990002e-05,
+        "permutation_count": 10000,
+        "standardized_effect": 76.16336622059164
+      },
+      "pair_count_within_6.84_mm": {
+        "model": "uniform_3d",
+        "null_95_interval": [
+          368.0,
+          463.0
+        ],
+        "null_mean": 413.0981,
+        "observed": 2372.0,
+        "one_sided_concentration_p_value": 9.999000099990002e-05,
+        "permutation_count": 10000,
+        "standardized_effect": 81.05429733763586
+      }
+    }
+  },
+  "observed_metrics": {
+    "adjacent_to_intentional_count": 9.0,
+    "dbscan_clustered_fraction": 0.9780701754385965,
+    "dbscan_largest_cluster": 207.0,
+    "graph_adjacent_pairs": 563.0,
+    "graph_clustered_fraction": 0.956140350877193,
+    "graph_largest_component": 207.0,
+    "mean_nearest_intentional_mm": 6.535185367033824,
+    "mean_nearest_neighbor_mm": 2.383195804561073,
+    "pair_count_within_2.28_mm": 148.0,
+    "pair_count_within_4.56_mm": 1037.0,
+    "pair_count_within_6.84_mm": 2372.0
+  },
+  "permutation_count": 10000,
+  "random_seed": 20260723,
+  "specimen_id": "210127_Brian_Tran_strut_lattices_0point5dash1_1",
+  "status": "ok"
+}

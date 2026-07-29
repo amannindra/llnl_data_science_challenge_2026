@@ -1,0 +1,16 @@
+{
+  "group_counts": {
+    "intentional": 89,
+    "low_priority_uncertain": 2654,
+    "main": 228,
+    "present": 14820,
+    "review_required": 677
+  },
+  "main_class_counts": {
+    "broken": 13,
+    "missing": 215
+  },
+  "output": "/Users/anthonyching/Desktop/Data Science Challenge/DSC Team Project/llnl_data_science_challenge_2026/Anthony/anthony-scripts/analysis/spatial_clustering/phase2c_knn_all_struts_v1_20260729/boundary_orientation_summary.csv",
+  "run_id": "phase2c_knn_all_struts_v1_20260729",
+  "status": "ok"
+}

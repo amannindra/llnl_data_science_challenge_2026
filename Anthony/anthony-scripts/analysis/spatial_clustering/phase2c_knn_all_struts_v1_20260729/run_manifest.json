@@ -1,0 +1,73 @@
+{
+  "artifacts": [
+    "REPORT.md",
+    "boundary_orientation_summary.csv",
+    "boundary_orientation_summary.json",
+    "cluster_analysis_summary.json",
+    "cluster_membership.csv",
+    "cluster_scene.json",
+    "cluster_scene_page_000000_003648.json",
+    "cluster_summary.csv",
+    "knn_association.csv",
+    "knn_neighbors.csv",
+    "knn_random_baseline.json",
+    "knn_viewer_data.js",
+    "random_baseline.json",
+    "run_config.json",
+    "run_manifest.json"
+  ],
+  "assumptions": [
+    "registered and nominal strut IDs correspond one-to-one",
+    "2.28 mm per nominal graph unit",
+    "57.7379 um/voxel is design-derived, not independently calibrated",
+    "uniform-3D is a sensitivity baseline only"
+  ],
+  "created_utc": "2026-07-29T16:54:20.435046+00:00",
+  "git": {
+    "branch": "main",
+    "head": "9906f9d57947200c15e9a2eb0674eb22a7c77d1e",
+    "root": "/Users/anthonyching/Desktop/Data Science Challenge/DSC Team Project/llnl_data_science_challenge_2026"
+  },
+  "input_hashes_sha256": {
+    "/Users/anthonyching/Desktop/Data Science Challenge/DSC Team Project/llnl_data_science_challenge_2026/Anthony/anthony-agents/configs/current_specimen.json": "fe34f4c146683901cda1f4c0ebda38abb258ba53b348a2a872d9f5e53406344e",
+    "/Users/anthonyching/Desktop/Data Science Challenge/DSC Team Project/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/final_report_baseline/tables/human_spotcheck_labels_rank001_040.csv": "c4926fbe9640ce72384db2e374d27d78bcf3ebec2eb8e3665c7c4b9e6946d45f",
+    "/Users/anthonyching/Desktop/Data Science Challenge/DSC Team Project/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/review_tables/phase2c_labels.csv": "a852062f89ebd90023966cf07449468704e661d4877842eca0a1ec154e58cb39",
+    "/Users/anthonyching/Desktop/Data Science Challenge/DSC Team Project/llnl_data_science_challenge_2026/data/missing_struts/octet_truss_9x9x9.json": "af7bbd51657735f0a0af07ea8ede2007416c61821b7860936457ab0b76fad6a2",
+    "/Users/anthonyching/Desktop/Data Science Challenge/DSC Team Project/llnl_data_science_challenge_2026/data/missing_struts/registered_jsons/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.json": "8e422e1ceece719bdc1d0aa1b6f42273c4dea5bff6ee2ebba76e85ffddba99c7"
+  },
+  "method_ids": [
+    "SPATIAL-GRAPH-CC-001",
+    "SPATIAL-DBSCAN-001",
+    "SPATIAL-PERMUTATION-001",
+    "SPATIAL-BOUNDARY-001",
+    "SPATIAL-BH-001",
+    "SPATIAL-KNN-ASSOC-001",
+    "SPATIAL-KNN-PERM-001"
+  ],
+  "record_validation": {
+    "bounds_lattice_xyz_mm": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        41.04,
+        41.04,
+        41.04
+      ]
+    ],
+    "classification_row_count": 18468,
+    "human_label_count": 40,
+    "registered_junction_count": 10206,
+    "registered_strut_count": 18468
+  },
+  "run_id": "phase2c_knn_all_struts_v1_20260729",
+  "runtime": {
+    "numpy": "2.4.4",
+    "platform": "macOS-26.5.2-arm64-arm-64bit",
+    "python": "3.12.0 (v3.12.0:0fb18b02c8, Oct  2 2023, 09:45:56) [Clang 13.0.0 (clang-1300.0.29.30)]"
+  },
+  "schema_version": "1.0.0",
+  "specimen_id": "210127_Brian_Tran_strut_lattices_0point5dash1_1"
+}

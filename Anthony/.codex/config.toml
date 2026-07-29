@@ -1,0 +1,11 @@
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 5
+
+[agents.defect_workflow_coordinator]
+description = "Coordinate the complete lattice defect workflow and enforce handoff gates."
+config_file = "../anthony-agents/agents/defect_workflow_coordinator.toml"
+
+[agents.spatial_clustering_agent]
+description = "Analyze saved candidate records for spatial and graph clustering."
+config_file = "../anthony-agents/agents/spatial_clustering_agent.toml"

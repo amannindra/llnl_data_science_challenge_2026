@@ -1,0 +1,78 @@
+{
+  "group_metrics": {
+    "intentional": {
+      "dbscan_cluster_count": 11,
+      "dbscan_clustered_fraction": 0.5280898876404494,
+      "dbscan_largest_cluster": 12,
+      "dbscan_neighbor_pair_count": 144,
+      "dbscan_primary_eps_mm": 4.56,
+      "graph_adjacent_pair_count": 130,
+      "graph_component_count": 60,
+      "graph_largest_component": 12,
+      "graph_non_singleton_fraction": 0.39325842696629215,
+      "record_count": 89
+    },
+    "low_priority_uncertain": {
+      "dbscan_cluster_count": 11,
+      "dbscan_clustered_fraction": 0.9954785229841748,
+      "dbscan_largest_cluster": 2610,
+      "dbscan_neighbor_pair_count": 35041,
+      "dbscan_primary_eps_mm": 4.56,
+      "graph_adjacent_pair_count": 10026,
+      "graph_component_count": 154,
+      "graph_largest_component": 1399,
+      "graph_non_singleton_fraction": 0.9615674453654861,
+      "record_count": 2654
+    },
+    "main": {
+      "dbscan_cluster_count": 4,
+      "dbscan_clustered_fraction": 0.9780701754385965,
+      "dbscan_largest_cluster": 207,
+      "dbscan_neighbor_pair_count": 1037,
+      "dbscan_primary_eps_mm": 4.56,
+      "graph_adjacent_pair_count": 563,
+      "graph_component_count": 15,
+      "graph_largest_component": 207,
+      "graph_non_singleton_fraction": 0.956140350877193,
+      "record_count": 228
+    },
+    "review_required": {
+      "dbscan_cluster_count": 17,
+      "dbscan_clustered_fraction": 0.9409158050221565,
+      "dbscan_largest_cluster": 575,
+      "dbscan_neighbor_pair_count": 4698,
+      "dbscan_primary_eps_mm": 4.56,
+      "graph_adjacent_pair_count": 1403,
+      "graph_component_count": 107,
+      "graph_largest_component": 329,
+      "graph_non_singleton_fraction": 0.8759231905465288,
+      "record_count": 677
+    }
+  },
+  "outputs": {
+    "cluster_membership_csv": "/Users/anthonyching/Desktop/Data Science Challenge/DSC Team Project/llnl_data_science_challenge_2026/Anthony/anthony-scripts/analysis/spatial_clustering/phase2c_knn_v1_20260728/cluster_membership.csv",
+    "cluster_summary_csv": "/Users/anthonyching/Desktop/Data Science Challenge/DSC Team Project/llnl_data_science_challenge_2026/Anthony/anthony-scripts/analysis/spatial_clustering/phase2c_knn_v1_20260728/cluster_summary.csv"
+  },
+  "record_validation": {
+    "bounds_lattice_xyz_mm": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        41.04,
+        41.04,
+        41.04
+      ]
+    ],
+    "classification_row_count": 18468,
+    "human_label_count": 40,
+    "registered_junction_count": 10206,
+    "registered_strut_count": 18468
+  },
+  "run_id": "phase2c_knn_v1_20260728",
+  "specimen_id": "210127_Brian_Tran_strut_lattices_0point5dash1_1",
+  "status": "ok",
+  "thin_status": "unavailable_no_explicit_thin_labels"
+}

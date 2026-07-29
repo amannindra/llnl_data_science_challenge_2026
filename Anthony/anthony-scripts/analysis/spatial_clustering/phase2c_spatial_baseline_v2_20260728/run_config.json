@@ -1,0 +1,27 @@
+{
+  "build_axis_xyz": 1,
+  "coordinate_conventions": {
+    "lattice_physical": "XYZ millimetres",
+    "nominal_graph": "XYZ graph units",
+    "registered_graph": "XYZ voxels",
+    "tiff": "not accessed; source convention ZYX"
+  },
+  "dbscan_eps_mm": [
+    2.28,
+    4.56,
+    6.84
+  ],
+  "dbscan_min_samples": 2,
+  "estimated_voxel_size_um": 57.7379,
+  "graph_unit_mm": 2.28,
+  "human_labels_path": "/Users/anthonyching/Desktop/Data Science Challenge/DSC Team Project/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/final_report_baseline/tables/human_spotcheck_labels_rank001_040.csv",
+  "nominal_graph_path": "/Users/anthonyching/Desktop/Data Science Challenge/DSC Team Project/llnl_data_science_challenge_2026/data/missing_struts/octet_truss_9x9x9.json",
+  "output_root": "/Users/anthonyching/Desktop/Data Science Challenge/DSC Team Project/llnl_data_science_challenge_2026/Anthony/anthony-scripts/analysis/spatial_clustering",
+  "permutation_count": 10000,
+  "random_seed": 20260723,
+  "records_path": "/Users/anthonyching/Desktop/Data Science Challenge/DSC Team Project/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/review_tables/phase2c_labels.csv",
+  "registered_graph_path": "/Users/anthonyching/Desktop/Data Science Challenge/DSC Team Project/llnl_data_science_challenge_2026/data/missing_struts/registered_jsons/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.json",
+  "schema_version": "1.0.0",
+  "specimen_id": "210127_Brian_Tran_strut_lattices_0point5dash1_1",
+  "unit_cell_mm": 4.56
+}
