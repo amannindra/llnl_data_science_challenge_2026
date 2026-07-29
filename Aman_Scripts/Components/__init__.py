@@ -85,6 +85,14 @@ from .segmentation import (
     validate_binary_mask,
     validate_numeric_volume,
 )
+from .skeleton_graph import (
+    SkeletonGraph,
+    SkeletonGraphError,
+    SkeletonNode,
+    SkeletonStrut,
+    build_lattice_payload,
+    skeleton_to_lattice,
+)
 from .testing import CheckCollector, CheckResult, Checker, finish, load_module_from_path
 from .tiff_mesh import (
     BoundsZYX,
@@ -128,6 +136,10 @@ __all__ = [
     "RepositoryNotFoundError",
     "ResourceEstimate",
     "SegmentationError",
+    "SkeletonGraph",
+    "SkeletonGraphError",
+    "SkeletonNode",
+    "SkeletonStrut",
     "Strut",
     "TIFFMetadata",
     "TIFFMeshError",
@@ -141,6 +153,7 @@ __all__ = [
     "apply_transform",
     "available_memory_bytes",
     "atomic_write_bytes",
+    "build_lattice_payload",
     "build_manifest",
     "canonical_json_bytes",
     "centerline_occupancy",
@@ -178,6 +191,7 @@ __all__ = [
     "rotation_matrix_xyz",
     "save_npy",
     "scripts_path",
+    "skeleton_to_lattice",
     "sphere_offsets",
     "streaming_integer_histogram",
     "summarize_components",

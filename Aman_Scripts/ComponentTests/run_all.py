@@ -27,6 +27,7 @@ TESTS = (
     "test_coordinates.py",
     "test_lattice_graph.py",
     "test_segmentation.py",
+    "test_skeleton_graph.py",
     "test_tiff_mesh.py",
     "test_tif2stl.py",
     "test_legacy_occupancy.py",

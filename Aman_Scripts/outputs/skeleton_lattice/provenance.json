@@ -1,0 +1,108 @@
+{
+  "caveats": [
+    "Segmented volumes are supporting evidence, not ground truth; no threshold was tuned to reproduce any published defect rate.",
+    "This artifact is a geometry extraction, not a defect detector.",
+    "Design-only fields (indices, unit_cell_edge_idx, unit_cells, design-unit thickness) are omitted rather than fabricated."
+  ],
+  "chain": [
+    {
+      "foreground_rule": "value > threshold",
+      "input": "raw CT .tif",
+      "note": "Cached upstream; global exact-histogram Otsu threshold 40054.0.",
+      "output": "otsu_mask.tif (uint8 {0,255})",
+      "step": 1,
+      "tool": "segment_tiff_otsu"
+    },
+    {
+      "input": "otsu_mask.tif",
+      "note": "Format bridge: step 1 writes TIFF, step 3 requires .npy.",
+      "output": "otsu_mask.npy",
+      "step": 2,
+      "tool": "read_tiff"
+    },
+    {
+      "input": "otsu_mask.npy",
+      "note": "skimage.morphology.skeletonize, 3D Lee algorithm.",
+      "output": "otsu_skeleton.npy (bool)",
+      "step": 3,
+      "tool": "skeletonize"
+    },
+    {
+      "input": "otsu_skeleton.npy",
+      "note": "New in this change; 26-connected degree analysis -> junctions + struts.",
+      "output": "ct_lattice.json",
+      "step": 4,
+      "tool": "skeleton_to_lattice_json"
+    }
+  ],
+  "description": "Provenance for the CT-scan -> Otsu -> skeleton -> lattice-graph JSON chain, driven through the MCP tools in Aman_src/mcp_server.py.",
+  "environment": {
+    "conda_env": "DSC",
+    "numpy": "2.4.6",
+    "python": "3.11.15"
+  },
+  "inputs": [
+    {
+      "bytes": 519120083,
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/Aman_Scripts/outputs/mcp_missing_struts_otsu_pipeline/otsu_mask.npy",
+      "sha256": "cb3a9346cc85b98fbc9513158159085ad0cadf660ff90a148a9456fa18a35dea"
+    },
+    {
+      "bytes": 519120083,
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/Aman_Scripts/outputs/mcp_missing_struts_otsu_pipeline/otsu_skeleton.npy",
+      "sha256": "46b53817c1afe37c5f2308ddd1973c7f2f2a57909214c8624698dd47a18b0d7d"
+    }
+  ],
+  "outputs": [
+    {
+      "bytes": 4010095,
+      "path": "Aman_Scripts/outputs/skeleton_lattice/ct_lattice.json",
+      "sha256": "1570c3072ff1615514a2f23c5d21de40722e7696eda9c60dbf4bb92c7cb024ff"
+    },
+    {
+      "bytes": 797000,
+      "path": "Aman_Scripts/outputs/skeleton_lattice/ct_vs_design_report.json",
+      "sha256": "be67f527abee9fd794f30f4abc41b66efa49d8164855ceb5af17ab2802079c94"
+    },
+    {
+      "bytes": 9300,
+      "path": "Aman_Scripts/outputs/skeleton_lattice/unitcell_lattice.json",
+      "sha256": "f24cc9da32a56f41b1f2c016679c3eea67984b62015d001277296c28ce4ad87f"
+    },
+    {
+      "bytes": 16777344,
+      "path": "Aman_Scripts/outputs/skeleton_lattice/unitcell_mask.npy",
+      "sha256": "9f7d9997bc4c61498d3a4b726f13b0ea5133883d1d5321bacbf0ce0d579de99f"
+    },
+    {
+      "bytes": 16777344,
+      "path": "Aman_Scripts/outputs/skeleton_lattice/unitcell_skeleton.npy",
+      "sha256": "57b0361621bd0c8bc5892da32b70cbd48c0ab0dad01deeedf8f613dc1f0b6e54"
+    }
+  ],
+  "reference_design": [
+    {
+      "bytes": 4958672,
+      "path": "data/missing_struts/registered_jsons/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.json",
+      "sha256": "8e422e1ceece719bdc1d0aa1b6f42273c4dea5bff6ee2ebba76e85ffddba99c7"
+    }
+  ],
+  "schema_version": "ct-skeleton-lattice-provenance.v1",
+  "verification_of_cached_inputs": {
+    "mask_dtype": "uint8",
+    "mask_foreground_fraction": 0.1129779551625982,
+    "mask_foreground_voxels": 58649111,
+    "preflight_reference_fraction": 0.1129779551625982,
+    "shape_zyx": [
+      761,
+      815,
+      837
+    ],
+    "skeleton_dtype": "bool",
+    "skeleton_is_subset_of_mask": true,
+    "skeleton_voxels": 1049457,
+    "skeleton_voxels_outside_mask": 0,
+    "source_directory": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/Aman_Scripts/outputs/mcp_missing_struts_otsu_pipeline",
+    "total_voxels": 519119955
+  }
+}
