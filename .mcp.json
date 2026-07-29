@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "lattice-stl": {
+      "command": "conda",
+      "args": [
+        "run",
+        "--no-capture-output",
+        "-n",
+        "DSC",
+        "python",
+        "Aman_src/lattice_stl_mcp.py"
+      ]
+    }
+  }
+}
