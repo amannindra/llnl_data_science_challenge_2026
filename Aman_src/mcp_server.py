@@ -32,6 +32,11 @@ from Aman_Scripts.Components.asset_io import (
 from Aman_Scripts.Components.coordinates import zyx_to_xyz
 from Aman_Scripts.Components.lattice_graph import load_lattice_graph, weld_coincident_nodes
 from Aman_Scripts.Components.reporting import file_sha256, write_json
+from Aman_Scripts.Components.skeleton_graph import (
+    SkeletonGraphError,
+    build_lattice_payload,
+    skeleton_to_lattice,
+)
 
 # Initialize the MCP server
 mcp = FastMCP("CT Segmentation")
@@ -467,6 +472,119 @@ def skeleton_to_json(
         f"Saved skeleton JSON to {written} "
         f"(shape_zyx={tuple(int(size) for size in source.shape)}, "
         f"coordinate_order=xyz, skeleton_voxels={voxel_count}, sha256={output_sha256})."
+    )
+
+
+@mcp.tool()
+def skeleton_to_lattice_json(
+    input_filepath: str,
+    output_filepath: str,
+    merge_radius_voxels: float = 20.0,
+    min_strut_length_voxels: float = 0.0,
+    dissolve_degree2_nodes: bool = False,
+    max_voxels: int = 20_000_000,
+) -> str:
+    """Convert a 3D skeleton NumPy array into a lattice graph JSON.
+
+    Unlike ``skeleton_to_json``, which dumps a flat voxel list, this tool
+    recovers structure: skeleton voxels are classified by their 26-connected
+    neighbour count, junction blobs become nodes, and the degree-2 runs between
+    them become struts. The output carries ``junctions`` and ``struts`` and so
+    parses with the project's lattice-graph reader.
+
+    Design-only fields of the reference lattice JSONs (``indices``,
+    ``unit_cell_edge_idx``, ``unit_cells`` and the design-unit ``thickness``)
+    cannot be recovered from a CT skeleton and are omitted rather than invented.
+    Measured strut geometry is reported as ``length_voxels``.
+
+    Args:
+        input_filepath: Path to a 3D skeleton ``.npy`` file.
+        output_filepath: Destination JSON path. ``.json`` is appended if absent.
+        merge_radius_voxels: Contract struts shorter than this into one node, so
+            a junction split across sub-clusters is not counted several times.
+            Set well above the junction blob diameter and well below the real
+            strut length; 0 disables merging.
+        min_strut_length_voxels: Drop struts shorter than this, after merging.
+        dissolve_degree2_nodes: Splice out nodes carrying exactly two struts.
+            Sharp centerline bends produce degree-3 voxels under 26-connectivity
+            and so surface as spurious two-strut nodes; this removes them, which
+            recovers a defect-free unit cell exactly. Leave it off on a lattice
+            with missing struts, where a junction reduced to two struts is real
+            signal rather than an artifact.
+        max_voxels: Safety limit for skeleton voxels, default 20,000,000.
+
+    Returns:
+        A status string with output details, or an ``Error:`` string.
+    """
+    if not isinstance(input_filepath, str) or not input_filepath:
+        return "Error: 'input_filepath' must be a non-empty string."
+    if not isinstance(output_filepath, str) or not output_filepath:
+        return "Error: 'output_filepath' must be a non-empty string."
+    if os.path.splitext(input_filepath)[1].lower() != ".npy":
+        return f"Error: 'input_filepath' must end with .npy, got {input_filepath!r}."
+    try:
+        merge_radius = _nonnegative_finite(merge_radius_voxels, "'merge_radius_voxels'")
+        minimum_length = _nonnegative_finite(min_strut_length_voxels, "'min_strut_length_voxels'")
+    except ValueError as e:
+        return f"Error: {e}."
+    if isinstance(max_voxels, bool):
+        return f"Error: 'max_voxels' must be a positive integer, got {max_voxels!r}."
+    try:
+        max_voxels = operator.index(max_voxels)
+    except TypeError:
+        return f"Error: 'max_voxels' must be a positive integer, got {max_voxels!r}."
+    if max_voxels < 1:
+        return f"Error: 'max_voxels' must be a positive integer, got {max_voxels}."
+    if not isinstance(dissolve_degree2_nodes, bool):
+        return (
+            f"Error: 'dissolve_degree2_nodes' must be a boolean, "
+            f"got {dissolve_degree2_nodes!r}."
+        )
+
+    try:
+        source = load_npy(input_filepath, mmap_mode="r", allow_pickle=False)
+        graph = skeleton_to_lattice(
+            source,
+            merge_radius_voxels=merge_radius,
+            min_strut_length_voxels=minimum_length,
+            dissolve_degree2_nodes=dissolve_degree2_nodes,
+            max_skeleton_voxels=max_voxels,
+        )
+        source_sha256 = file_sha256(input_filepath)
+    except SkeletonGraphError as e:
+        return f"Error: {e}."
+    except Exception as e:  # noqa: BLE001 - surface NumPy/LFS/input errors to MCP clients
+        return f"Error: Failed to build lattice graph from '{input_filepath}': {e}"
+
+    payload = build_lattice_payload(
+        graph,
+        source={
+            "path": os.path.abspath(os.path.expanduser(input_filepath)),
+            "sha256": source_sha256,
+            "dtype": str(source.dtype),
+        },
+    )
+    payload["parameters"] = {
+        "merge_radius_voxels": merge_radius,
+        "min_strut_length_voxels": minimum_length,
+        "dissolve_degree2_nodes": dissolve_degree2_nodes,
+        "neighbourhood": 26,
+    }
+
+    saved_path = output_filepath
+    if not saved_path.endswith(".json"):
+        saved_path += ".json"
+    try:
+        written = write_json(saved_path, payload, create_parents=True)
+        output_sha256 = file_sha256(written)
+    except Exception as e:  # noqa: BLE001 - surface atomic write failures to MCP clients
+        return f"Error: Failed to write lattice JSON '{saved_path}': {e}"
+    return (
+        f"Saved lattice JSON to {written} "
+        f"(shape_zyx={tuple(int(size) for size in graph.shape_zyx)}, coordinate_order=xyz, "
+        f"junctions={len(graph.nodes)}, struts={len(graph.struts)}, "
+        f"skeleton_voxels={graph.statistics['skeleton_voxels']}, "
+        f"nodes_merged={graph.statistics['nodes_merged']}, sha256={output_sha256})."
     )
 
 

@@ -1,0 +1,446 @@
+{
+  "array_order": "zyx",
+  "coordinate_order": "xyz",
+  "junctions": [
+    {
+      "id": 0,
+      "kind": "junction",
+      "position": [
+        197.22222222222223,
+        58.0,
+        46.55555555555556
+      ],
+      "skeleton_max_degree": 3,
+      "skeleton_voxel_count": 9
+    },
+    {
+      "id": 1,
+      "kind": "junction",
+      "position": [
+        56.333333333333336,
+        47.666666666666664,
+        53.666666666666664
+      ],
+      "skeleton_max_degree": 3,
+      "skeleton_voxel_count": 3
+    },
+    {
+      "id": 2,
+      "kind": "junction",
+      "position": [
+        128.0,
+        127.8,
+        48.0
+      ],
+      "skeleton_max_degree": 6,
+      "skeleton_voxel_count": 10
+    },
+    {
+      "id": 3,
+      "kind": "junction",
+      "position": [
+        207.0,
+        206.0,
+        49.0
+      ],
+      "skeleton_max_degree": 3,
+      "skeleton_voxel_count": 1
+    },
+    {
+      "id": 4,
+      "kind": "junction",
+      "position": [
+        49.2,
+        204.4,
+        53.0
+      ],
+      "skeleton_max_degree": 3,
+      "skeleton_voxel_count": 5
+    },
+    {
+      "id": 5,
+      "kind": "junction",
+      "position": [
+        128.53333333333333,
+        50.266666666666666,
+        124.6
+      ],
+      "skeleton_max_degree": 5,
+      "skeleton_voxel_count": 15
+    },
+    {
+      "id": 6,
+      "kind": "junction",
+      "position": [
+        136.2941176470588,
+        199.64705882352942,
+        125.11764705882354
+      ],
+      "skeleton_max_degree": 4,
+      "skeleton_voxel_count": 17
+    },
+    {
+      "id": 7,
+      "kind": "junction",
+      "position": [
+        203.11111111111111,
+        130.44444444444446,
+        123.66666666666667
+      ],
+      "skeleton_max_degree": 3,
+      "skeleton_voxel_count": 18
+    },
+    {
+      "id": 8,
+      "kind": "junction",
+      "position": [
+        55.916666666666664,
+        127.83333333333333,
+        136.83333333333334
+      ],
+      "skeleton_max_degree": 3,
+      "skeleton_voxel_count": 12
+    },
+    {
+      "id": 9,
+      "kind": "junction",
+      "position": [
+        139.26829268292684,
+        130.53658536585365,
+        189.73170731707316
+      ],
+      "skeleton_max_degree": 4,
+      "skeleton_voxel_count": 41
+    },
+    {
+      "id": 10,
+      "kind": "junction",
+      "position": [
+        196.66666666666666,
+        208.88888888888889,
+        196.33333333333334
+      ],
+      "skeleton_max_degree": 3,
+      "skeleton_voxel_count": 9
+    },
+    {
+      "id": 11,
+      "kind": "junction",
+      "position": [
+        201.85714285714286,
+        49.714285714285715,
+        199.57142857142858
+      ],
+      "skeleton_max_degree": 3,
+      "skeleton_voxel_count": 7
+    },
+    {
+      "id": 12,
+      "kind": "junction",
+      "position": [
+        59.0,
+        57.666666666666664,
+        208.33333333333334
+      ],
+      "skeleton_max_degree": 3,
+      "skeleton_voxel_count": 3
+    },
+    {
+      "id": 13,
+      "kind": "junction",
+      "position": [
+        60.714285714285715,
+        194.28571428571428,
+        209.14285714285714
+      ],
+      "skeleton_max_degree": 4,
+      "skeleton_voxel_count": 14
+    }
+  ],
+  "parameters": {
+    "dissolve_degree2_nodes": true,
+    "merge_radius_voxels": 40.0,
+    "min_strut_length_voxels": 0.0,
+    "neighbourhood": 26
+  },
+  "schema_version": "ct-skeleton-lattice.v1",
+  "shape_zyx": [
+    256,
+    256,
+    256
+  ],
+  "source": {
+    "dtype": "bool",
+    "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/.claude/worktrees/skeleton-to-lattice-json/Aman_Scripts/outputs/skeleton_lattice/unitcell_skeleton.npy",
+    "sha256": "57b0361621bd0c8bc5892da32b70cbd48c0ab0dad01deeedf8f613dc1f0b6e54"
+  },
+  "statistics": {
+    "degree2_nodes_dissolved": 3,
+    "duplicate_pairs_collapsed": 0,
+    "endpoint_nodes": 0,
+    "isolated_nodes": 0,
+    "junction_nodes": 14,
+    "node_voxels": 176,
+    "nodes_merged": 52,
+    "path_voxels": 3006,
+    "self_loops_dropped": 0,
+    "short_struts_dropped": 0,
+    "skeleton_voxels": 3182,
+    "unreached_path_voxels": 0
+  },
+  "struts": [
+    {
+      "id": 0,
+      "junction0": 0,
+      "junction1": 2,
+      "length_voxels": 94.75983721356035,
+      "path_voxel_count": 67
+    },
+    {
+      "id": 1,
+      "junction0": 0,
+      "junction1": 5,
+      "length_voxels": 114.24511858779887,
+      "path_voxel_count": 84
+    },
+    {
+      "id": 2,
+      "junction0": 0,
+      "junction1": 7,
+      "length_voxels": 111.60871513954827,
+      "path_voxel_count": 77
+    },
+    {
+      "id": 3,
+      "junction0": 1,
+      "junction1": 2,
+      "length_voxels": 113.58413559209545,
+      "path_voxel_count": 82
+    },
+    {
+      "id": 4,
+      "junction0": 1,
+      "junction1": 5,
+      "length_voxels": 77.84256230619987,
+      "path_voxel_count": 52
+    },
+    {
+      "id": 5,
+      "junction0": 1,
+      "junction1": 8,
+      "length_voxels": 115.24778941829189,
+      "path_voxel_count": 81
+    },
+    {
+      "id": 6,
+      "junction0": 2,
+      "junction1": 3,
+      "length_voxels": 118.34489469332817,
+      "path_voxel_count": 86
+    },
+    {
+      "id": 7,
+      "junction0": 2,
+      "junction1": 4,
+      "length_voxels": 118.54444690438686,
+      "path_voxel_count": 85
+    },
+    {
+      "id": 8,
+      "junction0": 2,
+      "junction1": 5,
+      "length_voxels": 125.56902645183968,
+      "path_voxel_count": 86
+    },
+    {
+      "id": 9,
+      "junction0": 2,
+      "junction1": 6,
+      "length_voxels": 88.0742746704041,
+      "path_voxel_count": 62
+    },
+    {
+      "id": 10,
+      "junction0": 2,
+      "junction1": 7,
+      "length_voxels": 103.80559652011394,
+      "path_voxel_count": 72
+    },
+    {
+      "id": 11,
+      "junction0": 2,
+      "junction1": 8,
+      "length_voxels": 118.63402364486012,
+      "path_voxel_count": 86
+    },
+    {
+      "id": 12,
+      "junction0": 3,
+      "junction1": 6,
+      "length_voxels": 118.72627121582637,
+      "path_voxel_count": 83
+    },
+    {
+      "id": 13,
+      "junction0": 3,
+      "junction1": 7,
+      "length_voxels": 119.04823720723321,
+      "path_voxel_count": 86
+    },
+    {
+      "id": 14,
+      "junction0": 4,
+      "junction1": 6,
+      "length_voxels": 120.52253818742707,
+      "path_voxel_count": 80
+    },
+    {
+      "id": 15,
+      "junction0": 4,
+      "junction1": 8,
+      "length_voxels": 111.49455885162224,
+      "path_voxel_count": 76
+    },
+    {
+      "id": 16,
+      "junction0": 5,
+      "junction1": 7,
+      "length_voxels": 102.13436208822482,
+      "path_voxel_count": 69
+    },
+    {
+      "id": 17,
+      "junction0": 5,
+      "junction1": 8,
+      "length_voxels": 127.93335196144811,
+      "path_voxel_count": 89
+    },
+    {
+      "id": 18,
+      "junction0": 5,
+      "junction1": 9,
+      "length_voxels": 129.2477894182919,
+      "path_voxel_count": 92
+    },
+    {
+      "id": 19,
+      "junction0": 5,
+      "junction1": 11,
+      "length_voxels": 112.53764732768279,
+      "path_voxel_count": 80
+    },
+    {
+      "id": 20,
+      "junction0": 5,
+      "junction1": 12,
+      "length_voxels": 116.09885421785691,
+      "path_voxel_count": 87
+    },
+    {
+      "id": 21,
+      "junction0": 6,
+      "junction1": 7,
+      "length_voxels": 76.07840341661513,
+      "path_voxel_count": 53
+    },
+    {
+      "id": 22,
+      "junction0": 6,
+      "junction1": 8,
+      "length_voxels": 128.97984022586073,
+      "path_voxel_count": 91
+    },
+    {
+      "id": 23,
+      "junction0": 6,
+      "junction1": 9,
+      "length_voxels": 86.66758964259404,
+      "path_voxel_count": 62
+    },
+    {
+      "id": 24,
+      "junction0": 6,
+      "junction1": 10,
+      "length_voxels": 77.57121332541675,
+      "path_voxel_count": 53
+    },
+    {
+      "id": 25,
+      "junction0": 6,
+      "junction1": 13,
+      "length_voxels": 118.3120576534533,
+      "path_voxel_count": 83
+    },
+    {
+      "id": 26,
+      "junction0": 7,
+      "junction1": 9,
+      "length_voxels": 40.72306435728781,
+      "path_voxel_count": 28
+    },
+    {
+      "id": 27,
+      "junction0": 7,
+      "junction1": 10,
+      "length_voxels": 115.07281675468603,
+      "path_voxel_count": 79
+    },
+    {
+      "id": 28,
+      "junction0": 7,
+      "junction1": 11,
+      "length_voxels": 107.05163699558526,
+      "path_voxel_count": 72
+    },
+    {
+      "id": 29,
+      "junction0": 8,
+      "junction1": 9,
+      "length_voxels": 56.72233539942877,
+      "path_voxel_count": 39
+    },
+    {
+      "id": 30,
+      "junction0": 8,
+      "junction1": 12,
+      "length_voxels": 124.74059932709349,
+      "path_voxel_count": 89
+    },
+    {
+      "id": 31,
+      "junction0": 8,
+      "junction1": 13,
+      "length_voxels": 120.25118920664387,
+      "path_voxel_count": 81
+    },
+    {
+      "id": 32,
+      "junction0": 9,
+      "junction1": 10,
+      "length_voxels": 103.3271147225794,
+      "path_voxel_count": 70
+    },
+    {
+      "id": 33,
+      "junction0": 9,
+      "junction1": 11,
+      "length_voxels": 118.78368780315411,
+      "path_voxel_count": 83
+    },
+    {
+      "id": 34,
+      "junction0": 9,
+      "junction1": 12,
+      "length_voxels": 103.16307038188867,
+      "path_voxel_count": 70
+    },
+    {
+      "id": 35,
+      "junction0": 9,
+      "junction1": 13,
+      "length_voxels": 56.576071029486805,
+      "path_voxel_count": 40
+    }
+  ],
+  "units": "voxels"
+}
