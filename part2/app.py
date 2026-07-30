@@ -107,6 +107,13 @@ def main() -> None:
         max-width: 1440px;
         padding: 64px 48px 96px;
     }
+    /* The lattice inspector is the page; drop the reading-width cap wherever
+       it renders so the Three.js canvas can use the full main area. */
+    .block-container:has(.st-key-lattice-fullbleed) {
+        max-width: 100%;
+        padding-left: 24px;
+        padding-right: 24px;
+    }
     h1 {
         font-size: clamp(2.5rem, 4vw, 3.5rem) !important;
         font-weight: 650 !important;

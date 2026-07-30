@@ -28,7 +28,7 @@ def test_dashboard_data_filters_without_mutation() -> None:
         gap_range=(0.0, 1.0),
     )
 
-    assert len(selected) == 3
+    assert len(selected) == 374
     assert set(selected["prediction"]) == {"missing", "broken"}
     assert artifacts.table.equals(original)
 
@@ -36,11 +36,11 @@ def test_dashboard_data_filters_without_mutation() -> None:
 def test_dashboard_figures_use_consistent_candidate_colors() -> None:
     table = load_dashboard_artifacts().table
     counts = class_count_figure(table)
-    lattice = lattice_3d_figure(table[table["prediction"] != "intact"])
+    lattice = lattice_3d_figure(table[table["prediction"] != "healthy"])
 
     assert list(counts.data[0].marker.color) == [
         CHART_CLASS_COLORS[label]
-        for label in ["missing", "broken", "thin", "uncertain", "intact"]
+        for label in ["missing", "broken", "thin", "thick", "bent_or_misaligned", "uncertain", "healthy", "not_applicable"]
     ]
     trace_colors = {
         trace.line.color
@@ -52,6 +52,8 @@ def test_dashboard_figures_use_consistent_candidate_colors() -> None:
         CANDIDATE_COLORS["broken"],
         CANDIDATE_COLORS["thin"],
         CANDIDATE_COLORS["uncertain"],
+        CANDIDATE_COLORS["bent_or_misaligned"],
+        CANDIDATE_COLORS["not_applicable"],
     }
 
 

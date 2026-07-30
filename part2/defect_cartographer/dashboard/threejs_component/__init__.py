@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from functools import lru_cache
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import numpy as np
 import streamlit as st
@@ -98,10 +98,12 @@ def lattice_threejs_viewer(
     scene_path: Path | str,
     *,
     key: str = "lattice-threejs-viewer",
-    height: int = 720,
+    height: int | Literal["content", "stretch"] = "content",
 ) -> Any:
     """Render the registered lattice scene and return component state."""
 
+    # "content" lets the wrapper grow with the viewport-relative canvas height in
+    # styles.css; a fixed pixel height would clip it on tall displays.
     renderer = _component_renderer()
     current_state = st.session_state.get(key, {})
     selected_strut_id = (

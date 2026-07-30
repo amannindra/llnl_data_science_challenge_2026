@@ -32,15 +32,17 @@ def test_summary_and_filters_are_bounded_and_read_only() -> None:
         ArtifactFilter(classes=["missing", "broken", "thin"], limit=3)
     )
 
-    assert summary["sample_size"] == 60
+    assert summary["sample_size"] == 18_468
     assert summary["candidate_counts"] == {
-        "intact": 49,
-        "thin": 5,
-        "uncertain": 3,
-        "missing": 2,
-        "broken": 1,
+        "bent_or_misaligned": 12_722,
+        "healthy": 3_157,
+        "uncertain": 1_475,
+        "not_applicable": 739,
+        "broken": 256,
+        "missing": 118,
+        "thin": 1,
     }
-    assert filtered["matching_count"] == 8
+    assert filtered["matching_count"] == 375
     assert filtered["returned_count"] == 3
     assert all(
         row["prediction"] in {"missing", "broken", "thin"}
@@ -57,15 +59,17 @@ def test_strut_lookup_and_group_comparison() -> None:
     )
 
     assert details["record"]["strut_id"] == 8578
-    assert details["record"]["prediction"] == "intact"
+    assert details["record"]["prediction"] == "healthy"
     assert "not_validated" in details["classification_status"]
-    assert comparison["filtered_sample_size"] == 60
+    assert comparison["filtered_sample_size"] == 18_468
     assert {row["group"] for row in comparison["groups"]} == {
-        "intact",
+        "healthy",
         "missing",
         "broken",
         "thin",
+        "bent_or_misaligned",
         "uncertain",
+        "not_applicable",
     }
 
     with pytest.raises(ValueError, match="not present"):
@@ -84,12 +88,12 @@ def test_methodology_and_threejs_spec_are_bounded() -> None:
     assert "Provisional classification rules" in methodology["markdown"]
     assert scene["viewer_launched"] is False
     assert scene["read_only"] is True
-    assert scene["matching_overlay_count"] == 3
-    assert scene["returned_overlay_count"] == 3
-    assert len(scene["overlay_strut_ids"]) == 3
+    assert scene["matching_overlay_count"] == 374
+    assert scene["returned_overlay_count"] == 200
+    assert len(scene["overlay_strut_ids"]) == 200
     assert scene["nominal_strut_count"] == 18_468
-    assert scene["analyzed_overlay_count"] == 60
-    assert scene["scene_artifact"] == "lattice_scene.npz"
+    assert scene["analyzed_overlay_count"] == 18_468
+    assert scene["scene_artifact"] == "full_lattice_scene.npz"
     assert scene["geometry_included_in_response"] is False
     assert scene["raw_ct_included"] is False
     assert "segments" not in scene
@@ -113,7 +117,7 @@ def test_threejs_scene_selection_and_spatial_bounds() -> None:
     )
     scene = service.prepare_threejs_scene(
         ThreeJSSceneRequest(
-            classes=["intact"],
+            classes=["healthy"],
             selected_strut_id=8578,
             bounds_zyx=bounds,
             include_nominal_lattice=False,
@@ -144,4 +148,4 @@ def test_schemas_reject_unsafe_or_inverted_requests() -> None:
     with pytest.raises(ValueError, match="start_zyx"):
         SceneBounds(start_zyx=(5, 0, 0), stop_zyx=(5, 1, 1))
     with pytest.raises(ValueError):
-        ArtifactFilter(limit=201)
+        ArtifactFilter(limit=501)

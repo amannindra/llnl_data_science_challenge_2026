@@ -3,7 +3,7 @@
 This directory contains the deterministic scientific core, read-only copilot
 boundary, and browser-native dashboard for the Part 2 lattice CT analysis.
 The workflow verifies registered CT/JSON alignment, measures a reproducible
-60-strut sample, applies provisional candidate rules, and exposes saved
+full 18,468-strut classification results, applies provisional candidate rules, and exposes saved
 evidence through FastMCP, Plotly, and Three.js.
 
 The classifications are exploratory candidates, not validated defect labels.
@@ -24,7 +24,7 @@ PYTHONPATH=part2 python -m pytest part2/tests -q
 ```
 
 Generated experimental runs belong in `artifacts/runs/` and are ignored by
-Git. The verified 60-strut reference artifacts are stored in
+Git. The verified full-lattice reference artifacts are stored in
 `artifacts/sample/`.
 
 ## Read-only MCP and agent interfaces
@@ -70,31 +70,23 @@ PYTHONPATH=part2 streamlit run part2/app.py
 The dashboard provides top navigation for Overview, Strut Explorer, Visual
 Analysis, System Design, and Copilot. The header uses the challenge and LLNL
 logos, while charts and controls use the supplied poster palette. The Strut
-Explorer separates missing, broken, thin, and uncertain candidates into
-filterable, paginated tabs and excludes intact rows.
+Explorer separates missing, broken, thin, thick, bent/misaligned, and uncertain
+records into filterable, paginated tabs and includes healthy and review-state
+rows.
 
 ## Three.js visualization
 
-The compiled Three.js component loads `artifacts/sample/lattice_scene.npz`
+The compiled Three.js component loads `artifacts/sample/full_lattice_scene.npz`
 through the Python dashboard boundary. It renders all 18,468 nominal struts as
 one efficient steel-gray line buffer, a compact CT-derived context mesh, and
-thicker candidate overlays. Intact overlays are hidden by default. Selecting an
+thicker classification overlays. Healthy and design-excluded overlays are hidden
+by default. Selecting an
 analyzed strut returns only its ID to Streamlit, which then displays the saved
 deterministic measurements.
 
-Visual Analysis also exposes exactly two fixed unit-cell scenes under
-`artifacts/sample/unit_cells/`: broken candidate cell 521 / strut 12958 and
-missing candidate cell 646 / strut 16082. Each scene displays 24 registered
-struts as cylinders and a compact CT-derived surface. A paired PNG shows axial,
-coronal, and sagittal grayscale CT crops with segmentation boundaries, the
-expected target strut, and deterministic skeleton evidence. The raw TIFF and
-raw CT voxel arrays are never sent to the browser or to an agent.
-
-Rebuild the two derived examples from the repository root with:
-
-```bash
-PYTHONPATH=part2 python -m defect_cartographer.core.unit_cell
-```
+The raw TIFF and raw CT voxel arrays are never sent to the browser or to an
+agent. The legacy unit-cell builder remains available for historical examples,
+but is no longer used by the dashboard.
 
 ## Codex integration
 

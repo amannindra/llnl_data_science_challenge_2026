@@ -9,11 +9,14 @@ import plotly.graph_objects as go
 
 
 CANDIDATE_COLORS = {
-    "intact": "#248A3D",
+    "healthy": "#248A3D",
     "missing": "#D70015",
     "broken": "#C93400",
     "thin": "#8944AB",
+    "thick": "#E08A00",
+    "bent_or_misaligned": "#7A5AF8",
     "uncertain": "#0066CC",
+    "not_applicable": "#9A9AA0",
 }
 CHART_PALETTE = {
     "blue": ("#215290", "#507DAB", "#89A8C6", "#C3D4E3"),
@@ -26,9 +29,15 @@ CHART_CLASS_COLORS = {
     "broken": CHART_PALETTE["blue"][0],
     "thin": CHART_PALETTE["green"][0],
     "uncertain": CHART_PALETTE["cyan"][0],
-    "intact": CHART_PALETTE["blue"][2],
+    "healthy": CHART_PALETTE["blue"][2],
+    "thick": CHART_PALETTE["green"][0],
+    "bent_or_misaligned": "#7A5AF8",
+    "not_applicable": "#9A9AA0",
 }
-CANDIDATE_ORDER = ["missing", "broken", "thin", "uncertain", "intact"]
+CANDIDATE_ORDER = [
+    "missing", "broken", "thin", "thick", "bent_or_misaligned",
+    "uncertain", "healthy", "not_applicable",
+]
 SYSTEM_FONT = '-apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif'
 
 
@@ -111,8 +120,8 @@ def lattice_3d_figure(
             ys.extend([row.start_y, row.end_y, None])
             zs.extend([row.start_z, row.end_z, None])
             hover.extend([details, details, None])
-        trace_color = "#86868B" if mute_intact and label == "intact" else CANDIDATE_COLORS[label]
-        trace_width = 3 if mute_intact and label == "intact" else 7
+        trace_color = "#86868B" if mute_intact and label == "healthy" else CANDIDATE_COLORS[label]
+        trace_width = 3 if mute_intact and label == "healthy" else 7
         figure.add_trace(
             go.Scatter3d(
                 x=xs, y=ys, z=zs, mode="lines", name=label.title(),
@@ -124,7 +133,7 @@ def lattice_3d_figure(
             go.Scatter3d(
                 x=subset["mid_x"], y=subset["mid_y"], z=subset["mid_z"],
                 mode="markers", name=f"{label.title()} midpoint", showlegend=False,
-                marker=dict(color=trace_color, size=3 if label == "intact" else 5),
+                marker=dict(color=trace_color, size=3 if label == "healthy" else 5),
                 customdata=np.column_stack(
                     [subset["strut_id"], subset["occupancy"], subset["gap_fraction"]]
                 ),

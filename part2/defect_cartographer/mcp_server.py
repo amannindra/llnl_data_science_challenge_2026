@@ -13,9 +13,10 @@ from .service import DEFAULT_SERVICE
 mcp = FastMCP(
     "Lattice CT Evidence",
     instructions=(
-        "Query only deterministic saved artifacts from the 60-strut exploratory "
-        "sample. Candidate labels are not validated defects. Never describe sample "
-        "fractions as full-part prevalence or uncalibrated confidence as probability."
+        "Query only deterministic saved artifacts from the full 18,468-strut "
+        "automated classification. Candidate labels are not validated defects. "
+        "Never describe classification fractions as validated prevalence or "
+        "uncalibrated confidence as probability."
     ),
 )
 

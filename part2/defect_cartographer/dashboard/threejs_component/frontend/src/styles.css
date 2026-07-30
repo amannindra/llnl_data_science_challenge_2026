@@ -116,9 +116,25 @@ button:disabled {
 }
 
 .viewer-canvas {
-  height: 520px;
-  min-height: 440px;
+  height: min(82vh, 1040px);
+  min-height: 480px;
   width: 100%;
+}
+
+.viewer-canvas > canvas {
+  display: block;
+}
+
+.viewer-shell:fullscreen {
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.viewer-shell:fullscreen .viewer-canvas {
+  flex: 1 1 auto;
+  height: auto;
+  min-height: 0;
 }
 
 .viewer-footer {
@@ -144,6 +160,7 @@ button:disabled {
   }
 
   .viewer-canvas {
-    min-height: 400px;
+    height: 62vh;
+    min-height: 380px;
   }
 }

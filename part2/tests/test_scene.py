@@ -6,7 +6,7 @@ from defect_cartographer.core.config import DEFAULT_CONFIG
 from defect_cartographer.core.scene import LABEL_NAMES, load_lattice_scene
 
 
-SCENE_PATH = DEFAULT_CONFIG.output_dir / "lattice_scene.npz"
+SCENE_PATH = DEFAULT_CONFIG.dashboard_scene_path
 
 
 def test_saved_scene_contains_full_lattice_and_sample() -> None:
@@ -14,9 +14,9 @@ def test_saved_scene_contains_full_lattice_and_sample() -> None:
 
     assert scene["nominal_segments_zyx"].shape == (18_468, 2, 3)
     assert scene["nominal_strut_ids"].shape == (18_468,)
-    assert scene["analyzed_segments_zyx"].shape == (60, 2, 3)
-    assert scene["analyzed_strut_ids"].shape == (60,)
-    assert scene["analyzed_label_codes"].shape == (60,)
+    assert scene["analyzed_segments_zyx"].shape == (18_468, 2, 3)
+    assert scene["analyzed_strut_ids"].shape == (18_468,)
+    assert scene["analyzed_label_codes"].shape == (18_468,)
     assert tuple(scene["label_names"].tolist()) == LABEL_NAMES
     assert str(scene["selected_mapping"]) == "JSON (x,y,z) -> CT array (z,y,x)"
 

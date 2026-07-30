@@ -46,20 +46,30 @@ type ViewerProps = {
 };
 
 const COLORS: Record<string, number> = {
-  intact: 0x248a3d,
+  healthy: 0x248a3d,
   missing: 0xd70015,
   broken: 0xc93400,
   thin: 0x8944ab,
+  thick: 0xe08a00,
+  bent_or_misaligned: 0x7a5af8,
   uncertain: 0x0066cc,
+  not_applicable: 0x9a9aa0,
 };
 
 const LABEL_TITLES: Record<string, string> = {
-  intact: "Intact",
+  healthy: "Healthy",
   missing: "Missing",
   broken: "Broken",
   thin: "Thin",
+  thick: "Thick",
+  bent_or_misaligned: "Bent or misaligned",
   uncertain: "Uncertain",
+  not_applicable: "Not applicable",
 };
+
+function labelTitle(label: string): string {
+  return LABEL_TITLES[label] ?? label.replaceAll("_", " ");
+}
 
 type SceneHandles = {
   camera: THREE.PerspectiveCamera;
@@ -211,6 +221,7 @@ export const LatticeViewer: FC<ViewerProps> = ({
   setStateValue,
 }): ReactElement => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const shellRef = useRef<HTMLDivElement>(null);
   const sceneHandles = useRef<SceneHandles | null>(null);
   const isUnitCell = data.sceneKind === "unit_cell";
   const presentLabels = useMemo(
@@ -225,7 +236,12 @@ export const LatticeViewer: FC<ViewerProps> = ({
   const [showAxes, setShowAxes] = useState(true);
   const [contextOpacity, setContextOpacity] = useState(isUnitCell ? 0.2 : 0.1);
   const [visibleLabels, setVisibleLabels] = useState<Set<string>>(
-    () => new Set(presentLabels.filter((label) => label !== "intact")),
+    () =>
+      new Set(
+        presentLabels.filter((label) =>
+          ["missing", "broken", "thin", "thick"].includes(label),
+        ),
+      ),
   );
   const [selectedStrutId, setSelectedStrutId] = useState<number | null>(
     data.selectedStrutId ?? data.targetStrutId ?? null,
@@ -254,7 +270,13 @@ export const LatticeViewer: FC<ViewerProps> = ({
   );
 
   useEffect(() => {
-    setVisibleLabels(new Set(presentLabels.filter((label) => label !== "intact")));
+    setVisibleLabels(
+      new Set(
+        presentLabels.filter((label) =>
+          ["missing", "broken", "thin", "thick"].includes(label),
+        ),
+      ),
+    );
     setContextOpacity(isUnitCell ? 0.2 : 0.1);
     setSelectedStrutId(data.selectedStrutId ?? data.targetStrutId ?? null);
   }, [data.sceneKind, data.targetStrutId, data.selectedStrutId, isUnitCell, presentLabels]);
@@ -354,8 +376,8 @@ export const LatticeViewer: FC<ViewerProps> = ({
           positions,
           strutIds,
           COLORS[label] ?? 0x687786,
-          isUnitCell ? 1.85 : label === "intact" ? 1.25 : 2.05,
-          label === "intact" ? 0.72 : 1,
+          isUnitCell ? 1.85 : ["healthy", "not_applicable"].includes(label) ? 1.25 : 2.05,
+          ["healthy", "not_applicable"].includes(label) ? 0.72 : 1,
         );
         overlay.name = `${label} analyzed struts`;
         overlay.visible = visibleLabels.has(label);
@@ -525,6 +547,25 @@ export const LatticeViewer: FC<ViewerProps> = ({
     };
   }, [data, isUnitCell, selectStrut]);
 
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const onFullscreenChange = (): void => {
+      setIsFullscreen(document.fullscreenElement !== null);
+    };
+    document.addEventListener("fullscreenchange", onFullscreenChange);
+    return () =>
+      document.removeEventListener("fullscreenchange", onFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = (): void => {
+    if (document.fullscreenElement) {
+      void document.exitFullscreen();
+    } else {
+      void shellRef.current?.requestFullscreen();
+    }
+  };
+
   const toggleLabel = (label: string): void => {
     setVisibleLabels((current) => {
       const next = new Set(current);
@@ -538,7 +579,7 @@ export const LatticeViewer: FC<ViewerProps> = ({
   };
 
   return (
-    <div className="viewer-shell">
+    <div className="viewer-shell" ref={shellRef}>
       <div className="viewer-header">
         <div>
           <strong>{data.viewerTitle}</strong>
@@ -546,7 +587,7 @@ export const LatticeViewer: FC<ViewerProps> = ({
             {data.nominalStrutIds.length.toLocaleString()} nominal struts
             {isUnitCell
               ? ` · unit cell ${data.cellId} · target ${data.targetStrutId}`
-              : ` · ${data.analyzedStrutIds.length} analyzed overlays`}
+              : ` · ${data.analyzedStrutIds.length.toLocaleString()} classified overlays`}
           </span>
         </div>
         <span className="mapping">{data.selectedMapping}</span>
@@ -589,7 +630,7 @@ export const LatticeViewer: FC<ViewerProps> = ({
                 .toString(16)
                 .padStart(6, "0")}` }}
             />
-            {LABEL_TITLES[label] ?? label}
+            {labelTitle(label)}
           </label>
         ))}
       </div>
@@ -611,7 +652,7 @@ export const LatticeViewer: FC<ViewerProps> = ({
                 data.labelNames[data.analyzedLabelCodes[index]] ?? "unknown";
               return (
                 <option key={strutId} value={strutId}>
-                  {strutId} · {LABEL_TITLES[label] ?? label}
+                  {strutId} · {labelTitle(label)}
                 </option>
               );
             })}
@@ -645,6 +686,9 @@ export const LatticeViewer: FC<ViewerProps> = ({
           >
             Focus selected
           </button>
+          <button type="button" onClick={toggleFullscreen}>
+            {isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+          </button>
         </div>
       </div>
       <div
@@ -661,7 +705,7 @@ export const LatticeViewer: FC<ViewerProps> = ({
           {selectedStrutId === null
             ? "No strut selected"
             : `Strut ${selectedStrutId} · ${
-                LABEL_TITLES[selectedLabel ?? ""] ?? selectedLabel
+                labelTitle(selectedLabel ?? "")
               }${selectionSource ? ` · selected via ${selectionSource}` : ""}`}
         </strong>
       </div>

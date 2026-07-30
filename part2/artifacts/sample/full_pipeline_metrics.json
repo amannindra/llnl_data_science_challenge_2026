@@ -1,0 +1,22 @@
+{
+  "classification_coverage": 0.19124972926142517,
+  "evaluation_scope": "full_18_468_strut_automated_classification",
+  "expected_total_struts": 18468,
+  "ground_truth_available": false,
+  "median_diameter_um": 356.8046270263033,
+  "prediction_counts": {
+    "bent_or_misaligned": 12722,
+    "broken": 256,
+    "healthy": 3157,
+    "missing": 118,
+    "not_applicable": 739,
+    "thick": 0,
+    "thin": 1,
+    "uncertain": 1475
+  },
+  "sample_size": 18468,
+  "source_classification_sha256": "fb69d8e53444feab8abe9739a674786da0ca57145c5cac8f7ab3f3112a9d747a",
+  "uncertain_fraction": 0.07986787957548191,
+  "valid_thickness_measurement_count": 17995,
+  "warning": "Labels are automated evidence classifications and include review states; they are not validated ground truth."
+}

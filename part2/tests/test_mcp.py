@@ -39,8 +39,8 @@ def test_mcp_calls_return_structured_read_only_results() -> None:
         return summary_result.structured_content, filter_result.structured_content
 
     summary, filtered = asyncio.run(call_tools())
-    assert summary["sample_size"] == 60
-    assert filtered["matching_count"] == 2
+    assert summary["sample_size"] == 18_468
+    assert filtered["matching_count"] == 118
     assert all(row["prediction"] == "missing" for row in filtered["records"])
 
 
@@ -63,7 +63,7 @@ def test_mcp_threejs_scene_response_excludes_large_geometry() -> None:
 
     scene = asyncio.run(call_scene())
     assert scene["nominal_strut_count"] == 18_468
-    assert scene["returned_overlay_count"] == 3
+    assert scene["returned_overlay_count"] == 10
     assert scene["geometry_included_in_response"] is False
     assert scene["raw_ct_included"] is False
     assert "segments" not in scene

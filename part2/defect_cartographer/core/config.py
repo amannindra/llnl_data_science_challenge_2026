@@ -51,5 +51,41 @@ class DefectConfig:
     def metrics_path(self) -> Path:
         return self.output_dir / "pipeline_metrics.json"
 
+    @property
+    def classification_path(self) -> Path:
+        return REPO_ROOT / "Aman_Scripts" / "outputs" / "strut_defect_classification" / "strut_defect_classification.csv"
+
+    @property
+    def measurements_path(self) -> Path:
+        return REPO_ROOT / "Aman_Scripts" / "outputs" / "mcp_tiff_strut_measurements" / "strut_measurements.csv"
+
+    @property
+    def metrology_path(self) -> Path:
+        return REPO_ROOT / "Aman_Scripts" / "outputs" / "simple_strut_metrology" / "strut_metrology.json"
+
+    @property
+    def dashboard_table_path(self) -> Path:
+        return self.output_dir / "full_strut_classification.csv"
+
+    @property
+    def dashboard_metrics_path(self) -> Path:
+        return self.output_dir / "full_pipeline_metrics.json"
+
+    @property
+    def dashboard_alignment_path(self) -> Path:
+        return self.output_dir / "full_alignment.json"
+
+    @property
+    def dashboard_thickness_reference_path(self) -> Path:
+        return self.output_dir / "full_thickness_reference.json"
+
+    @property
+    def dashboard_report_path(self) -> Path:
+        return self.output_dir / "full_defect_report.md"
+
+    @property
+    def dashboard_scene_path(self) -> Path:
+        return self.output_dir / "full_lattice_scene.npz"
+
 
 DEFAULT_CONFIG = DefectConfig()

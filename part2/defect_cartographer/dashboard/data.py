@@ -33,8 +33,8 @@ def load_dashboard_artifacts(
     """Load and validate only saved sample artifacts; never load raw CT data."""
 
     directory = Path(sample_dir)
-    table_path = directory / "sampled_struts.csv"
-    report_path = directory / "defect_cartographer_report.md"
+    table_path = directory / "full_strut_classification.csv"
+    report_path = directory / "full_defect_report.md"
     if not table_path.is_file():
         raise FileNotFoundError(f"Dashboard table is missing: {table_path}")
     if not report_path.is_file():
@@ -45,9 +45,9 @@ def load_dashboard_artifacts(
         raise ValueError(f"Dashboard table is missing columns: {sorted(missing)}")
     return DashboardArtifacts(
         table=table,
-        metrics=read_json(directory / "pipeline_metrics.json"),
-        alignment=read_json(directory / "alignment.json"),
-        thickness_reference=read_json(directory / "thickness_reference.json"),
+        metrics=read_json(directory / "full_pipeline_metrics.json"),
+        alignment=read_json(directory / "full_alignment.json"),
+        thickness_reference=read_json(directory / "full_thickness_reference.json"),
         report_markdown=report_path.read_text(encoding="utf-8"),
         xray_context=(
             load_xray_context(directory / "xray_context.npz")

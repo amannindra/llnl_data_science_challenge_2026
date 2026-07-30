@@ -9,7 +9,6 @@ import pandas as pd
 import streamlit as st
 
 from ..agents import copilot_status, run_copilot
-from ..core.io import read_json
 from .data import DashboardArtifacts
 from .figures import (
     CANDIDATE_COLORS,
@@ -18,7 +17,11 @@ from .figures import (
     spatial_projection_figure,
     thickness_histogram_figure,
 )
-from .threejs_component import lattice_threejs_viewer, unit_cell_threejs_viewer
+from .threejs_component import lattice_threejs_viewer
+
+
+def _label_title(label: str) -> str:
+    return label.replace("_", " ").title()
 
 
 def _candidate_badge(label: str) -> str:
@@ -26,7 +29,7 @@ def _candidate_badge(label: str) -> str:
     return (
         f'<span style="background:{color}12;color:{color};'
         'padding:8px 16px;border-radius:98px;font-weight:650;">'
-        f"{html.escape(label.title())}</span>"
+        f"{html.escape(_label_title(label))}</span>"
     )
 
 
@@ -67,14 +70,16 @@ def render_overview(artifacts: DashboardArtifacts) -> None:
     columns = st.columns(5)
     columns[0].metric("Analyzed struts", artifacts.metrics["sample_size"])
     columns[1].metric(
-        "Classified",
+        "Decisive labels",
         f"{artifacts.metrics['classification_coverage']:.0%}",
-        help="Fraction assigned a class other than uncertain.",
+        help="Healthy or physical-defect labels; bent, uncertain, and design-excluded review states are not counted.",
     )
     columns[2].metric(
         "Flagged struts",
-        counts["missing"] + counts["broken"] + counts["thin"],
-        help="Missing, broken, or thin classifications.",
+        sum(counts.get(label, 0) for label in (
+            "missing", "broken", "thin", "thick", "bent_or_misaligned", "uncertain"
+        )),
+        help="Defect findings plus review-required classifications.",
     )
     columns[3].metric(
         "Median diameter", f"{artifacts.metrics['median_diameter_um']:.1f} µm"
@@ -96,11 +101,9 @@ def render_overview(artifacts: DashboardArtifacts) -> None:
         st.subheader("How the analysis works")
         st.markdown(
             """
-The pipeline aligns the nominal JSON struts to the CT volume, samples material
-along each expected centerline, measures support and geometry, then applies
-transparent rules in this order:
-
-**missing → broken → uncertain → thin → intact**
+    The dashboard loads all registered JSON struts and joins each one to the
+    automated native-TIFF classification. Review states remain visible and are
+    not silently converted into healthy or defect labels.
 
 **Uncertain** means the expected strut is not aligned closely enough to CT
 material, or its material-support result changes across nearby thresholds.
@@ -113,17 +116,19 @@ The evidence is therefore not stable enough for a stronger classification.
         )
 
 
-DEFECT_TABS = ("missing", "broken", "thin", "uncertain")
+DEFECT_TABS = (
+    "missing", "broken", "thin", "thick", "bent_or_misaligned", "uncertain"
+)
 
 
 def _render_defect_tab(table: pd.DataFrame, label: str) -> None:
     candidates = table.loc[table["prediction"] == label].copy()
-    st.metric(f"{label.title()} candidates", len(candidates))
+    st.metric(f"{_label_title(label)} records", len(candidates))
     search_column, region_column, orientation_column = st.columns([1, 1, 1.4])
     search = search_column.text_input(
         "Search strut ID",
         key=f"{label}-strut-search",
-        placeholder="e.g. 16082",
+        placeholder="e.g. 1885",
     ).strip()
     regions = region_column.multiselect(
         "Region",
@@ -204,7 +209,7 @@ def _render_defect_tab(table: pd.DataFrame, label: str) -> None:
     )
 
     if filtered.empty:
-        st.info(f"No {label} candidates match the current filters.")
+        st.info(f"No {_label_title(label).lower()} records match the current filters.")
         return
     selected_id = st.selectbox(
         "Selected strut details",
@@ -242,7 +247,7 @@ def render_explorer(artifacts: DashboardArtifacts) -> None:
         config={"displaylogo": False, "scrollZoom": True},
     )
     _measurement_guide()
-    tabs = st.tabs([label.title() for label in DEFECT_TABS])
+    tabs = st.tabs([_label_title(label) for label in DEFECT_TABS])
     for tab, label in zip(tabs, DEFECT_TABS):
         with tab:
             _render_defect_tab(defect_table, label)
@@ -255,7 +260,6 @@ def render_thickness_spatial(artifacts: DashboardArtifacts) -> None:
         "Visualization",
         [
             "X-ray 3D view",
-            "Unit cell examples (Three.js)",
             "Thickness distribution",
             "Spatial distribution",
             "Classification counts",
@@ -264,14 +268,14 @@ def render_thickness_spatial(artifacts: DashboardArtifacts) -> None:
 
     if visualization == "X-ray 3D view":
         control_a, control_b = st.columns(2)
-        show_intact = control_a.toggle("Show intact struts", value=True)
+        show_healthy = control_a.toggle("Show healthy struts", value=False)
         context_opacity = control_b.slider(
             "CT context opacity", 0.0, 0.35, 0.10, 0.01
         )
         visible = (
             artifacts.table
-            if show_intact
-            else artifacts.table[artifacts.table["prediction"] != "intact"]
+            if show_healthy
+            else artifacts.table[~artifacts.table["prediction"].isin(["healthy", "not_applicable"])]
         )
         st.plotly_chart(
             lattice_3d_figure(
@@ -286,11 +290,9 @@ def render_thickness_spatial(artifacts: DashboardArtifacts) -> None:
         )
         st.caption(
             "The translucent surface is a bounded, downsampled CT-derived context. "
-            "Gray lines are intact classifications; colored lines are findings."
+            "Gray lines are healthy classifications; colored lines are findings or review states."
         )
         _threejs_inspector(artifacts)
-    elif visualization == "Unit cell examples (Three.js)":
-        _unit_cell_inspector(artifacts)
     elif visualization == "Thickness distribution":
         reference = artifacts.thickness_reference
         show_design = st.toggle(
@@ -332,15 +334,16 @@ def _threejs_inspector(artifacts: DashboardArtifacts) -> None:
     st.subheader("Interactive Full-Lattice Inspector (Three.js)")
     st.caption(
         "Three.js renders all 18,468 registered nominal struts in one steel-gray "
-        "buffer. Exploratory defect candidates are thicker overlays; intact "
-        "analyzed struts start hidden."
+        "buffer. Every automated classification is available as a colored overlay; "
+        "healthy and not-applicable records start hidden."
     )
-    scene_path = artifacts.sample_dir / "lattice_scene.npz"
+    scene_path = artifacts.sample_dir / "full_lattice_scene.npz"
     if not scene_path.is_file():
         st.warning("The compact lattice scene artifact is unavailable.")
         return
     try:
-        result = lattice_threejs_viewer(scene_path)
+        with st.container(key="lattice-fullbleed"):
+            result = lattice_threejs_viewer(scene_path)
     except RuntimeError as exc:
         st.error(f"The interactive lattice inspector could not load: {exc}")
         return
@@ -348,7 +351,7 @@ def _threejs_inspector(artifacts: DashboardArtifacts) -> None:
     selected_id = getattr(result, "selected_strut_id", None)
     if selected_id is None:
         st.caption(
-            "Select one of the 60 colored analyzed struts to inspect its saved evidence."
+            "Select any classified strut to inspect its saved evidence."
         )
         return
 
@@ -357,7 +360,7 @@ def _threejs_inspector(artifacts: DashboardArtifacts) -> None:
     ]
     if rows.empty:
         st.warning(
-            f"Strut {int(selected_id)} is not in the saved 60-strut analysis."
+            f"Strut {int(selected_id)} is not in the full saved classification."
         )
         return
     details = rows.iloc[0]
@@ -386,69 +389,6 @@ def _threejs_inspector(artifacts: DashboardArtifacts) -> None:
         "Not eligible" if pd.isna(diameter) else f"{diameter:.1f} µm",
     )
     st.caption(f"Evidence: {details['prediction_reason']}")
-
-
-def _unit_cell_inspector(artifacts: DashboardArtifacts) -> None:
-    st.subheader("Interactive Unit Cell Inspector (Three.js)")
-    st.caption(
-        "Three.js renders one compact registered cell at a time using 24 nominal "
-        "strut cylinders and a translucent CT-derived surface. Only the two fixed "
-        "examples below are available."
-    )
-    selected = st.radio(
-        "Example",
-        ["Broken · cell 521 · strut 12958", "Missing · cell 646 · strut 16082"],
-        horizontal=True,
-        key="unit-cell-example",
-    )
-    if selected.startswith("Broken"):
-        key, cell_id = "broken", 521
-    else:
-        key, cell_id = "missing", 646
-    unit_cell_dir = artifacts.sample_dir / "unit_cells"
-    scene_path = unit_cell_dir / f"{key}_cell_{cell_id}.npz"
-    metadata_path = unit_cell_dir / f"{key}_cell_{cell_id}.json"
-    contour_path = unit_cell_dir / f"{key}_cell_{cell_id}_contours.png"
-    missing = [
-        path.name
-        for path in (scene_path, metadata_path, contour_path)
-        if not path.is_file()
-    ]
-    if missing:
-        st.warning(f"Unit-cell artifacts are unavailable: {', '.join(missing)}")
-        return
-    metadata = read_json(metadata_path)
-    metrics = st.columns(4)
-    metrics[0].metric("Unit cell", metadata["cell_id"])
-    metrics[1].metric("Target strut", metadata["target_strut_id"])
-    metrics[2].metric(
-        "Material coverage", f"{metadata['target_support_fraction']:.1%}"
-    )
-    metrics[3].metric("Longest gap", f"{metadata['target_gap_fraction']:.1%}")
-    try:
-        unit_cell_threejs_viewer(
-            scene_path,
-            key=f"unit-cell-threejs-{key}",
-        )
-    except RuntimeError as exc:
-        st.error(f"The unit-cell inspector could not load: {exc}")
-        return
-
-    st.subheader("Synchronized CT contour evidence")
-    st.image(
-        contour_path,
-        caption=(
-            "Raw CT grayscale with the segmentation boundary, expected target "
-            "strut, and deterministic skeleton overlaid in axial, coronal, and "
-            "sagittal views."
-        ),
-        width="stretch",
-    )
-    st.caption(
-        f"Focus: {metadata['focus_method']}. Registered mapping: "
-        f"{metadata['selected_mapping']}. Segmentation and skeletonization are "
-        "shown as visual evidence, not as validation."
-    )
 
 
 def render_architecture(artifacts: DashboardArtifacts) -> None:
@@ -515,8 +455,7 @@ Registered CT TIFF + aligned nominal JSON
                  |
                  v
       Deterministic scientific core
- registration -> 60-strut selection -> centerline sampling
-              -> measurements -> fixed candidate rules
+ registered full lattice -> TIFF measurements -> automated classifications
                  |
                  v
      CSV / JSON / PNG / Markdown artifacts
@@ -557,7 +496,7 @@ The JSON supplies expected strut centerlines in registered coordinates. The core
 samples segmented CT material near each centerline, measures coverage, gaps,
 alignment offset, threshold agreement, and eligible thickness, then applies:
 
-**missing → broken → uncertain → thin → intact**
+**missing → broken → thin/thick → bent-or-misaligned → uncertain → healthy**
 """
         )
         _measurement_guide()
@@ -581,8 +520,8 @@ alignment offset, threshold agreement, and eligible thickness, then applies:
             )
         st.markdown(
             '<div class="scope-card"><strong>Reproducibility</strong><br>'
-            '<span class="muted">60 fixed struts · seed 20260723 · voxel spacing '
-            "58.09 µm · JSON (x,y,z) mapped to CT array (z,y,x).</span></div>",
+            '<span class="muted">18,468 registered struts · native TIFF evidence · '
+            "JSON (x,y,z) mapped to CT array (z,y,x).</span></div>",
             unsafe_allow_html=True,
         )
 

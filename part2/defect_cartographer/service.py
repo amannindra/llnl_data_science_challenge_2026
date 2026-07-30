@@ -86,7 +86,7 @@ class ArtifactService:
 
     @property
     def table_path(self) -> Path:
-        return self.sample_dir / "sampled_struts.csv"
+        return self.sample_dir / "full_strut_classification.csv"
 
     def _table(self) -> pd.DataFrame:
         if not self.table_path.is_file():
@@ -145,12 +145,12 @@ class ArtifactService:
     def get_pipeline_summary(self) -> dict[str, Any]:
         """Return aggregate evidence without exposing raw CT or local paths."""
 
-        metrics = self._artifact_json("pipeline_metrics.json")
-        alignment = self._artifact_json("alignment.json")
+        metrics = self._artifact_json("full_pipeline_metrics.json")
+        alignment = self._artifact_json("full_alignment.json")
         table = self._table()
         return _json_safe(
             {
-                "scope": "deterministic_60_strut_exploratory_sample",
+                "scope": "full_18_468_strut_automated_classification",
                 "sample_size": len(table),
                 "candidate_counts": table["prediction"].value_counts().to_dict(),
                 "classification_coverage": metrics.get("classification_coverage"),
@@ -177,7 +177,7 @@ class ArtifactService:
                 },
                 "warnings": [
                     "Candidate labels are exploratory and have not been validated.",
-                    "This 60-strut sample does not estimate full-part prevalence.",
+                    "Labels include automated review states and are not validated ground truth.",
                     "No defect ground truth exists; accuracy, precision, recall, and F1 are unavailable.",
                     "Confidence values are uncalibrated rule-strength scores, not probabilities.",
                 ],
@@ -191,7 +191,7 @@ class ArtifactService:
         rows = table.loc[table["strut_id"] == int(strut_id)]
         if rows.empty:
             raise ValueError(
-                f"Strut {strut_id} is not present in the saved 60-strut sample"
+                f"Strut {strut_id} is not present in the full classified lattice"
             )
         if len(rows) != 1:
             raise ValueError(f"Strut {strut_id} appears more than once")
@@ -224,8 +224,7 @@ class ArtifactService:
                 "filters": query.model_dump(mode="json"),
                 "records": records.to_dict(orient="records"),
                 "warning": (
-                    "Results are saved exploratory candidates from a 60-strut sample, "
-                    "not validated defects or full-part prevalence."
+                    "Results are automated evidence classifications; review states are not validated defects."
                 ),
             }
         )
@@ -281,12 +280,12 @@ class ArtifactService:
     def get_methodology(self, section: str = "overview") -> dict[str, Any]:
         """Return a bounded section of the generated methodology report."""
 
-        report_path = self.sample_dir / "defect_cartographer_report.md"
+        report_path = self.sample_dir / "full_defect_report.md"
         if not report_path.is_file():
             raise FileNotFoundError(f"Required methodology report is missing: {report_path}")
         report = report_path.read_text(encoding="utf-8")
         headings = {
-            "overview": "# Lattice CT Analysis — 60-Strut Report",
+            "overview": "# Full-lattice CT defect classification",
             "alignment": "## Alignment evidence",
             "detection": "## How the prototype detects defect candidates",
             "features": "### Feature definitions",
@@ -368,14 +367,14 @@ class ArtifactService:
                 )
 
         returned = table.sort_values("sample_order").head(query.max_overlays)
-        scene_path = self.sample_dir / "lattice_scene.npz"
+        scene_path = self.sample_dir / "full_lattice_scene.npz"
         if not scene_path.is_file():
             raise FileNotFoundError(f"Required browser scene is missing: {scene_path}")
         scene = load_lattice_scene(scene_path)
 
         scene_mapping = str(scene["selected_mapping"])
         alignment_mapping = str(
-            self._artifact_json("alignment.json").get("selected_mapping")
+            self._artifact_json("full_alignment.json").get("selected_mapping")
         )
         if scene_mapping != alignment_mapping:
             raise ValueError(

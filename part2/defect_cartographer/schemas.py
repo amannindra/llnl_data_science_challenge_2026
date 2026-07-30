@@ -11,11 +11,14 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 class CandidateLabel(str, Enum):
     """Exploratory candidate labels emitted by the deterministic core."""
 
-    INTACT = "intact"
+    HEALTHY = "healthy"
     MISSING = "missing"
     BROKEN = "broken"
     THIN = "thin"
+    THICK = "thick"
+    BENT_OR_MISALIGNED = "bent_or_misaligned"
     UNCERTAIN = "uncertain"
+    NOT_APPLICABLE = "not_applicable"
 
 
 class ArtifactFilter(BaseModel):
@@ -41,7 +44,7 @@ class ArtifactFilter(BaseModel):
     max_y: float | None = None
     min_z: float | None = None
     max_z: float | None = None
-    limit: int = Field(default=60, ge=1, le=200)
+    limit: int = Field(default=200, ge=1, le=500)
 
     @model_validator(mode="after")
     def validate_ranges(self) -> "ArtifactFilter":
@@ -89,18 +92,21 @@ class ThreeJSSceneRequest(BaseModel):
 
     classes: list[CandidateLabel] = Field(
         default_factory=lambda: [
-            CandidateLabel.INTACT,
+            CandidateLabel.HEALTHY,
             CandidateLabel.MISSING,
             CandidateLabel.BROKEN,
             CandidateLabel.THIN,
+            CandidateLabel.THICK,
+            CandidateLabel.BENT_OR_MISALIGNED,
             CandidateLabel.UNCERTAIN,
+            CandidateLabel.NOT_APPLICABLE,
         ]
     )
     include_nominal_lattice: bool = True
     include_ct_context: bool = True
     selected_strut_id: int | None = Field(default=None, ge=0)
     bounds_zyx: SceneBounds | None = None
-    max_overlays: int = Field(default=60, ge=1, le=200)
+    max_overlays: int = Field(default=200, ge=1, le=500)
 
     @model_validator(mode="after")
     def require_classes(self) -> "ThreeJSSceneRequest":

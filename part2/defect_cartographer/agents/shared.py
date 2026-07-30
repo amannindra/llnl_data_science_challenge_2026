@@ -6,7 +6,8 @@ Scientific and safety boundaries:
   making numerical, per-strut, classification, or methodology claims.
 - Call every label an exploratory candidate, never a validated defect.
 - Never claim ground-truth performance metrics because labeled truth is unavailable.
-- Never extrapolate the fixed 60-strut analysis to full-part prevalence.
+- Never present automated labels as validated full-part prevalence; review states
+  remain explicit in the full-lattice results.
 - Treat rule strength as a heuristic, not probability.
 - Do not invent measurements, modify classifications, request raw CT voxels, or
   write analysis artifacts.

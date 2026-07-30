@@ -15,7 +15,16 @@ from .xray_context import load_xray_context
 
 
 SCENE_SCHEMA_VERSION = 1
-LABEL_NAMES = ("intact", "missing", "broken", "thin", "uncertain")
+LABEL_NAMES = (
+    "healthy",
+    "missing",
+    "broken",
+    "thin",
+    "thick",
+    "bent_or_misaligned",
+    "uncertain",
+    "not_applicable",
+)
 LABEL_TO_CODE = {name: index for index, name in enumerate(LABEL_NAMES)}
 
 
