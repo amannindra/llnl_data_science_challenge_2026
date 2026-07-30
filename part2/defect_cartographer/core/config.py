@@ -56,6 +56,10 @@ class DefectConfig:
         return REPO_ROOT / "Aman_Scripts" / "outputs" / "strut_defect_classification" / "strut_defect_classification.csv"
 
     @property
+    def human_review_path(self) -> Path:
+        return REPO_ROOT / "Aman_Scripts" / "outputs" / "strut_defect_classification" / "human_review_labels.csv"
+
+    @property
     def measurements_path(self) -> Path:
         return REPO_ROOT / "Aman_Scripts" / "outputs" / "mcp_tiff_strut_measurements" / "strut_measurements.csv"
 

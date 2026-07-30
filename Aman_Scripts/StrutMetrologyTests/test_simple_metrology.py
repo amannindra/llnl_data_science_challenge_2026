@@ -19,6 +19,7 @@ from Components.ct_surface_metrology import (
     refine_rigid_registration,
     rigid_correction_matrix,
     sample_stl_surface_by_area,
+    similarity_correction_matrix,
     trilinear_sample,
 )
 from Components.strut_metrology import (
@@ -224,6 +225,33 @@ def test_registration_recovers_a_planted_small_rigid_correction():
     )
 
 
+def test_registration_recovers_a_planted_scale_correction():
+    shape = (56, 58, 60)
+    center = np.asarray((30.0, 28.0, 27.0))
+    half = np.asarray((12.0, 9.0, 7.0))
+    planted_scale = 1.008
+    volume = _soft_rotated_box(
+        shape, center, half * planted_scale, np.eye(3), (0.0, 0.0, 0.0)
+    )
+    points, normals = _box_surface_points(center, half, face_steps=9)
+    result = refine_rigid_registration(
+        volume, points, normals,
+        maximum_iterations=8,
+        minimum_end_contrast=300.0,
+        maximum_translation_voxels=1.5,
+        maximum_rotation_degrees=0.5,
+        maximum_scale_fraction=0.05,
+    )
+    planted = similarity_correction_matrix((0.0, 0.0, 0.0), (0.0, 0.0, 0.0), center, planted_scale)
+    recovered_points = apply_transform(points, result["correction_matrix"])
+    planted_points = apply_transform(points, planted)
+    assert np.median(np.linalg.norm(recovered_points - planted_points, axis=1)) < 0.20
+    assert result["scale_factor"] == pytest.approx(planted_scale, abs=0.005)
+    assert result["after_held_out"]["median_absolute_offset_voxels"] < (
+        result["before_held_out"]["median_absolute_offset_voxels"]
+    )
+
+
 def test_registration_rejects_underconstrained_parallel_normals():
     points = np.stack((
         np.full(125, 15.0),
@@ -231,7 +259,7 @@ def test_registration_rejects_underconstrained_parallel_normals():
         np.tile(np.repeat(np.linspace(5, 25, 5), 5), 5),
     ), axis=1)
     normals = np.tile((1.0, 0.0, 0.0), (len(points), 1))
-    with pytest.raises(RuntimeError, match="constrain all six"):
+    with pytest.raises(RuntimeError, match="constrain all seven"):
         refine_rigid_registration(
             _soft_plane(), points, normals,
             minimum_end_contrast=300.0,

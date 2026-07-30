@@ -1,22 +1,22 @@
 {
-  "classification_coverage": 0.19124972926142517,
+  "classification_coverage": 0.37578514186701323,
   "evaluation_scope": "full_18_468_strut_automated_classification",
   "expected_total_struts": 18468,
   "ground_truth_available": false,
-  "median_diameter_um": 356.8046270263033,
+  "median_diameter_um": null,
   "prediction_counts": {
-    "bent_or_misaligned": 12722,
-    "broken": 256,
-    "healthy": 3157,
-    "missing": 118,
+    "bent_or_misaligned": 3816,
+    "broken": 90,
+    "healthy": 6598,
+    "missing": 246,
     "not_applicable": 739,
     "thick": 0,
-    "thin": 1,
-    "uncertain": 1475
+    "thin": 6,
+    "uncertain": 6973
   },
   "sample_size": 18468,
-  "source_classification_sha256": "fb69d8e53444feab8abe9739a674786da0ca57145c5cac8f7ab3f3112a9d747a",
-  "uncertain_fraction": 0.07986787957548191,
-  "valid_thickness_measurement_count": 17995,
+  "source_classification_sha256": "43c5df6a12f63e46f4fecc78f1d9193fec01a07e4b7bc2ca4b9a0b5123724f5c",
+  "uncertain_fraction": 0.3775720164609053,
+  "valid_thickness_measurement_count": 0,
   "warning": "Labels are automated evidence classifications and include review states; they are not validated ground truth."
 }

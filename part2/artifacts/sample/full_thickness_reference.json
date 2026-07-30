@@ -1,6 +1,6 @@
 {
   "design_reference_um_unconfirmed": 350.0,
-  "median_um": 356.8046270263033,
-  "thin_candidate_cutoff_um": 337.2922840067228,
-  "valid_thickness_measurement_count": 17995
+  "median_um": null,
+  "thin_candidate_cutoff_um": null,
+  "valid_thickness_measurement_count": 0
 }

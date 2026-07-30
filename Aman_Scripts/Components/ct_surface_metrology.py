@@ -15,7 +15,7 @@ from typing import Any, Sequence
 
 import numpy as np
 
-from .coordinates import apply_transform
+from .coordinates import apply_transform, homogeneous_matrix
 from tif2stl.stl_geometry import read_stl_triangles
 
 
@@ -263,6 +263,36 @@ def rigid_correction_matrix(
     return matrix
 
 
+def similarity_correction_matrix(
+    rotation_vector_radians: Sequence[float],
+    translation_xyz_voxels: Sequence[float],
+    pivot_xyz: Sequence[float],
+    scale: float,
+) -> np.ndarray:
+    """Build an affine correction rotating and isotropically scaling around
+    ``pivot_xyz`` then translating."""
+
+    from scipy.spatial.transform import Rotation
+
+    rotation_vector = np.asarray(rotation_vector_radians, dtype=np.float64)
+    translation = np.asarray(translation_xyz_voxels, dtype=np.float64)
+    pivot = np.asarray(pivot_xyz, dtype=np.float64)
+    if rotation_vector.shape != (3,) or not np.isfinite(rotation_vector).all():
+        raise ValueError("rotation vector must contain three finite radians")
+    if translation.shape != (3,) or not np.isfinite(translation).all():
+        raise ValueError("translation must contain three finite voxel values")
+    if pivot.shape != (3,) or not np.isfinite(pivot).all():
+        raise ValueError("pivot must contain three finite XYZ values")
+    if not np.isfinite(scale) or scale <= 0.0:
+        raise ValueError("scale must be a finite positive value")
+    rotation = Rotation.from_rotvec(rotation_vector).as_matrix()
+    linear = homogeneous_matrix(rotation=rotation, scale=scale)[:3, :3]
+    matrix = np.eye(4, dtype=np.float64)
+    matrix[:3, :3] = linear
+    matrix[:3, 3] = pivot + translation - linear @ pivot
+    return matrix
+
+
 def _apply_rigid_to_normals(normals_xyz: np.ndarray, matrix: np.ndarray) -> np.ndarray:
     return _unit_vectors(normals_xyz @ matrix[:3, :3].T, "corrected normals")
 
@@ -334,9 +364,11 @@ def refine_rigid_registration(
     minimum_end_contrast: float = 1000.0,
     maximum_translation_voxels: float = 2.0,
     maximum_rotation_degrees: float = 0.5,
+    maximum_scale_fraction: float = 0.02,
     minimum_valid_fraction: float = 0.20,
 ) -> dict[str, Any]:
-    """Refine a small rigid transform with separate selection and audit sets."""
+    """Refine a small similarity transform (rotation + translation + isotropic
+    scale) with separate selection and audit sets."""
 
     points = _points_xyz(surface_points_xyz, "surface_points_xyz")
     normals = _unit_vectors(surface_normals_xyz, "surface_normals_xyz")
@@ -346,6 +378,8 @@ def refine_rigid_registration(
         raise ValueError("maximum_iterations must be positive")
     if maximum_translation_voxels <= 0.0 or maximum_rotation_degrees <= 0.0:
         raise ValueError("registration correction limits must be positive")
+    if maximum_scale_fraction <= 0.0:
+        raise ValueError("maximum_scale_fraction must be positive")
     if not 0.0 < minimum_valid_fraction <= 1.0:
         raise ValueError("minimum_valid_fraction must lie in (0, 1]")
     population_index = np.arange(len(points))
@@ -357,6 +391,8 @@ def refine_rigid_registration(
     pivot = np.median(points, axis=0)
     current_correction = np.eye(4, dtype=np.float64)
     best_correction = np.eye(4, dtype=np.float64)
+    cumulative_scale = 1.0
+    best_scale = 1.0
     corrected_points = points.copy()
     corrected_normals = normals.copy()
     before_selection = local_iso50_crossings(
@@ -401,8 +437,9 @@ def refine_rigid_registration(
         selected_normals = selected_normals[keep]
         selected_offsets = selected_offsets[keep]
         relative = selected_points - pivot
+        scale_term = np.sum(relative * selected_normals, axis=1, keepdims=True)
         system = np.concatenate(
-            (np.cross(relative, selected_normals), selected_normals), axis=1
+            (np.cross(relative, selected_normals), selected_normals, scale_term), axis=1
         )
         residual_scale = max(0.1, 1.4826 * float(np.median(np.abs(
             selected_offsets - np.median(selected_offsets)
@@ -413,10 +450,13 @@ def refine_rigid_registration(
         update, _residuals, rank, singular = np.linalg.lstsq(
             weighted_system, weighted_target, rcond=None
         )
-        if rank < 6:
-            raise RuntimeError("CT surface normals do not constrain all six rigid parameters")
+        if rank < 7:
+            raise RuntimeError(
+                "CT surface normals do not constrain all seven similarity parameters"
+            )
         rotation_update = update[:3]
-        translation_update = update[3:]
+        translation_update = update[3:6]
+        scale_update = float(update[6])
         rotation_norm = float(np.linalg.norm(rotation_update))
         translation_norm = float(np.linalg.norm(translation_update))
         maximum_step_rotation = math.radians(0.10)
@@ -424,8 +464,17 @@ def refine_rigid_registration(
             rotation_update *= maximum_step_rotation / rotation_norm
         if translation_norm > 0.35:
             translation_update *= 0.35 / translation_norm
-        step_matrix = rigid_correction_matrix(rotation_update, translation_update, pivot)
+        maximum_step_scale = 0.005
+        if scale_update > maximum_step_scale:
+            scale_update = maximum_step_scale
+        elif scale_update < -maximum_step_scale:
+            scale_update = -maximum_step_scale
+        step_scale_factor = 1.0 + scale_update
+        step_matrix = similarity_correction_matrix(
+            rotation_update, translation_update, pivot, step_scale_factor
+        )
         current_correction = step_matrix @ current_correction
+        cumulative_scale *= step_scale_factor
         corrected_points = apply_transform(points, current_correction)
         corrected_normals = _apply_rigid_to_normals(normals, current_correction)
         selection_crossings = local_iso50_crossings(
@@ -460,6 +509,7 @@ def refine_rigid_registration(
         if candidate_score < best_selection_score:
             best_selection_score = candidate_score
             best_correction = current_correction.copy()
+            best_scale = cumulative_scale
             best_selection_comparison = comparison
             best_iteration = iteration + 1
         record = {
@@ -487,6 +537,7 @@ def refine_rigid_registration(
 
     correction = best_correction
     correction_accepted = best_iteration > 0
+    scale_factor = best_scale if correction_accepted else 1.0
     selection_reason = (
         f"validation-selected iteration {best_iteration}"
         if correction_accepted
@@ -494,11 +545,14 @@ def refine_rigid_registration(
     )
     corrected_points = apply_transform(points, correction)
     corrected_normals = _apply_rigid_to_normals(normals, correction)
+    extracted_scale = float(np.linalg.det(correction[:3, :3])) ** (1.0 / 3.0)
+    pure_rotation_matrix = correction[:3, :3] / extracted_scale
     rotation_degrees = math.degrees(float(Rotation.from_matrix(
-        correction[:3, :3]
+        pure_rotation_matrix
     ).magnitude()))
     translation_at_pivot = apply_transform(pivot[None, :], correction)[0] - pivot
     translation_norm = float(np.linalg.norm(translation_at_pivot))
+    scale_fraction = abs(extracted_scale - 1.0)
     if rotation_degrees > maximum_rotation_degrees + 1e-9:
         raise RuntimeError(
             f"independent correction rotation {rotation_degrees:.4f} deg exceeds "
@@ -508,6 +562,11 @@ def refine_rigid_registration(
         raise RuntimeError(
             f"independent correction translation {translation_norm:.4f} vox exceeds "
             f"{maximum_translation_voxels:.4f} vox"
+        )
+    if scale_fraction > maximum_scale_fraction + 1e-9:
+        raise RuntimeError(
+            f"independent correction scale fraction {scale_fraction:.4f} exceeds "
+            f"{maximum_scale_fraction:.4f}"
         )
     after_held_out = local_iso50_crossings(
         volume_zyx, corrected_points[held_out], corrected_normals[held_out],
@@ -535,6 +594,7 @@ def refine_rigid_registration(
         rotation_degrees = 0.0
         translation_at_pivot = np.zeros(3, dtype=np.float64)
         translation_norm = 0.0
+        scale_factor = 1.0
         after_summary = before_summary
         held_out_comparison = _common_crossing_comparison(
             before_held_out, before_held_out
@@ -545,6 +605,7 @@ def refine_rigid_registration(
         "rotation_degrees": rotation_degrees,
         "translation_xyz_voxels": translation_at_pivot,
         "translation_magnitude_voxels": translation_norm,
+        "scale_factor": scale_factor,
         "before_held_out": before_summary,
         "after_held_out": after_summary,
         "held_out_common_comparison": held_out_comparison,
@@ -562,7 +623,7 @@ def refine_rigid_registration(
         "selection_sample_count": int(np.count_nonzero(selection)),
         "held_out_sample_count": int(np.count_nonzero(held_out)),
         "converged": optimization_converged,
-        "method": "local-ISO50 robust point-to-plane rigid refinement",
+        "method": "local-ISO50 robust point-to-plane rigid refinement + isotropic scale",
     }
 
 
@@ -570,6 +631,7 @@ __all__ = [
     "local_iso50_crossings",
     "refine_rigid_registration",
     "rigid_correction_matrix",
+    "similarity_correction_matrix",
     "sample_stl_surface_by_area",
     "trilinear_sample",
 ]
