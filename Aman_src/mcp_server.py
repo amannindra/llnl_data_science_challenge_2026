@@ -1,11 +1,14 @@
 import contextlib
+import csv
 import io
 import json
+import math
 import os
 import operator
 import stat
 import sys
 import tempfile
+from pathlib import Path
 
 import numpy as np
 import tifffile
@@ -23,6 +26,9 @@ from skeletonization import skeletonize_mask
 _REPOSITORY_DIR = os.path.dirname(_SRC_DIR)
 if _REPOSITORY_DIR not in sys.path:
     sys.path.insert(0, _REPOSITORY_DIR)
+_SCRIPTS_DIR = os.path.join(_REPOSITORY_DIR, "Aman_Scripts")
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPTS_DIR)
 from Aman_Scripts.Components.asset_io import (
     inspect_npy,
     inspect_tiff,
@@ -31,10 +37,73 @@ from Aman_Scripts.Components.asset_io import (
 )
 from Aman_Scripts.Components.coordinates import zyx_to_xyz
 from Aman_Scripts.Components.lattice_graph import load_lattice_graph, weld_coincident_nodes
+from Aman_Scripts.Components.strut_metrology import measure_strut_cross_sections
 from Aman_Scripts.Components.reporting import file_sha256, write_json
+from registration import RegistrationError, register_json_to_tiff as _register_json_to_tiff
 
 # Initialize the MCP server
 mcp = FastMCP("CT Segmentation")
+
+
+@mcp.tool()
+def register_json_to_tiff(
+    json_filepath: str,
+    tiff_filepath: str,
+    output_filepath: str,
+    mode: str = "auto",
+    translation_xyz: list[float] | None = None,
+    rotation_xyz_degrees: list[float] | None = None,
+    scale_xyz: list[float] | None = None,
+    threshold: float | None = None,
+    max_points: int = 20_000,
+) -> str:
+    """Register lattice JSON junctions to a tilted 3D CT TIFF.
+
+    In ``auto`` mode, a bounded-memory PCA point-cloud fit estimates rotation
+    (including scan tilt), translation, and per-axis scale from Otsu foreground
+    voxels. In ``manual`` mode, provide all three XYZ values explicitly. JSON
+    geometry is XYZ; the TIFF is interpreted as NumPy ZYX and converted to XYZ
+    voxel coordinates. Strut endpoints and unit-cell topology are preserved.
+
+    The output JSON includes the homogeneous transform, threshold, fit error,
+    and an explicit ``tilt_acknowledged`` provenance flag. Registration is a
+    geometric initialization, not proof that the CT is ground truth.
+    """
+    for name, value in (("json_filepath", json_filepath), ("tiff_filepath", tiff_filepath),
+                        ("output_filepath", output_filepath)):
+        if not isinstance(value, str) or not value:
+            return f"Error: '{name}' must be a non-empty string."
+    if os.path.splitext(json_filepath)[1].lower() != ".json":
+        return "Error: 'json_filepath' must end with .json."
+    if os.path.splitext(tiff_filepath)[1].lower() not in {".tif", ".tiff"}:
+        return "Error: 'tiff_filepath' must end with .tif or .tiff."
+    if mode not in {"auto", "manual"}:
+        return "Error: 'mode' must be 'auto' or 'manual'."
+    try:
+        if isinstance(max_points, bool):
+            raise ValueError("max_points must be an integer")
+        max_points = operator.index(max_points)
+        if max_points < 16:
+            raise ValueError("max_points must be at least 16")
+        if threshold is not None:
+            threshold = float(threshold)
+            if not np.isfinite(threshold):
+                raise ValueError("threshold must be finite")
+        saved, report = _register_json_to_tiff(
+            json_filepath, tiff_filepath, output_filepath, mode=mode,
+            translation_xyz=translation_xyz,
+            rotation_xyz_degrees=rotation_xyz_degrees,
+            scale_xyz=scale_xyz, threshold=threshold, max_points=max_points,
+        )
+        digest = file_sha256(saved)
+    except (RegistrationError, OSError, ValueError, TypeError) as exc:
+        return f"Error: Registration failed: {exc}"
+    return (
+        f"Saved registered JSON to {saved} (mode={mode}, "
+        f"threshold={report['threshold']:.12g}, "
+        f"median_error_voxels={report['median_nearest_foreground_distance_voxels']:.6g}, "
+        f"tilt_acknowledged=true, sha256={digest})."
+    )
 
 
 def _json_pointer_value(document, pointer: str):
@@ -985,6 +1054,266 @@ def skeletonize(input_filepath: str, output_filepath: str) -> str:
     return (f"Saved skeleton to {saved_path} "
             f"(shape={tuple(int(s) for s in skel.shape)}, dtype={skel.dtype}, "
             f"skeleton_voxels={nz}).")
+
+def _measure_strut_thickness(
+    volume_zyx: np.ndarray,
+    endpoint0_xyz: tuple[float, float, float],
+    endpoint1_xyz: tuple[float, float, float],
+    expected_radius_voxels: float,
+    voxel_pitch_um: float,
+) -> dict[str, object]:
+    """Measure one strut using the notebook's native-TIFF cross-sections."""
+
+    measurement = measure_strut_cross_sections(
+        volume_zyx,
+        endpoint0_xyz,
+        endpoint1_xyz,
+        expected_radius_voxels,
+        minimum_local_contrast=1000.0,
+    )
+    radii = np.asarray(
+        [value for value in measurement["station_observed_radius_voxels"] if value is not None],
+        dtype=np.float64,
+    )
+    result: dict[str, object] = {
+        "measurement_valid": bool(measurement["measurement_valid"]),
+        "valid_cross_sections": int(radii.size),
+        "diameter_voxels_median": None,
+        "thickness_mm_median": None,
+        "thickness_um_median": None,
+        "diameter_voxels_p10": None,
+        "diameter_voxels_p90": None,
+        "observed_axial_fraction": float(measurement["observed_axial_fraction"]),
+        "connected_support": bool(measurement["connected_support"]),
+        "measurement_reason": (
+            "valid" if measurement["measurement_valid"] else "insufficient_measurement_evidence"
+        ),
+    }
+    if radii.size:
+        diameters = 2.0 * radii
+        median = float(np.median(diameters))
+        result.update({
+            "diameter_voxels_median": median,
+            "thickness_mm_median": median * float(voxel_pitch_um) / 1000.0,
+            "thickness_um_median": median * float(voxel_pitch_um),
+            "diameter_voxels_p10": float(np.quantile(diameters, 0.10)),
+            "diameter_voxels_p90": float(np.quantile(diameters, 0.90)),
+        })
+    return result
+
+
+def _nearest_skeleton_voxel(
+    skeleton_zyx: np.ndarray,
+    point_xyz: tuple[float, float, float],
+    radius: int = 8,
+) -> tuple[int, int, int] | None:
+    """Return the nearest local skeleton voxel as ZYX."""
+
+    center = np.rint(np.asarray(point_xyz, dtype=np.float64)[[2, 1, 0]]).astype(np.int64)
+    shape = np.asarray(skeleton_zyx.shape, dtype=np.int64)
+    lower = np.maximum(center - radius, 0)
+    upper = np.minimum(center + radius + 1, shape)
+    crop = np.asarray(
+        skeleton_zyx[tuple(slice(int(a), int(b)) for a, b in zip(lower, upper))]
+    )
+    positions = np.argwhere(crop)
+    if not len(positions):
+        return None
+    candidates = positions + lower
+    distances = np.sum((candidates - center) ** 2, axis=1)
+    selected = candidates[int(np.argmin(distances))]
+    return tuple(int(value) for value in selected)
+
+
+def _centerline_label_samples(
+    endpoint0_xyz: tuple[float, float, float],
+    endpoint1_xyz: tuple[float, float, float],
+    strut_id: int,
+    shape_zyx: tuple[int, int, int],
+    labels: dict[int, int],
+) -> int:
+    """Add rounded centerline voxels; shared samples become label ``-1``."""
+
+    first = np.asarray(endpoint0_xyz, dtype=np.float64)
+    second = np.asarray(endpoint1_xyz, dtype=np.float64)
+    length = float(np.linalg.norm(second - first))
+    sample_count = max(2, int(math.ceil(length)) + 1)
+    points_xyz = first[None, :] + np.linspace(0.0, 1.0, sample_count)[:, None] * (
+        second - first
+    )[None, :]
+    points_zyx = np.rint(points_xyz[:, [2, 1, 0]]).astype(np.int64)
+    valid = np.all(
+        (points_zyx >= 0) & (points_zyx < np.asarray(shape_zyx)), axis=1
+    )
+    unique = {tuple(int(value) for value in point) for point in points_zyx[valid]}
+    for z, y, x in unique:
+        linear = int(np.ravel_multi_index((z, y, x), shape_zyx))
+        previous = labels.get(linear)
+        labels[linear] = int(strut_id) if previous is None or previous == strut_id else -1
+    return len(unique)
+
+
+def _require_mcp_success(status: str, operation: str) -> None:
+    if not isinstance(status, str) or status.startswith("Error:"):
+        raise RuntimeError(f"{operation} failed: {status}")
+
+
+@mcp.tool()
+def measure_tiff_struts(
+    tiff_filepath: str,
+    registered_json_filepath: str,
+    output_filepath: str,
+    voxel_pitch_um: float = 58.1,
+    expected_radius_voxels: float = 3.65,
+) -> str:
+    """Measure all registered struts from a raw TIFF and write a complete CSV.
+
+    Otsu segmentation and the existing MCP skeletonizer run first. The
+    registered JSON supplies stable identity and endpoints for the 18,468
+    expected members; raw TIFF cross-sections supply thickness. A companion
+    NPZ stores sparse rounded centerline labels in ZYX order. Shared samples
+    at junctions are labeled ``-1`` because ownership is ambiguous.
+    """
+
+    for name, value in (
+        ("tiff_filepath", tiff_filepath),
+        ("registered_json_filepath", registered_json_filepath),
+        ("output_filepath", output_filepath),
+    ):
+        if not isinstance(value, str) or not value:
+            return f"Error: '{name}' must be a non-empty string."
+    if os.path.splitext(tiff_filepath)[1].lower() not in {".tif", ".tiff"}:
+        return "Error: 'tiff_filepath' must end with .tif or .tiff."
+    if os.path.splitext(registered_json_filepath)[1].lower() != ".json":
+        return "Error: 'registered_json_filepath' must end with .json."
+    try:
+        voxel_pitch_um = float(voxel_pitch_um)
+        expected_radius_voxels = float(expected_radius_voxels)
+        if not np.isfinite(voxel_pitch_um) or voxel_pitch_um <= 0.0:
+            raise ValueError("voxel_pitch_um must be positive and finite")
+        if not np.isfinite(expected_radius_voxels) or expected_radius_voxels <= 0.0:
+            raise ValueError("expected_radius_voxels must be positive and finite")
+    except (TypeError, ValueError) as exc:
+        return f"Error: invalid measurement parameters: {exc}"
+
+    output = Path(os.path.abspath(os.path.expanduser(output_filepath)))
+    if output.suffix.lower() != ".csv":
+        output = output.with_suffix(output.suffix + ".csv" if output.suffix else ".csv")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    mask_tif = output.with_name(output.stem + ".otsu_mask.tif")
+    mask_npy = output.with_name(output.stem + ".otsu_mask.npy")
+    skeleton_npy = output.with_name(output.stem + ".skeleton.npy")
+    labels_npz = output.with_name(output.stem + ".centerline_labels.npz")
+
+    try:
+        _require_mcp_success(segment_tiff_otsu(tiff_filepath, str(mask_tif)), "Otsu segmentation")
+        _require_mcp_success(read_tiff(str(mask_tif), str(mask_npy)), "mask conversion")
+        _require_mcp_success(skeletonize(str(mask_npy), str(skeleton_npy)), "skeletonization")
+        graph = load_lattice_graph(registered_json_filepath)
+        junctions = graph.junction_by_id()
+        volume_zyx = tifffile.memmap(tiff_filepath, series=0, mode="r")
+        skeleton_zyx = np.load(skeleton_npy, mmap_mode="r", allow_pickle=False)
+        mask_zyx = np.load(mask_npy, mmap_mode="r", allow_pickle=False)
+        if tuple(volume_zyx.shape) != tuple(skeleton_zyx.shape):
+            raise ValueError("raw TIFF and skeleton shapes do not match")
+    except Exception as exc:  # noqa: BLE001 - return through MCP
+        return f"Error: TIFF strut preparation failed: {exc}"
+
+    fields = [
+        "strut_id", "junction0", "junction1", "endpoint0_xyz_voxels", "endpoint1_xyz_voxels",
+        "endpoint0_skeleton_zyx", "endpoint1_skeleton_zyx", "length_voxels",
+        "centerline_voxel_count", "centerline_skeleton_hit_count", "centerline_skeleton_hit_fraction",
+        "measurement_valid", "valid_cross_sections", "diameter_voxels_median",
+        "thickness_mm_median", "thickness_um_median", "diameter_voxels_p10", "diameter_voxels_p90",
+        "observed_axial_fraction", "connected_support", "measurement_reason",
+    ]
+    rows: list[dict[str, object]] = []
+    labels: dict[int, int] = {}
+    shape_zyx = tuple(int(value) for value in volume_zyx.shape)
+    try:
+        for number, strut in enumerate(graph.struts, start=1):
+            first = tuple(float(value) for value in junctions[strut.junction0].position)
+            second = tuple(float(value) for value in junctions[strut.junction1].position)
+            centerline_count = _centerline_label_samples(
+                first, second, int(strut.id), shape_zyx, labels
+            )
+            nearest0 = _nearest_skeleton_voxel(skeleton_zyx, first)
+            nearest1 = _nearest_skeleton_voxel(skeleton_zyx, second)
+            start = np.asarray(first, dtype=np.float64)
+            stop = np.asarray(second, dtype=np.float64)
+            length = float(np.linalg.norm(stop - start))
+            sample_count = max(2, int(math.ceil(length)) + 1)
+            sample_xyz = start[None, :] + np.linspace(0.0, 1.0, sample_count)[:, None] * (
+                stop - start
+            )[None, :]
+            sample_zyx = np.rint(sample_xyz[:, [2, 1, 0]]).astype(np.int64)
+            in_bounds = np.all(
+                (sample_zyx >= 0) & (sample_zyx < np.asarray(shape_zyx)), axis=1
+            )
+            hits = (
+                int(np.count_nonzero(mask_zyx[tuple(sample_zyx[in_bounds].T)] > 0))
+                if np.any(in_bounds) else 0
+            )
+            measurement = _measure_strut_thickness(
+                volume_zyx, first, second, expected_radius_voxels, voxel_pitch_um
+            )
+            rows.append({
+                "strut_id": int(strut.id),
+                "junction0": int(strut.junction0),
+                "junction1": int(strut.junction1),
+                "endpoint0_xyz_voxels": repr(first),
+                "endpoint1_xyz_voxels": repr(second),
+                "endpoint0_skeleton_zyx": repr(nearest0),
+                "endpoint1_skeleton_zyx": repr(nearest1),
+                "length_voxels": length,
+                "centerline_voxel_count": centerline_count,
+                "centerline_skeleton_hit_count": hits,
+                "centerline_skeleton_hit_fraction": hits / max(1, int(np.count_nonzero(in_bounds))),
+                **measurement,
+            })
+            if number % 1000 == 0:
+                print(
+                    f"measure_tiff_struts: processed {number}/{len(graph.struts)}",
+                    file=sys.stderr,
+                )
+
+        temporary_csv = output.with_name("." + output.name + ".tmp")
+        with temporary_csv.open("w", newline="", encoding="utf-8") as handle:
+            writer = csv.DictWriter(handle, fieldnames=fields, extrasaction="ignore")
+            writer.writeheader()
+            writer.writerows(rows)
+        os.replace(temporary_csv, output)
+
+        linear_indices = np.fromiter(labels.keys(), dtype=np.int64, count=len(labels))
+        label_values = np.fromiter(labels.values(), dtype=np.int64, count=len(labels))
+        zyx = np.column_stack(np.unravel_index(linear_indices, shape_zyx)).astype(np.int32, copy=False)
+        temporary_npz = labels_npz.with_name("." + labels_npz.name + ".tmp.npz")
+        np.savez_compressed(temporary_npz, zyx=zyx, strut_id=label_values)
+        os.replace(temporary_npz, labels_npz)
+    except Exception as exc:  # noqa: BLE001 - return through MCP
+        for temporary in (
+            output.with_name("." + output.name + ".tmp"),
+            labels_npz.with_name("." + labels_npz.name + ".tmp.npz"),
+        ):
+            if temporary.exists():
+                temporary.unlink()
+        return f"Error: TIFF strut measurement failed: {exc}"
+
+    valid = sum(bool(row["measurement_valid"]) for row in rows)
+    measured = [
+        float(row["thickness_um_median"])
+        for row in rows if row["thickness_um_median"] is not None
+    ]
+    average = float(np.mean(measured)) if measured else None
+    ambiguous = int(np.count_nonzero(label_values < 0))
+    return (
+        f"Saved {len(rows):,} strut records to {output}; "
+        f"valid_measurements={valid:,}, measured={len(measured):,}, "
+        f"average_thickness_um={average}, centerline_labels={len(label_values):,}, "
+        f"ambiguous_junction_labels={ambiguous:,}, mask={mask_tif}, skeleton={skeleton_npy}, "
+        f"labels={labels_npz}."
+    )
+
 
 if __name__ == "__main__":
     # Run the FastMCP server, exposing the tools over standard I/O (default)
