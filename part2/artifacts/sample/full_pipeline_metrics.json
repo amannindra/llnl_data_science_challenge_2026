@@ -3,7 +3,7 @@
   "evaluation_scope": "full_18_468_strut_automated_classification",
   "expected_total_struts": 18468,
   "ground_truth_available": false,
-  "median_diameter_um": null,
+  "median_diameter_um": 356.8046270263033,
   "prediction_counts": {
     "bent_or_misaligned": 3816,
     "broken": 90,
@@ -17,6 +17,6 @@
   "sample_size": 18468,
   "source_classification_sha256": "43c5df6a12f63e46f4fecc78f1d9193fec01a07e4b7bc2ca4b9a0b5123724f5c",
   "uncertain_fraction": 0.3775720164609053,
-  "valid_thickness_measurement_count": 0,
+  "valid_thickness_measurement_count": 17995,
   "warning": "Labels are automated evidence classifications and include review states; they are not validated ground truth."
 }
