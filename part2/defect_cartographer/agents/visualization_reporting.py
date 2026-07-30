@@ -23,6 +23,9 @@ def build_visualization_reporting_subagent(model: str) -> Agent[Any]:
             "filters, spatial bounds, a selected strut ID, and the compact scene "
             "artifact reference. Never request or place full lattice geometry or raw "
             "CT voxels in model context; the dashboard loads geometry directly. "
+            "Only recommend clustering displays when get_pipeline_summary reports a "
+            "compatible clustering artifact; otherwise state that the future specialist "
+            "slot is inactive. "
             "Return display recommendations to the Analysis Coordinator. "
             + GLOBAL_SAFETY_INSTRUCTIONS
         ),

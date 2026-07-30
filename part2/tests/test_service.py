@@ -33,6 +33,7 @@ def test_summary_and_filters_are_bounded_and_read_only() -> None:
     )
 
     assert summary["sample_size"] == 18_468
+    assert summary["clustering"]["status"] == "not_available"
     assert summary["candidate_counts"] == {
         "bent_or_misaligned": 12_722,
         "healthy": 3_157,
@@ -60,6 +61,7 @@ def test_strut_lookup_and_group_comparison() -> None:
 
     assert details["record"]["strut_id"] == 8578
     assert details["record"]["prediction"] == "healthy"
+    assert details["clustering"]["status"] == "not_available"
     assert "not_validated" in details["classification_status"]
     assert comparison["filtered_sample_size"] == 18_468
     assert {row["group"] for row in comparison["groups"]} == {

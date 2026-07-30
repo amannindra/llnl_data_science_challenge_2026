@@ -4,16 +4,28 @@ from __future__ import annotations
 
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any
 
 import numpy as np
 import streamlit as st
 
+from ...core.colors import browser_palette
 from ...core.scene import load_lattice_scene
-from ...core.unit_cell import load_unit_cell_scene
 
 
 BUILD_DIR = Path(__file__).parent / "frontend" / "build"
+CANONICAL_LABELS = ("intact", "missing", "broken", "uncertain")
+LABEL_ALIASES = {
+    "healthy": "intact",
+    "intact": "intact",
+    "missing": "missing",
+    "broken": "broken",
+    "thin": "uncertain",
+    "uncertain": "uncertain",
+    "thick": "uncertain",
+    "bent_or_misaligned": "uncertain",
+    "not_applicable": "uncertain",
+}
 
 
 @lru_cache(maxsize=1)
@@ -43,19 +55,42 @@ def _flatten(values: np.ndarray, dtype: type) -> list[Any]:
     return np.asarray(values).reshape(-1).astype(dtype).tolist()
 
 
-def _scene_geometry_payload(scene: dict[str, np.ndarray]) -> dict[str, Any]:
+def _scene_geometry_payload(
+    scene: dict[str, np.ndarray],
+) -> dict[str, Any]:
+    raw_label_names = [str(value) for value in scene["label_names"].tolist()]
+    raw_codes = np.asarray(scene["analyzed_label_codes"]).reshape(-1)
+    canonical_codes = [
+        CANONICAL_LABELS.index(
+            LABEL_ALIASES.get(raw_label_names[int(code)], "uncertain")
+        )
+        for code in raw_codes
+    ]
     return {
-        "schemaVersion": int(scene["schema_version"]),
+        # Browser schema v3 references analyzed labels by nominal strut ID and
+        # intentionally omits duplicate endpoint arrays.
+        "schemaVersion": 3,
         "coordinateOrder": str(scene["coordinate_order"]),
         "selectedMapping": str(scene["selected_mapping"]),
         "nominalStrutIds": _flatten(scene["nominal_strut_ids"], int),
         "nominalPositionsZyx": _flatten(scene["nominal_segments_zyx"], float),
+        "junctionIds": _flatten(scene.get("junction_ids", np.asarray([])), int),
+        "junctionPositionsZyx": _flatten(
+            scene.get("junction_positions_zyx", np.empty((0, 3))), float
+        ),
+        "nominalJunctionIds": _flatten(
+            scene.get("nominal_junction_ids", np.empty((0, 2))), int
+        ),
         "analyzedStrutIds": _flatten(scene["analyzed_strut_ids"], int),
-        "analyzedPositionsZyx": _flatten(scene["analyzed_segments_zyx"], float),
-        "analyzedLabelCodes": _flatten(scene["analyzed_label_codes"], int),
-        "labelNames": [str(value) for value in scene["label_names"].tolist()],
+        "analyzedLabelCodes": canonical_codes,
+        "analyzedRawLabelCodes": _flatten(raw_codes, int),
+        "labelNames": list(CANONICAL_LABELS),
+        "rawLabelNames": raw_label_names,
         "xrayVerticesZyx": _flatten(scene["xray_vertices_zyx"], float),
         "xrayFaces": _flatten(scene["xray_faces"], int),
+        "xrayVertexTexture": _flatten(
+            scene.get("xray_vertex_texture", np.asarray([])), float
+        ),
     }
 
 
@@ -63,32 +98,14 @@ def _scene_geometry_payload(scene: dict[str, np.ndarray]) -> dict[str, Any]:
 def scene_payload(scene_path: str) -> dict[str, Any]:
     """Serialize the compact scene into a browser-safe, raw-CT-free payload."""
 
+    path = Path(scene_path)
     scene = load_lattice_scene(scene_path)
     payload = _scene_geometry_payload(scene)
     payload.update(
         {
-            "sceneKind": "lattice",
             "viewerTitle": "Interactive Full-Lattice Inspector (Three.js)",
-        }
-    )
-    return payload
-
-
-@lru_cache(maxsize=2)
-def unit_cell_scene_payload(scene_path: str) -> dict[str, Any]:
-    """Serialize one approved derived unit-cell scene without CT voxels."""
-
-    scene = load_unit_cell_scene(scene_path)
-    label = str(scene["target_label"])
-    payload = _scene_geometry_payload(scene)
-    payload.update(
-        {
-            "sceneKind": "unit_cell",
-            "viewerTitle": "Interactive Unit Cell Inspector (Three.js)",
-            "cellId": int(scene["cell_id"]),
-            "targetStrutId": int(scene["target_strut_id"]),
-            "targetLabel": label,
-            "focusZyx": _flatten(scene["focus_zyx"], float),
+            "sceneRevision": f"{path.name}:{path.stat().st_size}:{path.stat().st_mtime_ns}",
+            "palette": browser_palette(),
         }
     )
     return payload
@@ -97,47 +114,22 @@ def unit_cell_scene_payload(scene_path: str) -> dict[str, Any]:
 def lattice_threejs_viewer(
     scene_path: Path | str,
     *,
+    selected_strut_id: int | None = None,
+    slice_evidence: dict[str, Any] | None = None,
     key: str = "lattice-threejs-viewer",
-    height: int | Literal["content", "stretch"] = "content",
+    height: int | str = "content",
 ) -> Any:
     """Render the registered lattice scene and return component state."""
 
-    # "content" lets the wrapper grow with the viewport-relative canvas height in
-    # styles.css; a fixed pixel height would clip it on tall displays.
     renderer = _component_renderer()
-    current_state = st.session_state.get(key, {})
-    selected_strut_id = (
-        current_state.get("selected_strut_id")
-        if isinstance(current_state, dict)
-        else None
-    )
-    payload = dict(scene_payload(str(Path(scene_path).resolve())))
+    resolved_scene = Path(scene_path).resolve()
+    payload = dict(scene_payload(str(resolved_scene)))
     payload["selectedStrutId"] = selected_strut_id
+    payload["sliceEvidence"] = slice_evidence
     return renderer(
         key=key,
         data=payload,
-        default={"selected_strut_id": None},
-        on_selected_strut_id_change=lambda: None,
-        height=height,
-    )
-
-
-def unit_cell_threejs_viewer(
-    scene_path: Path | str,
-    *,
-    key: str,
-    height: int = 680,
-) -> Any:
-    """Render one fixed derived unit-cell scene and return component state."""
-
-    renderer = _component_renderer()
-    payload = dict(unit_cell_scene_payload(str(Path(scene_path).resolve())))
-    target_id = int(payload["targetStrutId"])
-    payload["selectedStrutId"] = target_id
-    return renderer(
-        key=key,
-        data=payload,
-        default={"selected_strut_id": target_id},
+        default={"selected_strut_id": selected_strut_id},
         on_selected_strut_id_change=lambda: None,
         height=height,
     )

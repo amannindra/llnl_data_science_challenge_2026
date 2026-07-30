@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 
 from .core.config import DEFAULT_CONFIG
+from .core.clustering import clustering_record, clustering_summary
 from .core.io import read_json
 from .core.scene import load_lattice_scene
 from .schemas import (
@@ -175,6 +176,7 @@ class ArtifactService:
                         "p90_material_distance_vox"
                     ),
                 },
+                "clustering": clustering_summary(self.sample_dir),
                 "warnings": [
                     "Candidate labels are exploratory and have not been validated.",
                     "Labels include automated review states and are not validated ground truth.",
@@ -198,6 +200,9 @@ class ArtifactService:
         record = _json_safe(rows.iloc[0].to_dict())
         return {
             "record": record,
+            "clustering": _json_safe(
+                clustering_record(self.sample_dir, int(strut_id))
+            ),
             "classification_status": "exploratory_candidate_not_validated",
             "confidence_interpretation": (
                 "Uncalibrated rule strength; not a correctness probability."
