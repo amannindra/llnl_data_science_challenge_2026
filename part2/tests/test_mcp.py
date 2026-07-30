@@ -9,21 +9,25 @@ from fastmcp import Client
 from defect_cartographer.mcp_server import mcp
 
 
-EXPECTED_TOOLS = {
+NATIVE_TOOLS = {
     "get_pipeline_summary",
     "get_strut_details",
     "filter_defect_candidates",
     "compare_defect_groups",
     "get_methodology",
     "prepare_threejs_scene",
+    "get_strut_ct_evidence",
 }
 
 
-def test_mcp_lists_exact_checkpoint_three_tools() -> None:
+def test_mcp_lists_unified_dashboard_and_raw_ct_tools() -> None:
     async def inspect() -> set[str]:
         return {tool.name for tool in await mcp.list_tools()}
 
-    assert asyncio.run(inspect()) == EXPECTED_TOOLS
+    names = asyncio.run(inspect())
+    assert NATIVE_TOOLS <= names
+    assert "raw_ct_read_tiff" in names
+    assert "raw_ct_get_full_defect_summary" in names
 
 
 def test_mcp_calls_return_structured_read_only_results() -> None:
@@ -40,7 +44,7 @@ def test_mcp_calls_return_structured_read_only_results() -> None:
 
     summary, filtered = asyncio.run(call_tools())
     assert summary["sample_size"] == 18_468
-    assert filtered["matching_count"] == 118
+    assert filtered["matching_count"] == 120
     assert all(row["prediction"] == "missing" for row in filtered["records"])
 
 

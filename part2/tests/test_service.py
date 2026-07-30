@@ -34,15 +34,15 @@ def test_summary_and_filters_are_bounded_and_read_only() -> None:
 
     assert summary["sample_size"] == 18_468
     assert summary["candidate_counts"] == {
-        "bent_or_misaligned": 12_722,
-        "healthy": 3_157,
-        "uncertain": 1_475,
+        "bent_or_misaligned": 12_723,
+        "healthy": 3_162,
+        "uncertain": 1_467,
         "not_applicable": 739,
         "broken": 256,
-        "missing": 118,
+        "missing": 120,
         "thin": 1,
     }
-    assert filtered["matching_count"] == 375
+    assert filtered["matching_count"] == 377
     assert filtered["returned_count"] == 3
     assert all(
         row["prediction"] in {"missing", "broken", "thin"}
@@ -88,7 +88,7 @@ def test_methodology_and_threejs_spec_are_bounded() -> None:
     assert "Provisional classification rules" in methodology["markdown"]
     assert scene["viewer_launched"] is False
     assert scene["read_only"] is True
-    assert scene["matching_overlay_count"] == 374
+    assert scene["matching_overlay_count"] == 376
     assert scene["returned_overlay_count"] == 200
     assert len(scene["overlay_strut_ids"]) == 200
     assert scene["nominal_strut_count"] == 18_468

@@ -94,6 +94,21 @@ async def prepare_threejs_scene(
     return _tool_text(await call_readonly_mcp("prepare_threejs_scene", arguments))
 
 
+@function_tool
+async def get_strut_ct_evidence(strut_id: int, crop_radius_voxels: int = 24) -> str:
+    """Render bounded orthogonal CT evidence for one selected strut."""
+
+    return _tool_text(
+        await call_readonly_mcp(
+            "get_strut_ct_evidence",
+            {
+                "strut_id": int(strut_id),
+                "crop_radius_voxels": int(crop_radius_voxels),
+            },
+        )
+    )
+
+
 ANALYSIS_MCP_TOOLS = [
     get_pipeline_summary,
     get_strut_details,
@@ -107,4 +122,5 @@ VISUALIZATION_MCP_TOOLS = [
     filter_defect_candidates,
     get_methodology,
     prepare_threejs_scene,
+    get_strut_ct_evidence,
 ]

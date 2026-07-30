@@ -64,6 +64,18 @@ class DefectConfig:
         return REPO_ROOT / "Aman_Scripts" / "outputs" / "simple_strut_metrology" / "strut_metrology.json"
 
     @property
+    def human_review_path(self) -> Path:
+        return REPO_ROOT / "Aman_Scripts" / "outputs" / "strut_defect_classification" / "human_review_labels.csv"
+
+    @property
+    def otsu_mask_path(self) -> Path:
+        return REPO_ROOT / "Aman_Scripts" / "outputs" / "mcp_tiff_strut_measurements" / "otsu_mask.tif"
+
+    @property
+    def ct_evidence_dir(self) -> Path:
+        return self.output_dir / "ct_evidence"
+
+    @property
     def dashboard_table_path(self) -> Path:
         return self.output_dir / "full_strut_classification.csv"
 

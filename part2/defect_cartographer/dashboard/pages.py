@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import html
+import asyncio
 import math
 
 import pandas as pd
 import streamlit as st
 
 from ..agents import copilot_status, run_copilot
+from ..agents.mcp_tools import call_readonly_mcp
 from .data import DashboardArtifacts
 from .figures import (
     CANDIDATE_COLORS,
@@ -59,6 +61,33 @@ selected rule fired. It is not a probability or accuracy score.
 caused the rule-based classification.
 """
         )
+
+
+@st.cache_data(show_spinner=False)
+def _load_strut_ct_evidence(strut_id: int) -> dict:
+    """Ask the unified MCP boundary for one rendered CT evidence panel."""
+
+    return asyncio.run(
+        call_readonly_mcp(
+            "get_strut_ct_evidence",
+            {"strut_id": int(strut_id), "crop_radius_voxels": 24},
+        )
+    )
+
+
+def _render_ct_evidence(strut_id: int) -> None:
+    """Show the bounded CT crop returned by the unified evidence agent."""
+
+    try:
+        evidence = _load_strut_ct_evidence(int(strut_id))
+        st.subheader("CT evidence")
+        st.image(evidence["image_path"], width="stretch")
+        st.caption(
+            "Green overlay: Otsu-segmented material. Red crosshairs: expected "
+            "strut midpoint. This is rendered evidence, not raw CT data."
+        )
+    except (FileNotFoundError, ValueError, RuntimeError, OSError) as exc:
+        st.warning(f"CT evidence is unavailable for strut {int(strut_id)}: {exc}")
 
 
 def render_overview(artifacts: DashboardArtifacts) -> None:
@@ -232,6 +261,7 @@ def _render_defect_tab(table: pd.DataFrame, label: str) -> None:
         "Not eligible" if pd.isna(diameter) else f"{diameter:.1f} µm",
     )
     st.caption(f"Evidence: {details['prediction_reason']}")
+    _render_ct_evidence(int(selected_id))
 
 
 def render_explorer(artifacts: DashboardArtifacts) -> None:
@@ -389,6 +419,7 @@ def _threejs_inspector(artifacts: DashboardArtifacts) -> None:
         "Not eligible" if pd.isna(diameter) else f"{diameter:.1f} µm",
     )
     st.caption(f"Evidence: {details['prediction_reason']}")
+    _render_ct_evidence(int(selected_id))
 
 
 def render_architecture(artifacts: DashboardArtifacts) -> None:
@@ -441,6 +472,16 @@ def render_architecture(artifacts: DashboardArtifacts) -> None:
                         "Visualization and Reporting",
                         "Read-only scene filters and IDs",
                     ),
+                    (
+                        "get_strut_ct_evidence",
+                        "Visualization and Reporting",
+                        "Rendered CT crop for selected strut",
+                    ),
+                    (
+                        "raw_ct_*",
+                        "Unified formal agent",
+                        "Mounted Aman CT utilities",
+                    ),
                 ],
                 columns=["MCP tool", "Available to", "Purpose"],
             ),
@@ -464,7 +505,7 @@ Registered CT TIFF + aligned nominal JSON
         Read-only ArtifactService
                  |
                  v
-        Six bounded FastMCP tools
+        Unified FastMCP agent: dashboard evidence + mounted Aman CT tools
                  |
         +--------+---------+
         |                  |

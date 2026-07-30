@@ -28,7 +28,7 @@ def test_dashboard_data_filters_without_mutation() -> None:
         gap_range=(0.0, 1.0),
     )
 
-    assert len(selected) == 374
+    assert len(selected) == 376
     assert set(selected["prediction"]) == {"missing", "broken"}
     assert artifacts.table.equals(original)
 

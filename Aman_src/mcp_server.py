@@ -11,6 +11,7 @@ import tempfile
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import tifffile
 from fastmcp import FastMCP
 
@@ -29,6 +30,9 @@ if _REPOSITORY_DIR not in sys.path:
 _SCRIPTS_DIR = os.path.join(_REPOSITORY_DIR, "Aman_Scripts")
 if _SCRIPTS_DIR not in sys.path:
     sys.path.insert(0, _SCRIPTS_DIR)
+_PART2_DIR = os.path.join(_REPOSITORY_DIR, "part2")
+if _PART2_DIR not in sys.path:
+    sys.path.insert(0, _PART2_DIR)
 from Aman_Scripts.Components.asset_io import (
     inspect_npy,
     inspect_tiff,
@@ -40,6 +44,12 @@ from Aman_Scripts.Components.lattice_graph import load_lattice_graph, weld_coinc
 from Aman_Scripts.Components.strut_metrology import measure_strut_cross_sections
 from Aman_Scripts.Components.reporting import file_sha256, write_json
 from registration import RegistrationError, register_json_to_tiff as _register_json_to_tiff
+from defect_cartographer.core.config import DEFAULT_CONFIG as _DEFECT_CONFIG
+from defect_cartographer.core.full_results import (
+    EXPECTED_STRUTS as _EXPECTED_STRUTS,
+    build_full_dashboard_artifacts as _build_full_dashboard_artifacts,
+)
+from analyze_human_anchor_similarity import analyze as _analyze_anchor_similarity
 
 # Initialize the MCP server
 mcp = FastMCP("CT Segmentation")
@@ -1313,6 +1323,185 @@ def measure_tiff_struts(
         f"ambiguous_junction_labels={ambiguous:,}, mask={mask_tif}, skeleton={skeleton_npy}, "
         f"labels={labels_npz}."
     )
+
+
+def _full_classification_table() -> pd.DataFrame:
+    path = _DEFECT_CONFIG.dashboard_table_path
+    if not path.is_file():
+        raise FileNotFoundError(
+            f"Full classification artifact is missing: {path}. "
+            "Run run_full_defect_workflow first."
+        )
+    table = pd.read_csv(path, low_memory=False)
+    if len(table) != _EXPECTED_STRUTS:
+        raise ValueError(
+            f"Expected {_EXPECTED_STRUTS:,} rows in the full classification, found {len(table):,}."
+        )
+    return table
+
+
+@mcp.tool()
+def run_full_defect_workflow(
+    rebuild_saved_artifacts: bool = False,
+    run_anchor_similarity: bool = True,
+) -> str:
+    """Build or inspect the authoritative full-lattice defect workflow.
+
+    The workflow joins the registered JSON/STL geometry, the saved raw-TIFF
+    metrology JSON, the TIFF thickness CSV, automated subtype classifications,
+    and explicit human-review overrides. It covers all 18,468 expected struts.
+    By default it reads saved deterministic evidence; setting
+    ``rebuild_saved_artifacts`` regenerates the compact dashboard table, metrics,
+    report, and Three.js scene from those saved inputs. It does not silently
+    remeasure the 990 MB raw TIFF.
+    """
+    try:
+        if rebuild_saved_artifacts:
+            _build_full_dashboard_artifacts(_DEFECT_CONFIG)
+        table = _full_classification_table()
+        metrics = json.loads(_DEFECT_CONFIG.dashboard_metrics_path.read_text(encoding="utf-8"))
+        result: dict[str, object] = {
+            "status": "ok",
+            "scope": "full_18_468_strut_classification",
+            "rebuilt_saved_artifacts": bool(rebuild_saved_artifacts),
+            "sample_size": int(len(table)),
+            "classification_counts": {
+                str(key): int(value) for key, value in table["prediction"].value_counts().items()
+            },
+            "metrics": metrics,
+            "artifacts": {
+                "classification_csv": str(_DEFECT_CONFIG.dashboard_table_path),
+                "scene_npz": str(_DEFECT_CONFIG.dashboard_scene_path),
+                "metrics_json": str(_DEFECT_CONFIG.dashboard_metrics_path),
+                "alignment_json": str(_DEFECT_CONFIG.dashboard_alignment_path),
+                "report_md": str(_DEFECT_CONFIG.dashboard_report_path),
+                "human_review_csv": str(_DEFECT_CONFIG.human_review_path),
+            },
+        }
+        if run_anchor_similarity:
+            result["anchor_similarity"] = _analyze_anchor_similarity()
+        return json.dumps(result, indent=2, default=str)
+    except Exception as exc:  # noqa: BLE001 - return bounded MCP error text
+        return f"Error: full defect workflow failed: {exc}"
+
+
+@mcp.tool()
+def get_full_defect_summary() -> str:
+    """Return counts and provenance for all 18,468 classified struts."""
+    try:
+        table = _full_classification_table()
+        metrics = json.loads(_DEFECT_CONFIG.dashboard_metrics_path.read_text(encoding="utf-8"))
+        return json.dumps(
+            {
+                "scope": "full_18_468_strut_classification",
+                "sample_size": int(len(table)),
+                "classification_counts": {
+                    str(key): int(value) for key, value in table["prediction"].value_counts().items()
+                },
+                "status_counts": {
+                    str(key): int(value) for key, value in table["classification_status"].value_counts().items()
+                },
+                "valid_thickness_measurements": int(table["thickness_measurement_valid"].sum()),
+                "median_diameter_um": metrics.get("median_diameter_um"),
+                "uncertain_fraction": metrics.get("uncertain_fraction"),
+                "ground_truth_available": False,
+                "warning": "Automated labels and human overrides are evidence classifications, not validated ground truth.",
+            },
+            indent=2,
+        )
+    except Exception as exc:  # noqa: BLE001
+        return f"Error: full defect summary failed: {exc}"
+
+
+@mcp.tool()
+def get_full_strut_details(strut_id: int) -> str:
+    """Return saved measurements and classification for one full-lattice strut."""
+    try:
+        strut_id = operator.index(strut_id)
+        table = _full_classification_table()
+        rows = table[table["strut_id"] == int(strut_id)]
+        if rows.empty:
+            return f"Error: strut_id {strut_id} is not present in the full registered lattice."
+        record = rows.iloc[0].replace({np.nan: None}).to_dict()
+        return json.dumps(
+            {
+                "strut_id": int(strut_id),
+                "record": record,
+                "warning": "Measurements are deterministic saved evidence; labels are not validated ground truth.",
+            },
+            indent=2,
+            default=str,
+        )
+    except Exception as exc:  # noqa: BLE001
+        return f"Error: full strut lookup failed: {exc}"
+
+
+@mcp.tool()
+def filter_full_struts(
+    classifications: list[str] | None = None,
+    min_occupancy: float | None = None,
+    max_occupancy: float | None = None,
+    min_gap_fraction: float | None = None,
+    max_gap_fraction: float | None = None,
+    limit: int = 50,
+) -> str:
+    """Filter the full saved classification table with bounded results."""
+    try:
+        limit = operator.index(limit)
+        if not 1 <= limit <= 200:
+            raise ValueError("limit must be between 1 and 200")
+        table = _full_classification_table()
+        selected = table
+        if classifications:
+            allowed = set(str(value) for value in classifications)
+            selected = selected[selected["prediction"].astype(str).isin(allowed)]
+        for column, lower, upper in (
+            ("occupancy", min_occupancy, max_occupancy),
+            ("gap_fraction", min_gap_fraction, max_gap_fraction),
+        ):
+            values = pd.to_numeric(selected[column], errors="coerce")
+            if lower is not None:
+                selected = selected[values >= float(lower)]
+            if upper is not None:
+                selected = selected[values <= float(upper)]
+        rows = selected.head(limit).replace({np.nan: None}).to_dict(orient="records")
+        return json.dumps(
+            {"matching_count": int(len(selected)), "returned_count": len(rows), "records": rows},
+            indent=2,
+            default=str,
+        )
+    except Exception as exc:  # noqa: BLE001
+        return f"Error: full strut filter failed: {exc}"
+
+
+@mcp.tool()
+def get_human_review_anchors() -> str:
+    """Return explicit human labels and review notes used by the full workflow."""
+    try:
+        if not _DEFECT_CONFIG.human_review_path.is_file():
+            return json.dumps({"anchor_count": 0, "records": []}, indent=2)
+        reviews = pd.read_csv(_DEFECT_CONFIG.human_review_path).replace({np.nan: None})
+        return json.dumps(
+            {
+                "anchor_count": int(len(reviews)),
+                "records": reviews.to_dict(orient="records"),
+                "source": str(_DEFECT_CONFIG.human_review_path),
+            },
+            indent=2,
+            default=str,
+        )
+    except Exception as exc:  # noqa: BLE001
+        return f"Error: human review anchor lookup failed: {exc}"
+
+
+@mcp.tool()
+def compare_human_anchors_to_full_lattice() -> str:
+    """Compare reviewed anchors with all 18,468 rows without auto-relabeling."""
+    try:
+        result = _analyze_anchor_similarity()
+        return json.dumps(result, indent=2, default=str)
+    except Exception as exc:  # noqa: BLE001
+        return f"Error: anchor similarity analysis failed: {exc}"
 
 
 if __name__ == "__main__":

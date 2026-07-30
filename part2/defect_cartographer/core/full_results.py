@@ -29,6 +29,42 @@ CLASSIFICATION_LABELS = (
 )
 
 
+def _apply_human_review_overrides(table: pd.DataFrame, config: DefectConfig) -> pd.DataFrame:
+    """Apply explicit human labels while preserving the automated evidence."""
+
+    if not config.human_review_path.is_file():
+        table["human_review_label"] = ""
+        table["human_review_note"] = ""
+        table["human_review_source"] = ""
+        return table
+    reviews = pd.read_csv(config.human_review_path)
+    required = {"strut_id", "human_label", "review_note"}
+    missing = required.difference(reviews.columns)
+    if missing:
+        raise ValueError(f"Human review file is missing columns: {sorted(missing)}")
+    if reviews["strut_id"].duplicated().any():
+        raise ValueError("Human review file contains duplicate strut IDs")
+    invalid = sorted(set(reviews["human_label"].astype(str)) - set(CLASSIFICATION_LABELS))
+    if invalid:
+        raise ValueError(f"Unsupported human review labels: {invalid}")
+    reviews = reviews[["strut_id", "human_label", "review_note"]].copy()
+    reviews["strut_id"] = reviews["strut_id"].astype(int)
+    table = table.merge(reviews, on="strut_id", how="left", validate="one_to_one")
+    reviewed = table["human_label"].notna()
+    table.loc[reviewed, "defect_type"] = table.loc[reviewed, "human_label"]
+    table.loc[reviewed, "prediction"] = table.loc[reviewed, "human_label"]
+    table["human_review_label"] = table["human_label"].fillna("")
+    table["human_review_note"] = table["review_note"].fillna("")
+    table["human_review_source"] = np.where(reviewed, str(config.human_review_path), "")
+    table.loc[reviewed & table["human_review_label"].isin(["healthy"]), "classification_status"] = "accepted"
+    table.loc[reviewed & table["human_review_label"].isin(["uncertain"]), "classification_status"] = "review"
+    table.loc[reviewed, "classification_confidence"] = "human_reviewed"
+    table.loc[reviewed, "classification_reason"] = "human_review_override"
+    table.loc[reviewed, "prediction_reason"] = table.loc[reviewed, "human_review_note"]
+    table["confidence_percent_uncalibrated"] = _confidence(table["classification_status"].astype(str))
+    return table.drop(columns=["human_label", "review_note"])
+
+
 def _source_path(value: Path, fallback: Path) -> Path:
     path = value if value.is_absolute() else REPO_ROOT / value
     return path if path.is_file() else fallback
@@ -136,6 +172,7 @@ def build_full_results_table(
     )
     merged["prediction_reason"] = merged["classification_reason"].astype(str)
     merged["sample_order"] = np.arange(len(merged), dtype=np.int64)
+    merged = _apply_human_review_overrides(merged, config)
     return merged.sort_values("sample_order").reset_index(drop=True)
 
 

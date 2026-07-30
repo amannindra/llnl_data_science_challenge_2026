@@ -29,7 +29,8 @@ Git. The verified full-lattice reference artifacts are stored in
 
 ## Read-only MCP and agent interfaces
 
-The FastMCP server exposes six read-only tools:
+The formal FastMCP entry point combines the dashboard evidence tools with the
+existing Aman CT tools. It exposes these native read-only dashboard tools:
 
 - `get_pipeline_summary`
 - `get_strut_details`
@@ -37,6 +38,13 @@ The FastMCP server exposes six read-only tools:
 - `compare_defect_groups`
 - `get_methodology`
 - `prepare_threejs_scene`
+- `get_strut_ct_evidence`
+
+The Aman CT tools are mounted under the `raw_ct_` namespace in the same server,
+so registration, TIFF, skeleton, metrology, and full-workflow tools remain
+available without maintaining a second MCP entry point. The selected-strut CT
+tool returns a bounded PNG with Otsu material overlays and never returns raw
+voxel arrays.
 
 Start the stdio server from the repository root:
 
@@ -91,6 +99,6 @@ but is no longer used by the dashboard.
 ## Codex integration
 
 The repository-local `lattice-ct-analysis` skill documents the Part 2 workflow.
-The global `lattice-ct-evidence` MCP entry launches the six-tool read-only server
+The global `lattice-ct-evidence` MCP entry launches this unified server
 with the configured Python environment. Restart Codex CLI only after adding or
 changing that global MCP entry.
