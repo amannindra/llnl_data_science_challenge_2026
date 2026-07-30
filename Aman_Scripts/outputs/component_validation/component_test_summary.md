@@ -2,7 +2,7 @@
 
 Overall: **PASS**
 
-Checks: 469/469
+Checks: 504/504
 
 | Test | Status | Checks |
 | --- | --- | ---: |
@@ -11,6 +11,7 @@ Checks: 469/469
 | `test_real_assets.py` | passed | 25/25 |
 | `test_coordinates.py` | passed | 31/31 |
 | `test_lattice_graph.py` | passed | 39/39 |
+| `test_lattice_stl.py` | passed | 35/35 |
 | `test_segmentation.py` | passed | 33/33 |
 | `test_tiff_mesh.py` | passed | 51/51 |
 | `test_tif2stl.py` | passed | 84/84 |
