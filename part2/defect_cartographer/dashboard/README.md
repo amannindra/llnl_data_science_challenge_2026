@@ -9,7 +9,8 @@ The dashboard provides five views from the saved 60-strut sample:
 5. Three-agent Copilot
 
 The dashboard uses a scientific-workstation layout with restrained Data Science
-Challenge and LLNL identity. One shared palette spans charts and 3D views:
+Challenge, UC Merced, UC Riverside, and LLNL identity. One shared palette spans
+charts and 3D views:
 blue nominal geometry, green intact,
 magenta missing, yellow broken, purple thin, and orange uncertain candidates.
 
@@ -36,13 +37,15 @@ and four fixed Three.js unit-cell examples:
 - thin candidate: unit cell 605, strut 15040;
 - intact candidate: unit cell 362, strut 9000.
 
-Each fixed example contains the canonical 24 nominal struts, registered
-junctions, one classified target overlay, a registered CT isosurface with
-qualitative CT-intensity texture, camera and lighting presets, cutaway controls,
-and the shared evidence side panel. Every canonical node remains visible while
-only the selected strut's two true endpoints are enlarged. The other 23 struts
-remain nominal context. These layers are visual evidence, not validation or a
-calibrated roughness measurement.
+Each fixed example uses 24 solid cylinders for the canonical unit-cell struts.
+Shared endpoints are deduplicated directly from those cylinders and rendered as
+spheres, ensuring that nodes and struts use the same geometry. The selected
+target and its two endpoints use the semantic class color; the other 23 struts
+remain unclassified blue context. Linked CT slices remain supporting evidence,
+not ground-truth validation.
+
+Legends combine color, text, and symbols; controls have visible keyboard focus
+and major 3D views expose loading states.
 
 The table-only Strut Explorer excludes intact records and separates Missing,
 Broken, Thin, and Uncertain into searchable, filterable, paginated tabs with CSV

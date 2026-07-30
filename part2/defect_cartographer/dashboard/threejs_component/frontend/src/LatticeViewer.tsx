@@ -120,8 +120,9 @@ const LABEL_TITLES: Record<string, string> = {
 type SceneHandles = {
   camera: THREE.PerspectiveCamera;
   controls: OrbitControls;
+  sceneCenter: THREE.Vector3;
   nominal: THREE.Object3D;
-  nodes: THREE.Points | null;
+  nodes: THREE.Object3D | null;
   focusNodes: THREE.InstancedMesh;
   overlays: Map<string, THREE.Object3D>;
   contextMesh: THREE.Mesh | null;
@@ -211,6 +212,61 @@ function junctionPoints(
     depthWrite: false,
   });
   return new THREE.Points(geometry, material);
+}
+
+function junctionSpheres(
+  positionsZyx: number[],
+  color: number,
+  radius: number,
+): THREE.InstancedMesh | null {
+  if (!positionsZyx.length) {
+    return null;
+  }
+  const geometry = new THREE.SphereGeometry(1, 18, 12);
+  const material = new THREE.MeshStandardMaterial({
+    color,
+    emissive: color,
+    emissiveIntensity: 0.18,
+    roughness: 0.48,
+    transparent: true,
+    opacity: 0.96,
+    depthTest: false,
+  });
+  const mesh = new THREE.InstancedMesh(
+    geometry,
+    material,
+    positionsZyx.length / 3,
+  );
+  const xyz = zyxToXyz(positionsZyx);
+  for (let index = 0; index < xyz.length / 3; index += 1) {
+    const matrix = new THREE.Matrix4().compose(
+      new THREE.Vector3(
+        xyz[index * 3],
+        xyz[index * 3 + 1],
+        xyz[index * 3 + 2],
+      ),
+      new THREE.Quaternion(),
+      new THREE.Vector3(radius, radius, radius),
+    );
+    mesh.setMatrixAt(index, matrix);
+  }
+  mesh.instanceMatrix.needsUpdate = true;
+  mesh.renderOrder = 6;
+  return mesh;
+}
+
+function uniqueSegmentEndpoints(positionsZyx: number[]): number[] {
+  const endpoints: number[] = [];
+  const seen = new Set<string>();
+  for (let index = 0; index + 2 < positionsZyx.length; index += 3) {
+    const point = positionsZyx.slice(index, index + 3);
+    const key = point.map((value) => value.toFixed(5)).join(":");
+    if (!seen.has(key)) {
+      seen.add(key);
+      endpoints.push(...point);
+    }
+  }
+  return endpoints;
 }
 
 function segmentMatrix(segmentZyx: number[], radius: number): THREE.Matrix4 {
@@ -331,36 +387,28 @@ function updateFocusedNodes(
     return;
   }
   const strutIndex = data.nominalStrutIds.indexOf(strutId);
-  if (
-    strutIndex < 0 ||
-    data.nominalJunctionIds.length !== data.nominalStrutIds.length * 2
-  ) {
+  if (strutIndex < 0) {
     mesh.count = 0;
     return;
   }
-  const first = data.nominalJunctionIds[strutIndex * 2];
-  const second = data.nominalJunctionIds[strutIndex * 2 + 1];
-  const selectedEndpoints = [first, second];
-  const positionById = new Map<number, number>();
-  data.junctionIds.forEach((id, index) => positionById.set(id, index));
-  let instance = 0;
-  selectedEndpoints.forEach((junctionId) => {
-    const positionIndex = positionById.get(junctionId);
-    if (positionIndex === undefined || instance >= 64) {
-      return;
-    }
-    const xyz = zyxToXyz(
-      data.junctionPositionsZyx.slice(positionIndex * 3, positionIndex * 3 + 3),
-    );
+  const segment = data.nominalPositionsZyx.slice(
+    strutIndex * 6,
+    strutIndex * 6 + 6,
+  );
+  const endpointsXyz = zyxToXyz(segment);
+  for (let instance = 0; instance < 2; instance += 1) {
     const matrix = new THREE.Matrix4().compose(
-      new THREE.Vector3(xyz[0], xyz[1], xyz[2]),
+      new THREE.Vector3(
+        endpointsXyz[instance * 3],
+        endpointsXyz[instance * 3 + 1],
+        endpointsXyz[instance * 3 + 2],
+      ),
       new THREE.Quaternion(),
       new THREE.Vector3(radius, radius, radius),
     );
     mesh.setMatrixAt(instance, matrix);
-    instance += 1;
-  });
-  mesh.count = instance;
+  }
+  mesh.count = 2;
   mesh.instanceMatrix.needsUpdate = true;
 }
 
@@ -755,9 +803,9 @@ export const LatticeViewer: FC<ViewerProps> = ({
   );
   const [showNominal, setShowNominal] = useState(true);
   const [showNodes, setShowNodes] = useState(true);
-  const [showContext, setShowContext] = useState(true);
+  const [showContext, setShowContext] = useState(!isUnitCell);
   const [showAxes, setShowAxes] = useState(true);
-  const [contextOpacity, setContextOpacity] = useState(isUnitCell ? 0.82 : 0.1);
+  const [contextOpacity, setContextOpacity] = useState(0.1);
   const [contextClip, setContextClip] = useState(0);
   const [lightingIntensity, setLightingIntensity] = useState(1);
   const [isolateTarget, setIsolateTarget] = useState(false);
@@ -781,6 +829,7 @@ export const LatticeViewer: FC<ViewerProps> = ({
   const [searchError, setSearchError] = useState("");
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [fallbackExpanded, setFallbackExpanded] = useState(false);
+  const [sceneReady, setSceneReady] = useState(false);
   const analyzedIdsRef = useRef(data.analyzedStrutIds);
   const selectedStrutRef = useRef<number | null>(selectedStrutId);
   const setStateValueRef = useRef(setStateValue);
@@ -936,15 +985,31 @@ export const LatticeViewer: FC<ViewerProps> = ({
     }
     const segment = segmentForStrut(data, selectedStrutId);
     if (segment) {
-      positionCylinder(handles.selectedHalo, segment, isUnitCell ? 2.55 : 3.2);
-      colorSelectedCylinder(handles.selectedMesh, selectedLabel, data.palette);
-      positionCylinder(handles.selectedMesh, segment, isUnitCell ? 2.15 : 2.65);
+      if (isUnitCell) {
+        handles.selectedHalo.visible = false;
+        handles.selectedMesh.visible = false;
+      } else {
+        positionCylinder(handles.selectedHalo, segment, 3.2);
+        colorSelectedCylinder(handles.selectedMesh, selectedLabel, data.palette);
+        positionCylinder(handles.selectedMesh, segment, 2.65);
+      }
       updateFocusedNodes(
         handles.focusNodes,
         data,
         selectedStrutId,
-        isUnitCell ? 2.5 : 3.2,
+        isUnitCell ? 3.1 : 3.2,
       );
+      if (isUnitCell) {
+        const endpointMaterial = handles.focusNodes
+          .material as THREE.MeshStandardMaterial;
+        const endpointColor = colorNumber(
+          data.palette.candidates[selectedLabel ?? ""],
+          colorNumber(data.palette.nodes, 0x8fb9e3),
+        );
+        endpointMaterial.color.setHex(endpointColor);
+        endpointMaterial.emissive.setHex(endpointColor);
+        endpointMaterial.needsUpdate = true;
+      }
     }
   }, [
     data,
@@ -958,6 +1023,7 @@ export const LatticeViewer: FC<ViewerProps> = ({
     if (!container) {
       return;
     }
+    setSceneReady(false);
     const validSchema =
       data.coordinateOrder === "zyx" &&
       ((isUnitCell && data.schemaVersion === 2) ||
@@ -996,17 +1062,23 @@ export const LatticeViewer: FC<ViewerProps> = ({
           data.nominalPositionsZyx,
           data.nominalStrutIds,
           nominalColor,
-          1.0,
-          0.94,
+          2.15,
+          1,
         )
       : lineSegments(data.nominalPositionsZyx, nominalColor, 0.8);
     nominal.name = "Nominal lattice";
     scene.add(nominal);
 
-    const nodes = junctionPoints(
-      data.junctionPositionsZyx,
-      colorNumber(data.palette.nodes, 0x8fb9e3),
-    );
+    const nodes = isUnitCell
+      ? junctionSpheres(
+          uniqueSegmentEndpoints(data.nominalPositionsZyx),
+          colorNumber(data.palette.nodes, 0x8fb9e3),
+          2.35,
+        )
+      : junctionPoints(
+          data.junctionPositionsZyx,
+          colorNumber(data.palette.nodes, 0x8fb9e3),
+        );
     if (nodes) {
       nodes.name = "Registered junction nodes";
       scene.add(nodes);
@@ -1018,6 +1090,9 @@ export const LatticeViewer: FC<ViewerProps> = ({
 
     const overlays = new Map<string, THREE.Object3D>();
     data.labelNames.forEach((label, code) => {
+      if (isUnitCell && label !== data.targetLabel) {
+        return;
+      }
       const positions: number[] = [];
       const strutIds: number[] = [];
       data.analyzedLabelCodes.forEach((value, index) => {
@@ -1033,8 +1108,8 @@ export const LatticeViewer: FC<ViewerProps> = ({
           positions,
           strutIds,
           colorNumber(data.palette.candidates[label], nominalColor),
-          isUnitCell ? 1.85 : label === "intact" ? 1.3 : 2.1,
-          label === "intact" ? 0.75 : 1,
+          isUnitCell ? 2.75 : label === "intact" ? 1.3 : 2.1,
+          isUnitCell ? 1 : label === "intact" ? 0.75 : 1,
         );
         overlay.name = `${label} analyzed struts`;
         overlay.visible = visibleLabels.has(label);
@@ -1044,11 +1119,12 @@ export const LatticeViewer: FC<ViewerProps> = ({
     });
 
     let contextMesh: THREE.Mesh | null = null;
-    if (data.xrayVerticesZyx.length && data.xrayFaces.length) {
+    if (!isUnitCell && data.xrayVerticesZyx.length && data.xrayFaces.length) {
       const geometry = new THREE.BufferGeometry();
+      const contextPositions = zyxToXyz(data.xrayVerticesZyx);
       geometry.setAttribute(
         "position",
-        new THREE.BufferAttribute(zyxToXyz(data.xrayVerticesZyx), 3),
+        new THREE.BufferAttribute(contextPositions, 3),
       );
       geometry.setIndex(data.xrayFaces);
       geometry.computeVertexNormals();
@@ -1059,7 +1135,9 @@ export const LatticeViewer: FC<ViewerProps> = ({
         const highColor = new THREE.Color(0xdce6ef);
         const colors = new Float32Array(data.xrayVertexTexture.length * 3);
         data.xrayVertexTexture.forEach((value, index) => {
-          const color = lowColor.clone().lerp(highColor, Math.min(Math.max(value, 0), 1));
+          const color = lowColor
+            .clone()
+            .lerp(highColor, Math.min(Math.max(value, 0), 1));
           colors[index * 3] = color.r;
           colors[index * 3 + 1] = color.g;
           colors[index * 3 + 2] = color.b;
@@ -1091,15 +1169,26 @@ export const LatticeViewer: FC<ViewerProps> = ({
     if (selectedStrutId !== null) {
       const segment = segmentForStrut(data, selectedStrutId);
       if (segment) {
-        positionCylinder(selectedHalo, segment, isUnitCell ? 2.55 : 3.2);
-        colorSelectedCylinder(selectedMesh, selectedLabel, data.palette);
-        positionCylinder(selectedMesh, segment, isUnitCell ? 2.15 : 2.65);
+        if (!isUnitCell) {
+          positionCylinder(selectedHalo, segment, 3.2);
+          colorSelectedCylinder(selectedMesh, selectedLabel, data.palette);
+          positionCylinder(selectedMesh, segment, 2.65);
+        }
         updateFocusedNodes(
           focusNodes,
           data,
           selectedStrutId,
-          isUnitCell ? 2.5 : 3.2,
+          isUnitCell ? 3.1 : 3.2,
         );
+        if (isUnitCell) {
+          const endpointMaterial = focusNodes.material as THREE.MeshStandardMaterial;
+          const endpointColor = colorNumber(
+            data.palette.candidates[selectedLabel ?? ""],
+            colorNumber(data.palette.nodes, 0x8fb9e3),
+          );
+          endpointMaterial.color.setHex(endpointColor);
+          endpointMaterial.emissive.setHex(endpointColor);
+        }
       }
     }
 
@@ -1236,6 +1325,7 @@ export const LatticeViewer: FC<ViewerProps> = ({
     sceneHandles.current = {
       camera,
       controls,
+      sceneCenter: center,
       nominal,
       nodes,
       focusNodes,
@@ -1326,9 +1416,14 @@ export const LatticeViewer: FC<ViewerProps> = ({
     renderer.domElement.addEventListener("pointerup", onPointerUp);
 
     let animationFrame = 0;
+    let firstFrame = true;
     const animate = (): void => {
       controls.update();
       renderer.render(scene, camera);
+      if (firstFrame) {
+        firstFrame = false;
+        setSceneReady(true);
+      }
       animationFrame = requestAnimationFrame(animate);
     };
     animate();
@@ -1480,7 +1575,7 @@ export const LatticeViewer: FC<ViewerProps> = ({
             checked={showNominal}
             onChange={(event) => setShowNominal(event.target.checked)}
           />
-          Blue nominal lattice
+          {isUnitCell ? "Solid unit-cell struts" : "Blue nominal lattice"}
         </label>
         <label>
           <input
@@ -1490,14 +1585,14 @@ export const LatticeViewer: FC<ViewerProps> = ({
           />
           Junction nodes
         </label>
-        <label>
+        {!isUnitCell && <label>
           <input
             type="checkbox"
             checked={showContext}
             onChange={(event) => setShowContext(event.target.checked)}
           />
           Derived CT surface
-        </label>
+        </label>}
         <label>
           <input
             type="checkbox"
@@ -1506,7 +1601,7 @@ export const LatticeViewer: FC<ViewerProps> = ({
           />
           Orientation axes
         </label>
-        {presentLabels.map((label) => (
+        {!isUnitCell && presentLabels.map((label) => (
           <label key={label}>
             <input
               type="checkbox"
@@ -1521,6 +1616,19 @@ export const LatticeViewer: FC<ViewerProps> = ({
           </label>
         ))}
         {isUnitCell && (
+          <span className="target-surface-key">
+            <span
+              className="legend-dot"
+              style={{
+                backgroundColor:
+                  data.palette.candidates[data.targetLabel ?? ""] ??
+                  data.palette.nominal,
+              }}
+            />
+            {LABEL_TITLES[data.targetLabel ?? ""] ?? data.targetLabel} target strut
+          </span>
+        )}
+        {isUnitCell && showNominal && (
           <label>
             <input
               type="checkbox"
@@ -1605,7 +1713,7 @@ export const LatticeViewer: FC<ViewerProps> = ({
             </label>
           </>
         )}
-        <label>
+        {!isUnitCell && <label>
           CT opacity
           <input
             type="range"
@@ -1617,36 +1725,7 @@ export const LatticeViewer: FC<ViewerProps> = ({
             onChange={(event) => setContextOpacity(Number(event.target.value))}
           />
           <span>{Math.round(contextOpacity * 100)}%</span>
-        </label>
-        {isUnitCell && (
-          <>
-            <label>
-              CT cutaway
-              <input
-                type="range"
-                min="0"
-                max="0.8"
-                step="0.05"
-                value={contextClip}
-                disabled={!showContext}
-                onChange={(event) => setContextClip(Number(event.target.value))}
-              />
-              <span>{Math.round(contextClip * 100)}%</span>
-            </label>
-            <label>
-              Surface lighting
-              <input
-                type="range"
-                min="0.35"
-                max="1.8"
-                step="0.05"
-                value={lightingIntensity}
-                onChange={(event) => setLightingIntensity(Number(event.target.value))}
-              />
-              <span>{lightingIntensity.toFixed(2)}×</span>
-            </label>
-          </>
-        )}
+        </label>}
         <div className="viewer-actions">
           <button type="button" onClick={() => sceneHandles.current?.reset()}>
             Reset view
@@ -1683,18 +1762,18 @@ export const LatticeViewer: FC<ViewerProps> = ({
           )}
         </div>
       </div>
-      {isUnitCell && (
-        <div className="surface-scope">
-          CT-derived surface texture — qualitative visualization, not calibrated
-          roughness measurement.
-        </div>
-      )}
       {searchError && <div className="search-error">{searchError}</div>}
       <div
         className={`viewer-body ${
           !evidenceOpen || !data.sliceEvidence ? "viewer-body-no-evidence" : ""
         }`}
       >
+        {!sceneReady && (
+          <div className="viewer-loading" role="status" aria-live="polite">
+            <span />
+            Loading registered 3D evidence…
+          </div>
+        )}
         <div
           ref={containerRef}
           className="viewer-canvas"

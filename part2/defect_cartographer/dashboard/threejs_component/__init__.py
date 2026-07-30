@@ -90,11 +90,14 @@ def scene_payload(scene_path: str) -> dict[str, Any]:
 
 @lru_cache(maxsize=2)
 def unit_cell_scene_payload(scene_path: str) -> dict[str, Any]:
-    """Serialize one approved derived unit-cell scene without CT voxels."""
+    """Serialize one approved solid-strut unit-cell scene without CT voxels."""
 
     scene = load_unit_cell_scene(scene_path)
     label = str(scene["target_label"])
     payload = _scene_geometry_payload(scene)
+    payload["xrayVerticesZyx"] = []
+    payload["xrayFaces"] = []
+    payload["xrayVertexTexture"] = []
     path = Path(scene_path)
     payload.update(
         {

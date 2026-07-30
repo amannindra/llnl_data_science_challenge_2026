@@ -77,7 +77,8 @@ PYTHONPATH=part2 streamlit run part2/app.py
 
 The dashboard provides top navigation for Overview, Strut Explorer, Visual
 Analysis, System Design, and Copilot. Its visual system combines a compact
-scientific workstation layout with restrained Challenge and LLNL identity.
+scientific workstation layout with restrained Challenge, UC Merced, UC
+Riverside, and LLNL identity.
 The Strut
 Explorer separates missing, broken, thin, and uncertain candidates into
 filterable, paginated tabs and excludes intact rows. It is the table and export
@@ -107,14 +108,14 @@ evidence and never receive raw CT voxels.
 Visual Analysis also exposes four fixed exploratory unit-cell scenes under
 `artifacts/sample/unit_cells/`: broken cell 521 / strut 12958, missing cell
 646 / strut 16082, thin cell 605 / strut 15040, and intact cell 362 / strut
-9000. Each scene displays the canonical 24 registered struts as cylinders,
-every canonical junction, one semantic target overlay, and a registered
-segmented CT isosurface shaded by normalized CT intensity. This surface texture
-is qualitative visualization, not a calibrated roughness measurement. Only the
-selected strut's two actual endpoint nodes are enlarged. The remaining 23
-nominal struts are not assigned a class. The same linked CT evidence panel is
-used for unit cells and the full lattice. The raw TIFF and raw CT voxel arrays
-are never sent to the browser or an agent.
+9000. Each scene renders its 24 canonical struts as solid cylinders. Shared
+endpoints are deduplicated directly from those strut segments and shown as
+spheres, while the selected target and its two endpoints use the semantic class
+color. The other 23 struts remain unclassified context.
+
+Text labels and symbols accompany the semantic colors, keyboard focus is
+visible, and unavailable evidence is stated rather than left blank. The raw
+TIFF and raw CT voxel arrays are never sent to the browser or an agent.
 
 Rebuild the four derived examples from the repository root with:
 

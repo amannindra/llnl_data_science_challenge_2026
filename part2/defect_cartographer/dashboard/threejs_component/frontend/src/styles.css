@@ -113,9 +113,19 @@
 }
 
 .legend-dot {
+  border: 1px solid rgba(29, 29, 31, 0.32);
   border-radius: 50%;
   height: 8px;
   width: 8px;
+}
+
+.target-surface-key {
+  align-items: center;
+  color: #1d1d1f;
+  display: inline-flex;
+  font-size: 0.82rem;
+  font-weight: 650;
+  gap: 8px;
 }
 
 .viewer-settings {
@@ -181,6 +191,13 @@ button:hover:not(:disabled) {
   background: #e8e8ed;
 }
 
+button:focus-visible,
+select:focus-visible,
+input:focus-visible {
+  outline: 3px solid #0066cc;
+  outline-offset: 3px;
+}
+
 button:disabled {
   color: #86868b;
   cursor: not-allowed;
@@ -196,6 +213,34 @@ button:disabled {
   display: grid;
   grid-template-columns: minmax(0, 1.45fr) minmax(390px, 1fr);
   min-height: 630px;
+  position: relative;
+}
+
+.viewer-loading {
+  align-items: center;
+  background: rgba(245, 247, 250, 0.94);
+  color: #435466;
+  display: flex;
+  font-size: 0.82rem;
+  font-weight: 650;
+  gap: 10px;
+  inset: 0;
+  justify-content: center;
+  position: absolute;
+  z-index: 20;
+}
+
+.viewer-loading span {
+  animation: viewer-spin 0.8s linear infinite;
+  border: 3px solid #c7d4e2;
+  border-radius: 50%;
+  border-top-color: #215290;
+  height: 22px;
+  width: 22px;
+}
+
+@keyframes viewer-spin {
+  to { transform: rotate(360deg); }
 }
 
 .viewer-shell:fullscreen .viewer-body,
@@ -483,16 +528,6 @@ button:disabled {
   color: #a81048;
   font-size: 0.78rem;
   padding: 8px 24px;
-}
-
-.surface-scope {
-  background: #eef3f8;
-  border-left: 4px solid #215290;
-  color: #4d5966;
-  font-size: 0.76rem;
-  line-height: 1.4;
-  margin: 0 24px 10px;
-  padding: 8px 12px;
 }
 
 .viewer-footer {

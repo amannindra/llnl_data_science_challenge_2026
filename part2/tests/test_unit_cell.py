@@ -49,6 +49,15 @@ def test_fixed_unit_cell_scenes_preserve_registered_geometry() -> None:
             2,
         )
         assert len(scene["junction_ids"]) == len(scene["junction_positions_zyx"])
+        endpoint_keys = {
+            tuple(np.round(point, 5))
+            for point in scene["nominal_segments_zyx"].reshape(-1, 3)
+        }
+        junction_keys = {
+            tuple(np.round(point, 5))
+            for point in scene["junction_positions_zyx"]
+        }
+        assert endpoint_keys == junction_keys
         assert str(scene["selected_mapping"]) == (
             "JSON (x,y,z) -> CT array (z,y,x)"
         )
@@ -99,7 +108,9 @@ def test_unit_cell_browser_payload_contains_no_raw_ct() -> None:
         assert payload["cellId"] == example.cell_id
         assert payload["targetStrutId"] == example.target_strut_id
         assert len(payload["nominalStrutIds"]) == UNIT_CELL_STRUT_COUNT
-        assert len(payload["xrayVertexTexture"]) == len(payload["xrayVerticesZyx"]) // 3
+        assert payload["xrayVerticesZyx"] == []
+        assert payload["xrayFaces"] == []
+        assert payload["xrayVertexTexture"] == []
         assert "volume" not in serialized
         assert "voxelvalues" not in serialized
         assert "tiff" not in serialized

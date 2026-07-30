@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import base64
+from functools import lru_cache
 from pathlib import Path
 
 import streamlit as st
@@ -26,29 +28,56 @@ PAGES = {
 PART2_DIR = Path(__file__).resolve().parent
 
 
+@lru_cache(maxsize=8)
+def _asset_data_uri(path: Path) -> str:
+    """Return a small local branding asset as an embedded browser-safe URI."""
+
+    media_types = {
+        ".png": "image/png",
+        ".webp": "image/webp",
+    }
+    media_type = media_types.get(path.suffix.lower())
+    if media_type is None:
+        raise ValueError(f"Unsupported branding asset format: {path.suffix}")
+    encoded = base64.b64encode(path.read_bytes()).decode("ascii")
+    return f"data:{media_type};base64,{encoded}"
+
+
 def _render_brand_header() -> None:
-    left, center, right = st.columns([0.8, 4, 1.65], vertical_alignment="center")
-    with left:
-        st.image(
-            PART2_DIR / "assets" / "branding" / "dsc-logo.png",
-            width=76,
-        )
-    with center:
-        st.markdown(
-            """
+    branding_dir = PART2_DIR / "assets" / "branding"
+    assets = {
+        "dsc": _asset_data_uri(branding_dir / "dsc-logo.png"),
+        "merced": _asset_data_uri(branding_dir / "uc-merced-logo.webp"),
+        "riverside": _asset_data_uri(
+            branding_dir / "ucr-primary-horizontal.png"
+        ),
+        "llnl": _asset_data_uri(branding_dir / "llnl-logo.webp"),
+    }
+    st.markdown(
+        f"""
+<div class="brand-header">
+  <img class="brand-logo brand-logo-dsc" src="{assets['dsc']}"
+       alt="Data Science Challenge">
 <div class="brand-title">
   <span>2026 Data Science Challenge</span>
   <strong>Lattice CT Analysis</strong>
   <div class="team-byline">Haseeb Ahmad · Ulices Ramirez · Anthony Ching · Aman Nindra</div>
 </div>
+  <img class="brand-logo brand-logo-merced" src="{assets['merced']}"
+       alt="University of California, Merced">
+  <svg class="brand-logo brand-logo-riverside"
+       viewBox="24 45 238 70"
+       preserveAspectRatio="xMidYMid meet"
+       role="img"
+       aria-label="University of California, Riverside">
+    <image href="{assets['riverside']}" width="600" height="146"></image>
+  </svg>
+  <img class="brand-logo brand-logo-llnl" src="{assets['llnl']}"
+       alt="Lawrence Livermore National Laboratory">
+</div>
 """,
-            unsafe_allow_html=True,
-        )
-    with right:
-        st.image(
-            PART2_DIR / "assets" / "branding" / "llnl-logo.webp",
-            width=190,
-        )
+        unsafe_allow_html=True,
+    )
     st.markdown('<div class="brand-divider"></div>', unsafe_allow_html=True)
 
 
@@ -87,6 +116,35 @@ def main() -> None:
         color: var(--ink);
     }
     .stApp { background: var(--canvas); }
+    .brand-header {
+        align-items: center;
+        display: grid;
+        gap: 16px;
+        grid-template-columns:
+            72px minmax(280px, 1fr)
+            minmax(120px, 0.82fr)
+            minmax(120px, 0.82fr)
+            minmax(140px, 0.92fr);
+        width: 100%;
+    }
+    .brand-logo {
+        display: block;
+        height: auto;
+        max-height: 52px;
+        max-width: 100%;
+        object-fit: contain;
+        width: 100%;
+    }
+    .brand-logo-dsc {
+        justify-self: start;
+        max-height: 64px;
+        width: 64px;
+    }
+    .brand-logo-merced,
+    .brand-logo-riverside,
+    .brand-logo-llnl {
+        justify-self: end;
+    }
     .brand-title {
         display: flex;
         flex-direction: column;
@@ -115,6 +173,39 @@ def main() -> None:
         border-bottom: 3px solid var(--accent);
         box-shadow: 0 1px 0 var(--challenge-green);
         margin: 8px 0 18px;
+    }
+    @media (max-width: 960px) {
+        .brand-header {
+            grid-template-columns: 64px repeat(4, minmax(0, 1fr));
+            gap: 12px;
+        }
+        .brand-logo-dsc {
+            grid-column: 1;
+            grid-row: 1;
+            width: 56px;
+        }
+        .brand-title {
+            grid-column: 2 / -1;
+            grid-row: 1;
+        }
+        .brand-logo-merced {
+            grid-column: 1 / 3;
+            grid-row: 2;
+        }
+        .brand-logo-riverside {
+            grid-column: 3 / 5;
+            grid-row: 2;
+        }
+        .brand-logo-llnl {
+            grid-column: 5;
+            grid-row: 2;
+        }
+        .brand-logo-merced,
+        .brand-logo-riverside,
+        .brand-logo-llnl {
+            justify-self: center;
+            max-height: 44px;
+        }
     }
     .block-container {
         max-width: 1640px;
@@ -278,6 +369,46 @@ def main() -> None:
         text-align: center;
     }
     .integration-contract span { color: var(--muted); }
+    .semantic-legend {
+        align-items: center;
+        background: var(--workspace);
+        border: 1px solid var(--divider);
+        border-radius: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 18px;
+        margin: 10px 0 18px;
+        padding: 10px 14px;
+    }
+    .semantic-legend.compact { margin: 8px 0 12px; }
+    .semantic-legend-item {
+        align-items: center;
+        color: var(--ink);
+        display: inline-flex;
+        font-size: 0.8rem;
+        font-weight: 600;
+        gap: 7px;
+    }
+    .semantic-legend-item b {
+        align-items: center;
+        border: 1px solid rgba(22, 32, 42, 0.24);
+        border-radius: 50%;
+        color: #FFFFFF;
+        display: inline-flex;
+        font-size: 0.7rem;
+        height: 20px;
+        justify-content: center;
+        width: 20px;
+    }
+    .semantic-legend-item:nth-child(2) b { color: #16202A; }
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible,
+    [tabindex]:focus-visible {
+        outline: 3px solid #0066CC !important;
+        outline-offset: 3px !important;
+    }
     hr { border-color: var(--divider) !important; }
     @media (max-width: 900px) {
         .block-container { padding: 20px 16px 48px; }

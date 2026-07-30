@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import html
 import math
+from pathlib import Path
 
 import pandas as pd
 import streamlit as st
@@ -122,6 +123,65 @@ UNIT_CELL_EXAMPLES = {
     "Thin": ("thin", 605, 15040),
     "Intact": ("intact", 362, 9000),
 }
+SEMANTIC_SYMBOLS = {
+    "missing": "×",
+    "broken": "∥",
+    "thin": "↓",
+    "uncertain": "?",
+    "intact": "✓",
+    "nominal": "◇",
+}
+MEASUREMENT_HELP = {
+    "occupancy": (
+        "Material coverage: fraction of expected centerline samples with segmented "
+        "CT material inside the search corridor."
+    ),
+    "gap_fraction": (
+        "Longest gap: largest uninterrupted unsupported centerline run divided by "
+        "the sampled strut length."
+    ),
+    "alignment_error_vox": (
+        "Alignment offset: median distance in voxels from the expected centerline "
+        "to nearby segmented CT material."
+    ),
+    "diameter_median_um": (
+        "Diameter: exploratory median interior thickness converted with the saved "
+        "anisotropic voxel spacing."
+    ),
+}
+
+
+def _semantic_legend(*, compact: bool = False) -> None:
+    """Render one text-and-symbol legend so color is never the only cue."""
+
+    labels = ("missing", "broken", "thin", "uncertain", "intact", "nominal")
+    items = "".join(
+        '<span class="semantic-legend-item">'
+        f'<b style="background:{CANDIDATE_COLORS.get(label, "#215290")}">'
+        f'{SEMANTIC_SYMBOLS[label]}</b>{label.title()}</span>'
+        for label in labels
+    )
+    qualifier = " compact" if compact else ""
+    st.markdown(
+        f'<div class="semantic-legend{qualifier}" role="list" '
+        f'aria-label="Classification legend">{items}</div>',
+        unsafe_allow_html=True,
+    )
+
+
+def _example_artifacts(
+    artifacts: DashboardArtifacts,
+    label: str,
+) -> tuple[str, int, int, Path, Path]:
+    key, cell_id, target_strut_id = UNIT_CELL_EXAMPLES[label]
+    unit_cell_dir = artifacts.sample_dir / "unit_cells"
+    return (
+        key,
+        cell_id,
+        target_strut_id,
+        unit_cell_dir / f"{key}_cell_{cell_id}.npz",
+        unit_cell_dir / f"{key}_cell_{cell_id}.json",
+    )
 
 
 def _open_strut_in_visual_analysis(strut_id: int) -> None:
@@ -289,6 +349,7 @@ def render_explorer(artifacts: DashboardArtifacts) -> None:
 def render_thickness_spatial(artifacts: DashboardArtifacts) -> None:
     st.title("Visual Analysis")
     st.caption("Explore measurements, registered geometry, and CT context")
+    _semantic_legend(compact=True)
     pending_visualization = st.session_state.pop("_pending_visualization", None)
     visualization_options = [
         "X-ray 3D view",
@@ -467,14 +528,14 @@ def _threejs_inspector(artifacts: DashboardArtifacts) -> None:
     st.caption(f"Evidence: {details['prediction_reason']}")
 
 
-def _unit_cell_inspector(artifacts: DashboardArtifacts) -> None:
+def _unit_cell_inspector(
+    artifacts: DashboardArtifacts,
+) -> None:
     st.subheader("Interactive Unit Cell Inspector (Three.js)")
     st.caption(
-        "Three.js renders one compact registered cell at a time using 24 nominal "
-        "strut cylinders and the registered segmented CT isosurface. CT-intensity "
-        "shading provides qualitative surface texture—not a calibrated roughness "
-        "measurement. The selected target is exploratory; the other 23 blue "
-        "struts are unclassified nominal context."
+        "Three.js renders the 24 canonical unit-cell struts as solid geometry. "
+        "Spheres mark their shared endpoints, and the selected exploratory target "
+        "is highlighted with its semantic class color."
     )
     selected_label = st.radio(
         "Example",
@@ -482,10 +543,10 @@ def _unit_cell_inspector(artifacts: DashboardArtifacts) -> None:
         horizontal=True,
         key="unit-cell-example",
     )
-    key, cell_id, target_strut_id = UNIT_CELL_EXAMPLES[selected_label]
-    unit_cell_dir = artifacts.sample_dir / "unit_cells"
-    scene_path = unit_cell_dir / f"{key}_cell_{cell_id}.npz"
-    metadata_path = unit_cell_dir / f"{key}_cell_{cell_id}.json"
+    key, cell_id, target_strut_id, scene_path, metadata_path = _example_artifacts(
+        artifacts,
+        selected_label,
+    )
     missing = [
         path.name
         for path in (scene_path, metadata_path)
@@ -526,8 +587,6 @@ def _unit_cell_inspector(artifacts: DashboardArtifacts) -> None:
         "preserved. Linked views are locally contrast-scaled supporting evidence, "
         "not ground-truth validation."
     )
-
-
 def render_architecture(artifacts: DashboardArtifacts) -> None:
     st.title("System Design")
     st.caption("A deterministic measurement core with bounded evidence tools and agents")
