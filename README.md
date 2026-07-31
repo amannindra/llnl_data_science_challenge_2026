@@ -32,6 +32,30 @@ By the end of the challenge, participants should understand how to move from sta
 
 This challenge was created by Haichao Miao, Research Scientist at LLNL, miao1 (at) llnl.gov
 
+## Automated strut defect classification
+
+The existing full native-TIFF metrology report can be converted into
+conservative per-strut defect subtypes with:
+
+```bash
+conda run -n DSC python Aman_Scripts/classify_strut_defects.py
+```
+
+The classifier joins the STL/JSON expected struts to their TIFF measurements by
+`strut_id` and writes `Aman_Scripts/outputs/strut_defect_classification/`.
+`strut_defect_classification.csv` contains one row for all 18,468 expected
+struts; `anchor_review_queue.csv` contains a small stratified set for human
+review; `summary.json` records counts and criteria; and `methodology.md`
+documents the decision boundary.
+
+The labels are evidence classifications, not confirmed ground truth. Missing
+requires low axial support plus a large unsupported gap, broken requires
+disconnected support or a large gap after excluding the missing rule, and
+thin/thick require radial deviation beyond the effective tolerance. Centerline
+offsets are reported as `bent_or_misaligned` review cases because registration
+error can produce the same signal. Invalid or near-threshold measurements stay
+`uncertain` rather than being forced into a defect class.
+
 The "missing strut" dataset builds on the work of many contributors. Jenny Nicolino-Wang served as PI for the project. Alex Hamza originally suggested the idea, and Karl Fisher led the RUS effort, with David Stobbe performing the initial RUS work and Brian Tran later taking over analysis and paper writing. The lattice design and printing effort included work by Paul Alexander, Steve Burke, and Robert Spence, who cut the parts from the build plate.
 
 ## Challenge Description

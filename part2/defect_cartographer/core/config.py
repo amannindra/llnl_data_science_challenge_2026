@@ -32,7 +32,7 @@ class DefectConfig:
     sample_size: int = 60
     random_seed: int = 20_260_723
     voxel_spacing_um: tuple[float, float, float] = (58.09, 58.09, 58.09)
-    design_diameter_um: float = 350.0
+    design_diameter_um: float = 424.0  # STL/paper nominal (58.1um/vox * r~3.65vox); replaces never-validated 350um placeholder
     axis_permutation: tuple[int, int, int] = (2, 1, 0)
     alignment_struts: int = 600
     alignment_search_radius_vox: int = 4

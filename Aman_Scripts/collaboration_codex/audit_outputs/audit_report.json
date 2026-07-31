@@ -1,0 +1,1542 @@
+{
+  "counts": {
+    "pass": 43,
+    "warn": 19,
+    "fail": 2
+  },
+  "findings": [
+    {
+      "check_id": "manifest.file_count",
+      "status": "pass",
+      "message": "Manifest file counts reconcile.",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/MANIFEST.json",
+      "evidence": {
+        "declared": 176,
+        "listed": 176,
+        "actual": 176
+      }
+    },
+    {
+      "check_id": "manifest.coverage",
+      "status": "pass",
+      "message": "Every handoff file is represented exactly once in the manifest.",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/MANIFEST.json",
+      "evidence": {
+        "missing_files": [],
+        "unlisted_files": []
+      }
+    },
+    {
+      "check_id": "manifest.nonself_integrity",
+      "status": "pass",
+      "message": "All non-manifest file hashes and sizes match the handoff manifest.",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/MANIFEST.json",
+      "evidence": {
+        "mismatches": []
+      }
+    },
+    {
+      "check_id": "manifest.self_hash",
+      "status": "warn",
+      "message": "MANIFEST.json records a stale hash/size for itself; a directly embedded self-hash cannot be stable after serialization.",
+      "severity": "medium",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/MANIFEST.json",
+      "evidence": {
+        "mismatches": [
+          {
+            "path": "MANIFEST.json",
+            "listed_size": 2057,
+            "actual_size": 37600,
+            "listed_sha256": "cb9eb3aebd3f616fc395773d7207f54a44bf0f1867d76d0f2cc7ace4cd4ddd31",
+            "actual_sha256": "c7624c316ee26f41c3824162d9f8accf8971e6cc5e96e199e42b4f3eb5845652"
+          }
+        ]
+      }
+    },
+    {
+      "check_id": "packet.raw_data_exclusion",
+      "status": "pass",
+      "message": "The packet excludes raw TIFF/STL/NumPy/source-data artifacts.",
+      "severity": "info",
+      "path": null,
+      "evidence": {
+        "forbidden_paths": []
+      }
+    },
+    {
+      "check_id": "structured.parseability",
+      "status": "pass",
+      "message": "Every JSON, CSV, YAML, and TOML artifact parses successfully.",
+      "severity": "info",
+      "path": null,
+      "evidence": {
+        "parsed_counts": {
+          ".json": 8,
+          ".yaml": 4,
+          ".toml": 4,
+          ".csv": 15
+        },
+        "errors": []
+      }
+    },
+    {
+      "check_id": "source.production_code_available",
+      "status": "fail",
+      "message": "The handoff does not contain the production/test Python implementation it documents, and those directories are absent from this worktree.",
+      "severity": "critical",
+      "path": null,
+      "evidence": {
+        "python_files_in_packet": [],
+        "missing_repo_directories": [
+          "src/part2",
+          "tests/part2"
+        ]
+      }
+    },
+    {
+      "check_id": "documentation.portability",
+      "status": "warn",
+      "message": "Some copied runbooks contain collaborator-specific absolute paths and are not directly runnable on this Mac.",
+      "severity": "medium",
+      "path": null,
+      "evidence": {
+        "files": [
+          {
+            "path": "notes_snapshot/01-how-to-run-code.md",
+            "occurrences": 4,
+            "examples": [
+              "/Users/haseebahmad/Library/CloudStorage/OneDrive-UniversityofCaliforniaMerced/UCM",
+              "/Users/haseebahmad/.codex/skills/.system/skill-creator/scripts/quick_validate.py",
+              "/Users/haseebahmad/Library/CloudStorage/OneDrive-UniversityofCaliforniaMerced/UCM"
+            ]
+          },
+          {
+            "path": "notes_snapshot/05-task-log-and-experiments.md",
+            "occurrences": 3,
+            "examples": [
+              "/Users/haseebahmad/.codex/skills/.system/skill-creator/scripts/quick_validate.py",
+              "/Users/haseebahmad/Library/CloudStorage/OneDrive-UniversityofCaliforniaMerced/UCM",
+              "/Users/haseebahmad/.codex/skills/.system/skill-creator/scripts/quick_validate.py"
+            ]
+          },
+          {
+            "path": "notes_snapshot/23-part2-final-report-and-agentic-system.md",
+            "occurrences": 1,
+            "examples": [
+              "/Users/haseebahmad/.codex/skills/.system/skill-creator/scripts/quick_validate.py"
+            ]
+          },
+          {
+            "path": "notes_snapshot/project-notebook.md",
+            "occurrences": 2,
+            "examples": [
+              "/Users/haseebahmad/Library/CloudStorage/OneDrive-UniversityofCaliforniaMerced/UCM",
+              "/Users/haseebahmad/Library/CloudStorage/OneDrive-UniversityofCaliforniaMerced/UCM"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "check_id": "phase2c.labels.row_count",
+      "status": "pass",
+      "message": "labels row count: 18468 (expected 18468).",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/review_tables/phase2c_labels.csv",
+      "evidence": {
+        "actual": 18468,
+        "expected": 18468
+      }
+    },
+    {
+      "check_id": "phase2c.labels.unique_edges",
+      "status": "pass",
+      "message": "Edge IDs are unique at the expected one-row-per-strut grain.",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/review_tables/phase2c_labels.csv",
+      "evidence": {
+        "duplicate_count": 0,
+        "examples": []
+      }
+    },
+    {
+      "check_id": "phase2c.candidates.row_count",
+      "status": "pass",
+      "message": "candidates row count: 228 (expected 228).",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/review_tables/phase2c_auto_supported_unintended_candidates.csv",
+      "evidence": {
+        "actual": 228,
+        "expected": 228
+      }
+    },
+    {
+      "check_id": "phase2c.candidates.unique_edges",
+      "status": "pass",
+      "message": "Edge IDs are unique at the expected one-row-per-strut grain.",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/review_tables/phase2c_auto_supported_unintended_candidates.csv",
+      "evidence": {
+        "duplicate_count": 0,
+        "examples": []
+      }
+    },
+    {
+      "check_id": "phase2c.remaining.row_count",
+      "status": "pass",
+      "message": "remaining row count: 677 (expected 677).",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/review_tables/phase2c_remaining_review_queue.csv",
+      "evidence": {
+        "actual": 677,
+        "expected": 677
+      }
+    },
+    {
+      "check_id": "phase2c.remaining.unique_edges",
+      "status": "pass",
+      "message": "Edge IDs are unique at the expected one-row-per-strut grain.",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/review_tables/phase2c_remaining_review_queue.csv",
+      "evidence": {
+        "duplicate_count": 0,
+        "examples": []
+      }
+    },
+    {
+      "check_id": "phase2c.new.row_count",
+      "status": "pass",
+      "message": "new row count: 14 (expected 14).",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/review_tables/newly_promoted_14_to_verify.csv",
+      "evidence": {
+        "actual": 14,
+        "expected": 14
+      }
+    },
+    {
+      "check_id": "phase2c.new.unique_edges",
+      "status": "pass",
+      "message": "Edge IDs are unique at the expected one-row-per-strut grain.",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/review_tables/newly_promoted_14_to_verify.csv",
+      "evidence": {
+        "duplicate_count": 0,
+        "examples": []
+      }
+    },
+    {
+      "check_id": "phase2c.remaining_verify.row_count",
+      "status": "pass",
+      "message": "remaining_verify row count: 677 (expected 677).",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/review_tables/remaining_review_required_677_to_verify.csv",
+      "evidence": {
+        "actual": 677,
+        "expected": 677
+      }
+    },
+    {
+      "check_id": "phase2c.remaining_verify.unique_edges",
+      "status": "pass",
+      "message": "Edge IDs are unique at the expected one-row-per-strut grain.",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/review_tables/remaining_review_required_677_to_verify.csv",
+      "evidence": {
+        "duplicate_count": 0,
+        "examples": []
+      }
+    },
+    {
+      "check_id": "phase2c.low.row_count",
+      "status": "pass",
+      "message": "low row count: 2654 (expected 2654).",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/review_tables/low_priority_uncertain_2654_audit_table.csv",
+      "evidence": {
+        "actual": 2654,
+        "expected": 2654
+      }
+    },
+    {
+      "check_id": "phase2c.low.unique_edges",
+      "status": "pass",
+      "message": "Edge IDs are unique at the expected one-row-per-strut grain.",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/review_tables/low_priority_uncertain_2654_audit_table.csv",
+      "evidence": {
+        "duplicate_count": 0,
+        "examples": []
+      }
+    },
+    {
+      "check_id": "phase2c.template.row_count",
+      "status": "pass",
+      "message": "template row count: 3345 (expected 3345).",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/review_tables/human_verification_template.csv",
+      "evidence": {
+        "actual": 3345,
+        "expected": 3345
+      }
+    },
+    {
+      "check_id": "phase2c.template.unique_edges",
+      "status": "pass",
+      "message": "Edge IDs are unique at the expected one-row-per-strut grain.",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/review_tables/human_verification_template.csv",
+      "evidence": {
+        "duplicate_count": 0,
+        "examples": []
+      }
+    },
+    {
+      "check_id": "phase2c.verification_template_union",
+      "status": "pass",
+      "message": "The human template is the disjoint union of 14 promoted, 677 remaining, and 2,654 low-priority rows.",
+      "severity": "info",
+      "path": null,
+      "evidence": {
+        "union_count": 3345,
+        "template_count": 3345,
+        "overlap_detected": false,
+        "missing_from_template": [],
+        "extra_in_template": []
+      }
+    },
+    {
+      "check_id": "phase2c.queue_set_relationships",
+      "status": "pass",
+      "message": "Candidate/review/audit queues are exact subsets of the all-edge table, and the two 677-row exports agree.",
+      "severity": "info",
+      "path": null,
+      "evidence": {
+        "candidate_not_in_labels": [],
+        "remaining_not_in_labels": [],
+        "low_not_in_labels": [],
+        "new_not_in_candidates": [],
+        "remaining_export_symmetric_difference": []
+      }
+    },
+    {
+      "check_id": "phase2c.label_distribution",
+      "status": "pass",
+      "message": "The seven Phase 2C label categories reconcile exactly to 18,468 struts.",
+      "severity": "info",
+      "path": null,
+      "evidence": {
+        "actual": {
+          "phase2c_auto_supported_designed_removed_absent_or_disconnected": 89,
+          "phase2c_auto_supported_possible_unintended_missing": 215,
+          "phase2c_auto_supported_possible_unintended_disconnected": 13,
+          "phase2c_still_review_required": 672,
+          "phase2c_low_priority_uncertain_not_defect_like": 2654,
+          "phase2c_still_review_required_design_intent_conflict": 5,
+          "phase2c_auto_supported_present_like": 14820
+        },
+        "expected": {
+          "phase2c_auto_supported_designed_removed_absent_or_disconnected": 89,
+          "phase2c_auto_supported_possible_unintended_missing": 215,
+          "phase2c_auto_supported_possible_unintended_disconnected": 13,
+          "phase2c_still_review_required": 672,
+          "phase2c_still_review_required_design_intent_conflict": 5,
+          "phase2c_low_priority_uncertain_not_defect_like": 2654,
+          "phase2c_auto_supported_present_like": 14820
+        },
+        "sum": 18468
+      }
+    },
+    {
+      "check_id": "phase2c.summary_reconciliation",
+      "status": "pass",
+      "message": "Phase 2C JSON summary matches the exported tables.",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/review_tables/phase2c_summary.json",
+      "evidence": {}
+    },
+    {
+      "check_id": "phase2c.edge_id_integrity",
+      "status": "pass",
+      "message": "Every canonical edge ID is well formed and agrees with node_u/node_v.",
+      "severity": "info",
+      "path": null,
+      "evidence": {
+        "malformed": [],
+        "node_mismatch": []
+      }
+    },
+    {
+      "check_id": "phase2c.required_numeric_domains",
+      "status": "pass",
+      "message": "Core classifier metrics are finite and fraction-valued metrics stay in [0, 1].",
+      "severity": "info",
+      "path": null,
+      "evidence": {
+        "invalid": [],
+        "out_of_range": []
+      }
+    },
+    {
+      "check_id": "phase2c.human_template_blank",
+      "status": "pass",
+      "message": "Human-verification fields remain blank; no labels were invented by the transfer process.",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/review_tables/human_verification_template.csv",
+      "evidence": {
+        "filled_rows": []
+      }
+    },
+    {
+      "check_id": "phase2b4.candidates.row_count",
+      "status": "pass",
+      "message": "candidates row count: 214 (expected 214).",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/final_report_baseline/tables/auto_supported_unintended_candidates.csv",
+      "evidence": {
+        "actual": 214,
+        "expected": 214
+      }
+    },
+    {
+      "check_id": "phase2b4.candidates.unique_edges",
+      "status": "pass",
+      "message": "Edge IDs are unique at the expected one-row-per-strut grain.",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/final_report_baseline/tables/auto_supported_unintended_candidates.csv",
+      "evidence": {
+        "duplicate_count": 0,
+        "examples": []
+      }
+    },
+    {
+      "check_id": "phase2b4.manual.row_count",
+      "status": "pass",
+      "message": "manual row count: 920 (expected 920).",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/final_report_baseline/tables/manual_review_queue.csv",
+      "evidence": {
+        "actual": 920,
+        "expected": 920
+      }
+    },
+    {
+      "check_id": "phase2b4.manual.unique_edges",
+      "status": "pass",
+      "message": "Edge IDs are unique at the expected one-row-per-strut grain.",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/final_report_baseline/tables/manual_review_queue.csv",
+      "evidence": {
+        "duplicate_count": 0,
+        "examples": []
+      }
+    },
+    {
+      "check_id": "phase2b4.human.row_count",
+      "status": "pass",
+      "message": "human row count: 40 (expected 40).",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/final_report_baseline/tables/human_spotcheck_labels_rank001_040.csv",
+      "evidence": {
+        "actual": 40,
+        "expected": 40
+      }
+    },
+    {
+      "check_id": "phase2b4.human.unique_edges",
+      "status": "pass",
+      "message": "Edge IDs are unique at the expected one-row-per-strut grain.",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/final_report_baseline/tables/human_spotcheck_labels_rank001_040.csv",
+      "evidence": {
+        "duplicate_count": 0,
+        "examples": []
+      }
+    },
+    {
+      "check_id": "phase2b4.baseline_reconciliation",
+      "status": "pass",
+      "message": "The conservative 214-candidate baseline, 920 blocked rows, 40 human labels, and 1.158761% fraction reconcile.",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/final_report_baseline/final_ct_defect_summary.json",
+      "evidence": {
+        "candidate_counts": {
+          "auto_supported_possible_unintended_missing": 202,
+          "auto_supported_possible_unintended_disconnected": 12
+        },
+        "human_counts": {
+          "material_absent": 29,
+          "material_disconnected": 7,
+          "ambiguous": 4
+        },
+        "computed_fraction": 0.011587611002815681
+      }
+    },
+    {
+      "check_id": "phase2c.promotion_delta",
+      "status": "pass",
+      "message": "Phase 2C's 228 candidates are exactly the 214 baseline candidates plus the 14 newly promoted rows.",
+      "severity": "info",
+      "path": null,
+      "evidence": {
+        "baseline_count": 214,
+        "phase2c_count": 228,
+        "new_count": 14,
+        "unexpected_added": [],
+        "missing_promotions": []
+      }
+    },
+    {
+      "check_id": "provenance.assumption_registry",
+      "status": "warn",
+      "message": "The all-edge table cites assumption IDs that are absent from the formal scientific-assumptions registry.",
+      "severity": "medium",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/method_and_config/scientific_assumptions.yaml",
+      "evidence": {
+        "missing_ids": [
+          "A-CT-FEATURES-001",
+          "A-STL-AXIS-001-HUMAN-ANCHORED"
+        ]
+      }
+    },
+    {
+      "check_id": "provenance.method_registry",
+      "status": "warn",
+      "message": "Method IDs used in all-edge provenance are not defined or cited by the methods ledger.",
+      "severity": "medium",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/method_and_config/METHODS_AND_PHYSICS_REFERENCE_LEDGER.md",
+      "evidence": {
+        "missing_ids": [
+          "CT-ATLAS-001",
+          "CT-REG-LOCAL-001",
+          "CT-STRAIGHTEN-001"
+        ]
+      }
+    },
+    {
+      "check_id": "provenance.reference_id_normalization",
+      "status": "warn",
+      "message": "Equivalent literature/source references use multiple identifiers, weakening automated lineage joins.",
+      "severity": "low",
+      "path": null,
+      "evidence": {
+        "equivalent_id_groups": {
+          "llnldsc2026": [
+            "LLNL-DSC-2026",
+            "LLNLDSC2026"
+          ]
+        }
+      }
+    },
+    {
+      "check_id": "provenance.config_snapshot_stale",
+      "status": "warn",
+      "message": "The copied part2.yaml still encodes an unverified identity/unknown STL mapping even though later artifacts say the human-anchor gate selected perm021_signmmm; it is not a ready-to-rerun Phase 2C config.",
+      "severity": "high",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/method_and_config/part2.yaml",
+      "evidence": {
+        "config_values": {
+          "specimen.mapping_status": "UNVERIFIED",
+          "coordinate_frames.stl.axis_mapping_to_nominal": null,
+          "coordinate_frames.stl.status": "UNVERIFIED",
+          "registration.stl_to_nominal.graph_to_stl_axis_mapping": "identity_centered_phase1_assumption",
+          "registration.stl_to_nominal.graph_to_stl_axis_mapping_status": "UNVERIFIED_REVIEW_NEEDED"
+        },
+        "later_documented_transform": "perm021_signmmm"
+      }
+    },
+    {
+      "check_id": "schema.boolean_casing",
+      "status": "warn",
+      "message": "Boolean columns mix True/False and true/false conventions; consumers must parse values explicitly because bool('false') is true in Python.",
+      "severity": "medium",
+      "path": null,
+      "evidence": {
+        "column_values": {
+          "bridge_connected_6": [
+            "False",
+            "True"
+          ],
+          "bridge_connected_26": [
+            "False",
+            "True"
+          ],
+          "phase2b2_is_design_removed_candidate": [
+            "False",
+            "True"
+          ],
+          "phase2b_is_design_removed_candidate": [
+            "False",
+            "True"
+          ],
+          "phase2b1_is_design_removed_candidate": [
+            "False",
+            "True"
+          ],
+          "phase2b3_is_design_removed_candidate": [
+            "False",
+            "True"
+          ],
+          "phase2b3_score_high_all_edge": [
+            "false",
+            "true"
+          ],
+          "phase2b3_score_high_inherited_warning": [
+            "false",
+            "true"
+          ],
+          "phase2b3_score_near_all_edge_threshold": [
+            "false",
+            "true"
+          ],
+          "phase2b3_long_gap_high": [
+            "false",
+            "true"
+          ],
+          "phase2b3_negative_template_residual_high": [
+            "false",
+            "true"
+          ],
+          "phase2b3_occupied_fraction_low": [
+            "false",
+            "true"
+          ],
+          "phase2b3_mean_area_low": [
+            "false",
+            "true"
+          ],
+          "phase2b3_core_contrast_low": [
+            "false",
+            "true"
+          ],
+          "phase2b3_bridge_broken_26": [
+            "false",
+            "true"
+          ],
+          "phase2b3_threshold_sensitive": [
+            "false",
+            "true"
+          ],
+          "phase2b3_registration_unstable": [
+            "false",
+            "true"
+          ],
+          "phase2b4_clean_for_auto_support": [
+            "false",
+            "true"
+          ],
+          "phase2c_changed_from_phase2b4": [
+            "false",
+            "true"
+          ]
+        }
+      }
+    },
+    {
+      "check_id": "schema.literal_nan",
+      "status": "warn",
+      "message": "Several numeric fields serialize undefined measurements as literal nan strings; use null/blank plus an explicit validity/status field for interoperable schemas.",
+      "severity": "medium",
+      "path": null,
+      "evidence": {
+        "literal_nan_counts": {
+          "centerline_displacement_voxels": 545,
+          "curvature_voxels": 600,
+          "node_u_registration_residual_voxels": 785,
+          "node_v_registration_residual_voxels": 697
+        }
+      }
+    },
+    {
+      "check_id": "schema.phase2c_changed_semantics",
+      "status": "warn",
+      "message": "phase2c_changed_from_phase2b4 is true for 1,009 lexical/status changes, not just the 14 newly promoted candidates; its name is easy to misread as a promotion flag.",
+      "severity": "low",
+      "path": null,
+      "evidence": {
+        "true_count": 1009,
+        "by_phase2c_label": {
+          "phase2c_auto_supported_designed_removed_absent_or_disconnected": 89,
+          "phase2c_auto_supported_possible_unintended_missing": 13,
+          "phase2c_still_review_required": 672,
+          "phase2c_auto_supported_possible_unintended_disconnected": 1,
+          "phase2c_still_review_required_design_intent_conflict": 5,
+          "phase2c_low_priority_uncertain_not_defect_like": 229
+        }
+      }
+    },
+    {
+      "check_id": "schema.viewer_numeric_types",
+      "status": "warn",
+      "message": "Viewer score and evidence_count values are strings, which permits accidental lexical sorting/comparison.",
+      "severity": "low",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/viewer/viewer_data.json",
+      "evidence": {
+        "score_types": {
+          "str": 18468
+        },
+        "evidence_count_types": {
+          "str": 18468
+        }
+      }
+    },
+    {
+      "check_id": "provenance.source_artifact_lineage",
+      "status": "warn",
+      "message": "Two included copies match their recorded source hashes, but the canonical graph and original Phase 2B.4 summary/all-label inputs are absent, so complete source-to-output lineage cannot be rehashed.",
+      "severity": "high",
+      "path": null,
+      "evidence": {
+        "included_hash_matches": {
+          "phase2c_labels": true,
+          "human_spotcheck_labels": true
+        },
+        "missing_source_paths": [
+          "outputs/part2/phase0/canonical_graphs/registered_9x9.canonical_graph.json",
+          "outputs/part2/phase2b4/20260727_092219/phase2b4_summary.json",
+          "outputs/part2/phase2b4/20260727_092219/automated_review_labels.csv"
+        ]
+      }
+    },
+    {
+      "check_id": "science.paper_external_consistency",
+      "status": "warn",
+      "message": "The Phase 2C candidate taxonomy does not reproduce the paper's manually reviewed defect distribution: it flags far more missing-like edges and far fewer disconnected edges. Treat it as triage, not validated paper-equivalent classification.",
+      "severity": "high",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/2246722.pdf",
+      "evidence": {
+        "denominator": 18468,
+        "paper": {
+          "name": "0.5% (#1)",
+          "nominal_missing_percent": 0.5,
+          "ct_missing_percent": 0.57,
+          "ct_disconnected_percent": 4.97,
+          "source": "2246722.pdf, Section 3.1.1, Table 3",
+          "approx_total_missing_count": 105.26759999999999,
+          "approx_nominal_designed_missing_count": 92.34,
+          "approx_unintended_missing_excess_count": 12.927599999999984,
+          "approx_disconnected_count": 917.8595999999999
+        },
+        "phase2c": {
+          "designed_removed_absent_or_disconnected": 89,
+          "possible_unintended_missing": 215,
+          "possible_unintended_disconnected": 13,
+          "designed_plus_possible_unintended_missing": 304
+        },
+        "ratios": {
+          "pipeline_total_missing_like_vs_paper_total_missing": 2.8878781315428492,
+          "pipeline_unintended_missing_vs_paper_excess_missing": 16.63108388254589,
+          "paper_disconnected_vs_pipeline_possible_disconnected": 70.60458461538461
+        }
+      }
+    },
+    {
+      "check_id": "science.human_review_sampling",
+      "status": "warn",
+      "message": "The human evidence covers only ranks 1-40 of the 214 auto-supported candidates, with no random sampling and no present-like controls; it supports top-ranked precision directionally but cannot establish full-list precision, recall, or calibration.",
+      "severity": "high",
+      "path": null,
+      "evidence": {
+        "reviewed_rows": 40,
+        "candidate_rows": 214,
+        "coverage_fraction": 0.18691588785046728,
+        "ranks": [
+          1,
+          40
+        ],
+        "labels": {
+          "material_absent": 29,
+          "material_disconnected": 7,
+          "ambiguous": 4
+        },
+        "present_like_control_rows": 0,
+        "selection": "top-ranked consecutive candidates, not a probability sample"
+      }
+    },
+    {
+      "check_id": "science.phase2c_promotions_unreviewed",
+      "status": "warn",
+      "message": "All 14 Phase 2C promotions remain unreviewed, so 228 must not replace the spot-check-supported 214 baseline yet.",
+      "severity": "high",
+      "path": null,
+      "evidence": {
+        "promoted_count": 14,
+        "promoted_rows_with_human_fields": 0
+      }
+    },
+    {
+      "check_id": "science.spatial_candidate_profile",
+      "status": "warn",
+      "message": "Possible unintended candidates are disproportionately boundary/near-boundary cases, increasing the risk of skin, crop, and registration artifacts.",
+      "severity": "medium",
+      "path": null,
+      "evidence": {
+        "all_edge_boundary_bins": {
+          "near_boundary": 4509,
+          "boundary": 9648,
+          "interior": 4311
+        },
+        "candidate_boundary_bins": {
+          "boundary": 224,
+          "near_boundary": 3,
+          "interior": 1
+        },
+        "all_boundary_or_near_fraction": 0.7665692007797271,
+        "candidate_boundary_or_near_fraction": 0.9956140350877193
+      }
+    },
+    {
+      "check_id": "coverage.auto_supported_without_ct_support",
+      "status": "fail",
+      "message": "Three auto-supported possible-missing edges have both endpoints beyond the evidence pipeline's x=767 support, no-local-material endpoint statuses, and all-zero area profiles. They must be coverage-blocked until the x-clipping/axis issue is fixed.",
+      "severity": "critical",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/review_tables/phase2c_labels.csv",
+      "evidence": {
+        "raw_tiff_shape_zyx": [
+          761,
+          815,
+          837
+        ],
+        "raw_tiff_x_max_index": 836,
+        "panel_evidence_x_max_index": 767,
+        "viewer_graph_x_max": 773.744679080309,
+        "viewer_edges_with_any_endpoint_past_panel_support": 1008,
+        "unsupported_auto_candidates": [
+          {
+            "edge_id": "E_N008309_N008313",
+            "phase2b4_label": "auto_supported_possible_unintended_missing",
+            "phase2c_label": "phase2c_auto_supported_possible_unintended_missing",
+            "phase2b4_clean_for_auto_support": "true",
+            "endpoint_u_x": 770.8193935710613,
+            "endpoint_v_x": 770.6506744589908,
+            "node_u_status": "no_local_material",
+            "node_v_status": "no_local_material"
+          },
+          {
+            "edge_id": "E_N009317_N009321",
+            "phase2b4_label": "auto_supported_possible_unintended_missing",
+            "phase2c_label": "phase2c_auto_supported_possible_unintended_missing",
+            "phase2b4_clean_for_auto_support": "true",
+            "endpoint_u_x": 770.353290180577,
+            "endpoint_v_x": 770.1845710685068,
+            "node_u_status": "no_local_material",
+            "node_v_status": "no_local_material"
+          },
+          {
+            "edge_id": "E_N009443_N009447",
+            "phase2b4_label": "auto_supported_possible_unintended_missing",
+            "phase2c_label": "phase2c_auto_supported_possible_unintended_missing",
+            "phase2b4_clean_for_auto_support": "true",
+            "endpoint_u_x": 770.7550609878897,
+            "endpoint_v_x": 770.5863418758192,
+            "node_u_status": "no_local_material",
+            "node_v_status": "no_local_material"
+          }
+        ]
+      }
+    },
+    {
+      "check_id": "coverage.review_panels_zero_edge_signal",
+      "status": "warn",
+      "message": "Forty of the 120 review panels have all-zero edge-aligned slabs/traces because their requested edge lies beyond the evidence pipeline's x support; nearby context in a projection must not be mistaken for valid edge evidence.",
+      "severity": "high",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/review_panels_phase2c_top120",
+      "evidence": {
+        "all_zero_panel_count": 40,
+        "all_zero_panels": [
+          {
+            "rank": 36,
+            "edge_id": "E_N008813_N010077",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.4264768003111,
+              772.5951959123815
+            ]
+          },
+          {
+            "rank": 38,
+            "edge_id": "E_N008813_N008817",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.4264768003111,
+              772.2577576882406
+            ]
+          },
+          {
+            "rank": 41,
+            "edge_id": "E_N007553_N008817",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.0890385761704,
+              772.2577576882406
+            ]
+          },
+          {
+            "rank": 42,
+            "edge_id": "E_N008687_N009951",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.0247059929986,
+              772.1934251050691
+            ]
+          },
+          {
+            "rank": 70,
+            "edge_id": "E_N006419_N007683",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.153371159342,
+              772.3220902714122
+            ]
+          },
+          {
+            "rank": 72,
+            "edge_id": "E_N004277_N005541",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.6838071329976,
+              772.852526245068
+            ]
+          },
+          {
+            "rank": 74,
+            "edge_id": "E_N003143_N004407",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.7481397161691,
+              772.9168588282394
+            ]
+          },
+          {
+            "rank": 75,
+            "edge_id": "E_N010199_N010203",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              773.1656858317642,
+              772.9969667196938
+            ]
+          },
+          {
+            "rank": 77,
+            "edge_id": "E_N003395_N003399",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              745,
+              767
+            ],
+            "endpoint_x": [
+              773.5516813307943,
+              773.3829622187238
+            ]
+          },
+          {
+            "rank": 78,
+            "edge_id": "E_N005663_N005667",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              745,
+              767
+            ],
+            "endpoint_x": [
+              773.4230161644512,
+              773.2542970523805
+            ]
+          },
+          {
+            "rank": 79,
+            "edge_id": "E_N006545_N006549",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.5551419666544,
+              772.386422854584
+            ]
+          },
+          {
+            "rank": 80,
+            "edge_id": "E_N006797_N006801",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              745,
+              767
+            ],
+            "endpoint_x": [
+              773.3586835812794,
+              773.1899644692089
+            ]
+          },
+          {
+            "rank": 81,
+            "edge_id": "E_N000870_N001005",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.941137465684,
+              773.1098565777545
+            ]
+          },
+          {
+            "rank": 82,
+            "edge_id": "E_N000996_N001131",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              745,
+              767
+            ],
+            "endpoint_x": [
+              773.3429082729967,
+              773.5116273850672
+            ]
+          },
+          {
+            "rank": 83,
+            "edge_id": "E_N004529_N004533",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              745,
+              767
+            ],
+            "endpoint_x": [
+              773.4873487476225,
+              773.318629635552
+            ]
+          },
+          {
+            "rank": 84,
+            "edge_id": "E_N000749_N002013",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.4750340752,
+              772.6437531872705
+            ]
+          },
+          {
+            "rank": 85,
+            "edge_id": "E_N000875_N000879",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.8768048825127,
+              772.7080857704423
+            ]
+          },
+          {
+            "rank": 86,
+            "edge_id": "E_N000875_N002139",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.8768048825127,
+              773.0455239945829
+            ]
+          },
+          {
+            "rank": 87,
+            "edge_id": "E_N001001_N001005",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              745,
+              767
+            ],
+            "endpoint_x": [
+              773.278575689825,
+              773.1098565777545
+            ]
+          },
+          {
+            "rank": 88,
+            "edge_id": "E_N001001_N002265",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              745,
+              767
+            ],
+            "endpoint_x": [
+              773.278575689825,
+              773.4472948018954
+            ]
+          },
+          {
+            "rank": 89,
+            "edge_id": "E_N001127_N001131",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              745,
+              767
+            ],
+            "endpoint_x": [
+              773.6803464971374,
+              773.5116273850672
+            ]
+          },
+          {
+            "rank": 90,
+            "edge_id": "E_N001883_N003147",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.4107014920285,
+              772.5794206040987
+            ]
+          },
+          {
+            "rank": 91,
+            "edge_id": "E_N002009_N002013",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.8124722993409,
+              772.6437531872705
+            ]
+          },
+          {
+            "rank": 92,
+            "edge_id": "E_N002009_N003273",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.8124722993409,
+              772.9811914114111
+            ]
+          },
+          {
+            "rank": 93,
+            "edge_id": "E_N002135_N002139",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              745,
+              767
+            ],
+            "endpoint_x": [
+              773.2142431066534,
+              773.0455239945829
+            ]
+          },
+          {
+            "rank": 94,
+            "edge_id": "E_N002261_N002265",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              745,
+              767
+            ],
+            "endpoint_x": [
+              773.6160139139658,
+              773.4472948018954
+            ]
+          },
+          {
+            "rank": 95,
+            "edge_id": "E_N003017_N004281",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.3463689088567,
+              772.5150880209271
+            ]
+          },
+          {
+            "rank": 96,
+            "edge_id": "E_N003143_N003147",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.7481397161691,
+              772.5794206040987
+            ]
+          },
+          {
+            "rank": 97,
+            "edge_id": "E_N003269_N003273",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              773.1499105234816,
+              772.9811914114111
+            ]
+          },
+          {
+            "rank": 98,
+            "edge_id": "E_N004151_N005415",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.2820363256851,
+              772.4507554377553
+            ]
+          },
+          {
+            "rank": 99,
+            "edge_id": "E_N004277_N004281",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.6838071329976,
+              772.5150880209271
+            ]
+          },
+          {
+            "rank": 100,
+            "edge_id": "E_N004403_N004407",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              773.08557794031,
+              772.9168588282394
+            ]
+          },
+          {
+            "rank": 101,
+            "edge_id": "E_N005285_N006549",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.2177037425138,
+              772.386422854584
+            ]
+          },
+          {
+            "rank": 102,
+            "edge_id": "E_N005411_N005415",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.619474549826,
+              772.4507554377553
+            ]
+          },
+          {
+            "rank": 103,
+            "edge_id": "E_N005411_N006675",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.619474549826,
+              772.7881936618965
+            ]
+          },
+          {
+            "rank": 104,
+            "edge_id": "E_N009947_N009951",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.3621442171393,
+              772.1934251050691
+            ]
+          },
+          {
+            "rank": 105,
+            "edge_id": "E_N010073_N010077",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.763915024452,
+              772.5951959123815
+            ]
+          },
+          {
+            "rank": 113,
+            "edge_id": "E_N000744_N000879",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              744,
+              767
+            ],
+            "endpoint_x": [
+              772.5393666583718,
+              772.7080857704423
+            ]
+          },
+          {
+            "rank": 114,
+            "edge_id": "E_N002135_N003399",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              745,
+              767
+            ],
+            "endpoint_x": [
+              773.2142431066534,
+              773.3829622187238
+            ]
+          },
+          {
+            "rank": 120,
+            "edge_id": "E_N007931_N009069",
+            "design_state": "phase2c_still_review_required",
+            "x_bounds": [
+              745,
+              767
+            ],
+            "endpoint_x": [
+              773.2943509981076,
+              773.0612993028656
+            ]
+          }
+        ],
+        "recommended_fix": "Add a valid-sample mask and OUT OF SUPPORT watermark; repair the unexplained x=767 clamp despite the TIFF's x=837 shape."
+      }
+    },
+    {
+      "check_id": "coverage.promotions_cross_support_boundary",
+      "status": "warn",
+      "message": "One newly promoted edge crosses the evidence x-support boundary and needs an explicit endpoint-coverage caution before review.",
+      "severity": "high",
+      "path": null,
+      "evidence": {
+        "rows": [
+          {
+            "rank": 13,
+            "edge_id": "E_N001379_N001506",
+            "endpoint_x": [
+              770.8036182627786,
+              731.5162182426391
+            ],
+            "x_bounds": [
+              703,
+              767
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "check_id": "coverage.panel_metric_units",
+      "status": "warn",
+      "message": "All 120 values named mean_delta_mm are actually the dimensionless quantity labeled CT anomaly score in the review index; the field name has misleading physical units.",
+      "severity": "medium",
+      "path": null,
+      "evidence": {
+        "row_count": 120,
+        "cross_table_mismatches": [],
+        "recommended_name": "ct_anomaly_score"
+      }
+    },
+    {
+      "check_id": "viewer.embedded_external_match",
+      "status": "pass",
+      "message": "The self-contained HTML embeds the same data as viewer_data.json.",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/viewer/index.html",
+      "evidence": {}
+    },
+    {
+      "check_id": "viewer.edge_counts",
+      "status": "pass",
+      "message": "Viewer edge IDs are unique and all class counts reconcile to 18,468.",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/viewer/viewer_data.json",
+      "evidence": {
+        "edge_count": 18468,
+        "unique_ids": 18468,
+        "class_counts": {
+          "present_like": 14820,
+          "low_priority_uncertain": 2654,
+          "designed_removed": 89,
+          "review_required": 677,
+          "possible_unintended_disconnected": 13,
+          "possible_unintended_missing": 215
+        }
+      }
+    },
+    {
+      "check_id": "viewer.edge_coverage",
+      "status": "pass",
+      "message": "Viewer edge IDs exactly cover the Phase 2C all-edge label table.",
+      "severity": "info",
+      "path": null,
+      "evidence": {
+        "missing_in_viewer": [],
+        "extra_in_viewer": []
+      }
+    },
+    {
+      "check_id": "viewer.geometry_and_style",
+      "status": "pass",
+      "message": "All viewer endpoints are finite/in-bounds and class styles match the legend.",
+      "severity": "info",
+      "path": null,
+      "evidence": {
+        "invalid_geometry": [],
+        "style_mismatches": []
+      }
+    },
+    {
+      "check_id": "viewer.static_ui_features",
+      "status": "pass",
+      "message": "The HTML includes search, reset, rotate, zoom, click-selection, legend, and resize handlers.",
+      "severity": "info",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/viewer/index.html",
+      "evidence": {
+        "missing_tokens": [],
+        "html_size_bytes": 7607196
+      }
+    },
+    {
+      "check_id": "images.decode_all",
+      "status": "pass",
+      "message": "All 121 PNG artifacts decode completely and were inspected sequentially.",
+      "severity": "info",
+      "path": null,
+      "evidence": {
+        "decoded": 121,
+        "expected": 121,
+        "errors": []
+      }
+    },
+    {
+      "check_id": "images.exact_duplicates",
+      "status": "pass",
+      "message": "No exact duplicate PNGs were found.",
+      "severity": "info",
+      "path": null,
+      "evidence": {
+        "duplicate_groups": []
+      }
+    },
+    {
+      "check_id": "images.panel_dimensions",
+      "status": "pass",
+      "message": "All 120 review panels share the expected 2790\u00d71655 layout.",
+      "severity": "info",
+      "path": null,
+      "evidence": {
+        "panel_count": 120,
+        "wrong_dimensions": []
+      }
+    },
+    {
+      "check_id": "images.panel_index_mapping",
+      "status": "pass",
+      "message": "Ranks 001\u2013120, edge IDs, filenames, summary rows, and review index agree exactly.",
+      "severity": "info",
+      "path": null,
+      "evidence": {
+        "summary_rows": 120,
+        "index_rows": 120,
+        "panel_files": 120,
+        "mismatches": [],
+        "summary_only": [],
+        "index_only": []
+      }
+    },
+    {
+      "check_id": "images.baseline_chart_scale",
+      "status": "warn",
+      "message": "The baseline bar chart uses one linear scale even though present-like exceeds the smallest headline defect class by more than 1,000\u00d7; small categories are visually unreadable.",
+      "severity": "medium",
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727/final_report_baseline/figures/automated_review_label_counts.png",
+      "evidence": {
+        "auto_supported_present_like": 14820,
+        "smallest_headline_defect_count": 12,
+        "ratio": 1235.0,
+        "recommended_fix": "Use a broken/log axis or a separate defect-only panel with direct value labels."
+      }
+    }
+  ],
+  "handoff_root": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/collaboration/part2_verification_handoff_20260727",
+  "file_count": 176,
+  "image_count": 121,
+  "contact_sheets": [
+    "/Users/amannindra/Projects/llnl_data_science_challenge_2026/Aman_Scripts/collaboration_codex/audit_outputs/contact_sheets/phase2c_panels_001_020.jpg",
+    "/Users/amannindra/Projects/llnl_data_science_challenge_2026/Aman_Scripts/collaboration_codex/audit_outputs/contact_sheets/phase2c_panels_021_040.jpg",
+    "/Users/amannindra/Projects/llnl_data_science_challenge_2026/Aman_Scripts/collaboration_codex/audit_outputs/contact_sheets/phase2c_panels_041_060.jpg",
+    "/Users/amannindra/Projects/llnl_data_science_challenge_2026/Aman_Scripts/collaboration_codex/audit_outputs/contact_sheets/phase2c_panels_061_080.jpg",
+    "/Users/amannindra/Projects/llnl_data_science_challenge_2026/Aman_Scripts/collaboration_codex/audit_outputs/contact_sheets/phase2c_panels_081_100.jpg",
+    "/Users/amannindra/Projects/llnl_data_science_challenge_2026/Aman_Scripts/collaboration_codex/audit_outputs/contact_sheets/phase2c_panels_101_120.jpg"
+  ]
+}

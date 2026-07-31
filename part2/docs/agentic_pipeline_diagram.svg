@@ -1,0 +1,190 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1700 1560" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#444"/>
+    </marker>
+    <marker id="arrowAmber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#b6790a"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1700" height="1560" fill="#ffffff"/>
+
+  <!-- Title -->
+  <text x="60" y="36" font-size="26" font-weight="700" fill="#111">Lattice CT Defect-Detection Pipeline — Current Agentic Architecture</text>
+  <text x="60" y="58" font-size="13.5" fill="#666">llnl_data_science_challenge_2026-agentic · branch agent/defect-agent-experiment · part2/defect_cartographer + Aman_src + Aman_Scripts · as of 2026-07-30</text>
+
+  <!-- ================= Row 1: raw inputs ================= -->
+  <g>
+    <rect x="60" y="82" width="500" height="88" rx="10" fill="#f4f6f9" stroke="#8a94a3" stroke-width="1.5"/>
+    <text x="80" y="106" font-size="14" font-weight="700" fill="#222">Raw CT Volume</text>
+    <text x="80" y="126" font-size="11.8" fill="#333">tif_stacks/*.tif — 761×815×837 uint16</text>
+    <text x="80" y="144" font-size="11.8" fill="#333">native, un-cropped grayscale CT scan</text>
+    <text x="80" y="162" font-size="11.8" fill="#333">voxel pitch 58.1 µm</text>
+
+    <rect x="600" y="82" width="500" height="88" rx="10" fill="#f4f6f9" stroke="#8a94a3" stroke-width="1.5"/>
+    <text x="620" y="106" font-size="14" font-weight="700" fill="#222">Registered Design Graph</text>
+    <text x="620" y="126" font-size="11.8" fill="#333">registered_jsons/*.json — [x,y,z] struts</text>
+    <text x="620" y="144" font-size="11.8" fill="#333">3,430 welded nodes → 18,468 unique</text>
+    <text x="620" y="162" font-size="11.8" fill="#333">expected edges (junction-aliases merged)</text>
+
+    <rect x="1140" y="82" width="500" height="88" rx="10" fill="#f4f6f9" stroke="#8a94a3" stroke-width="1.5"/>
+    <text x="1160" y="106" font-size="14" font-weight="700" fill="#222">CAD / STL Surface Model</text>
+    <text x="1160" y="126" font-size="11.8" fill="#333">nominal Ti-5553 octet lattice</text>
+    <text x="1160" y="144" font-size="11.8" fill="#333">424 µm design strut diameter</text>
+    <text x="1160" y="162" font-size="11.8" fill="#333">30,000-pt physical-area surface sample</text>
+  </g>
+  <path d="M310,170 V205" stroke="#444" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M850,170 V205" stroke="#444" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M1390,170 V205" stroke="#444" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- ================= Row 2: raw toolbox ================= -->
+  <rect x="60" y="205" width="1580" height="92" rx="10" fill="#eaf2ff" stroke="#2f6fed" stroke-width="1.8"/>
+  <text x="80" y="230" font-size="15" font-weight="700" fill="#123a8f">① Raw CT Toolbox — Aman_src/mcp_server.py  ("CT Segmentation", 17 tools)</text>
+  <text x="80" y="250" font-size="12" fill="#1c3d78">register_json_to_tiff · segment_tiff_otsu · skeletonize · measure_tiff_struts · run_full_defect_workflow ·</text>
+  <text x="80" y="267" font-size="12" fill="#1c3d78">get_full_strut_details · filter_full_struts · compare_human_anchors_to_full_lattice · visualize_slice · +8 more</text>
+  <text x="80" y="286" font-size="11.5" font-style="italic" fill="#3a5aa8">Shared low-level toolbox. Both paths below call these functions directly (in-process) — not via the MCP protocol.</text>
+
+  <path d="M460,297 V300 Q460,332 460,332" stroke="#444" stroke-width="1.5"/>
+  <path d="M850,297 L460,297 L460,332" stroke="#444" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <path d="M850,297 L1240,297 L1240,332" stroke="#444" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <text x="240" y="320" font-size="11" fill="#666" font-style="italic">Path A — production</text>
+  <text x="1030" y="320" font-size="11" fill="#666" font-style="italic">Path B — experimental</text>
+
+  <!-- ================= Row 3: two paths ================= -->
+  <rect x="60" y="332" width="770" height="150" rx="10" fill="#eaf2ff" stroke="#2f6fed" stroke-width="1.8"/>
+  <text x="80" y="358" font-size="15" font-weight="700" fill="#123a8f">②a Deterministic Metrology &amp; Classification</text>
+  <text x="720" y="352" font-size="10.5" font-weight="700" fill="#1a7a3a">LIVE</text>
+  <text x="80" y="378" font-size="11.8" fill="#1c3d78">Aman_Scripts/Components/ct_surface_metrology.py — 7-DOF similarity</text>
+  <text x="80" y="395" font-size="11.8" fill="#1c3d78">registration (STL → native TIFF) + registration-stability gate</text>
+  <text x="80" y="415" font-size="11.8" fill="#1c3d78">Aman_Scripts/Components/defect_classification.py — labels each of</text>
+  <text x="80" y="432" font-size="11.8" fill="#1c3d78">18,468 struts into 8 evidence classes</text>
+  <text x="80" y="455" font-size="11.3" fill="#3a5aa8" font-style="italic">Driven by a standalone script (run_simple_strut_metrology.py) —</text>
+  <text x="80" y="470" font-size="11.3" fill="#3a5aa8" font-style="italic">no LLM or agent in this path.</text>
+
+  <rect x="870" y="332" width="770" height="150" rx="10" stroke-dasharray="7 5" fill="#fff8e6" stroke="#d98c00" stroke-width="1.8"/>
+  <text x="890" y="358" font-size="15" font-weight="700" fill="#8a5a00">②b Agentic Orchestration Runtime</text>
+  <text x="1550" y="352" font-size="10.5" font-weight="700" fill="#b04a00">EXPERIMENTAL</text>
+  <text x="890" y="378" font-size="11.8" fill="#6b4a00">agentic_orchestration/{runtime,pipeline,persistence,models}.py</text>
+  <text x="890" y="396" font-size="11.8" fill="#6b4a00">Fixed 8-stage state machine (NOT an LLM tool-calling loop):</text>
+  <text x="890" y="413" font-size="11.3" fill="#6b4a00">validated→registered→segmented→skeletonized→measured→</text>
+  <text x="890" y="429" font-size="11.3" fill="#6b4a00">reconciled→qa→reported</text>
+  <text x="890" y="451" font-size="11.3" fill="#8a5a00" font-style="italic">Resume-safe (skips SUCCEEDED stages). "reconciled" hard-asserts</text>
+  <text x="890" y="466" font-size="11.3" fill="#8a5a00" font-style="italic">18,468 rows; "qa" stamps ground_truth_available=false.</text>
+
+  <!-- human review inset -->
+  <rect x="60" y="497" width="770" height="58" rx="8" fill="#fff3d6" stroke="#c98a10" stroke-width="1.4"/>
+  <text x="80" y="518" font-size="12.3" font-weight="700" fill="#7a4e00">⚠ human_review_labels.csv — human-in-the-loop overlay</text>
+  <text x="80" y="537" font-size="11.2" fill="#6b4a00">Analyst-confirmed labels override the automated class for that strut. Feeds ②a only.</text>
+
+  <rect x="870" y="497" width="770" height="58" rx="8" stroke-dasharray="6 4" fill="#fdeeee" stroke="#c94d4d" stroke-width="1.4"/>
+  <text x="890" y="518" font-size="12.3" font-weight="700" fill="#8a2222">✕ No human-review hook</text>
+  <text x="890" y="537" font-size="11.2" fill="#7a2a2a">Confirmed: zero references to human_review_labels.csv in agentic_orchestration/ or agents/.</text>
+
+  <path d="M445,482 V497" stroke="#444" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M445,555 V585" stroke="#444" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M1255,482 V585" stroke="#d98c00" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrowAmber)"/>
+
+  <!-- ================= Row 4: artifact stores ================= -->
+  <rect x="60" y="585" width="770" height="112" rx="10" fill="#eafbf0" stroke="#1f9d55" stroke-width="1.8"/>
+  <text x="80" y="609" font-size="14.5" font-weight="700" fill="#0f6b34">③a Artifact Store A — part2/artifacts/sample/*</text>
+  <text x="720" y="605" font-size="10.5" font-weight="700" fill="#1a7a3a">LIVE — single source of truth</text>
+  <text x="80" y="629" font-size="11.6" fill="#12502c">full_strut_classification.csv (18,468 rows) · full_pipeline_metrics.json ·</text>
+  <text x="80" y="646" font-size="11.6" fill="#12502c">full_alignment.json · full_thickness_reference.json · full_lattice_scene.npz</text>
+  <text x="80" y="666" font-size="11.4" fill="#12502c" font-weight="700">Current: bent_or_misaligned 3,816 · uncertain 6,973 · healthy 6,598 ·</text>
+  <text x="80" y="683" font-size="11.4" fill="#12502c" font-weight="700">missing 246 · broken 90 · thin 6 · not_applicable 739 (of 18,468)</text>
+
+  <rect x="870" y="585" width="770" height="112" rx="10" stroke-dasharray="7 5" fill="#fff8e6" stroke="#d98c00" stroke-width="1.8"/>
+  <text x="890" y="609" font-size="14.5" font-weight="700" fill="#8a5a00">③b Artifact Store B — artifacts/runs/agentic/&lt;run_id&gt;/*</text>
+  <text x="890" y="629" font-size="11.6" fill="#6b4a00">SQLite WAL run ledger (runs/stages/artifacts/events), sha256</text>
+  <text x="890" y="646" font-size="11.6" fill="#6b4a00">content-addressed artifacts, path-containment enforced.</text>
+  <text x="890" y="668" font-size="11.6" font-weight="700" fill="#b04a00">Status: 2 dev/test runs only (1 stalled "active", 1 "cancelled") —</text>
+  <text x="890" y="685" font-size="11.6" font-weight="700" fill="#b04a00">0 completed runs, 0 registered artifacts as of writing.</text>
+
+  <path d="M445,697 V730" stroke="#444" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- ================= Row 5: MCP servers ================= -->
+  <rect x="60" y="730" width="770" height="150" rx="10" fill="#f1e9ff" stroke="#7c3aed" stroke-width="1.8"/>
+  <text x="80" y="756" font-size="14.5" font-weight="700" fill="#4a1f9e">④a Canonical MCP Server</text>
+  <text x="720" y="750" font-size="10.5" font-weight="700" fill="#1a7a3a">LIVE</text>
+  <text x="80" y="774" font-size="11.6" fill="#3c2170">"Unified Lattice CT Evidence" — mcp_server.py</text>
+  <text x="80" y="793" font-size="11.6" fill="#3c2170">7 dashboard tools + mounts raw_ct (Aman_src) under raw_ct_*</text>
+  <text x="80" y="811" font-size="11.6" fill="#3c2170">reads Artifact Store A via service.py / DEFAULT_SERVICE</text>
+  <text x="80" y="835" font-size="11.2" fill="#5a3aa0" font-style="italic">Both the dashboard's MCP tools AND the LLM copilot layer</text>
+  <text x="80" y="851" font-size="11.2" fill="#5a3aa0" font-style="italic">talk to this exact server instance.</text>
+  <text x="80" y="871" font-size="11" fill="#5a3aa0" font-style="italic">Instructs: "candidate labels are not validated defects".</text>
+
+  <rect x="870" y="730" width="770" height="150" rx="10" stroke-dasharray="7 5" fill="#fff8e6" stroke="#d98c00" stroke-width="1.8"/>
+  <text x="890" y="756" font-size="14.5" font-weight="700" fill="#8a5a00">④b Experimental MCP Server</text>
+  <text x="1550" y="750" font-size="10.5" font-weight="700" fill="#b04a00">EXPERIMENTAL</text>
+  <text x="890" y="774" font-size="11.6" fill="#6b4a00">"Isolated Unified Lattice MCP" — isolated_unified_mcp/mcp_server.py</text>
+  <text x="890" y="793" font-size="11.6" fill="#6b4a00">Same 7 dashboard tools + mounts raw_ct + adds 7 agentic_* tools:</text>
+  <text x="890" y="811" font-size="11.3" fill="#6b4a00">create_run · start · resume · cancel · get_run_status ·</text>
+  <text x="890" y="827" font-size="11.3" fill="#6b4a00">list_run_artifacts · ask</text>
+  <text x="890" y="850" font-size="11.2" fill="#8a5a00" font-style="italic">Controls Path B. NOT imported by part2/app.py — this is a</text>
+  <text x="890" y="866" font-size="11.2" fill="#8a5a00" font-style="italic">standalone entrypoint only, separate process from the dashboard.</text>
+
+  <path d="M1255,585 V730" stroke="#d98c00" stroke-width="1.4" stroke-dasharray="5 4" fill="none"/>
+  <path d="M445,880 V912" stroke="#444" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M1255,880 V960" stroke="#d98c00" stroke-width="1.4" stroke-dasharray="5 4"/>
+
+  <!-- ================= Row 6: LLM copilot + note ================= -->
+  <rect x="60" y="912" width="1160" height="180" rx="10" fill="#f1e9ff" stroke="#7c3aed" stroke-width="1.8"/>
+  <text x="80" y="938" font-size="15" font-weight="700" fill="#4a1f9e">⑤ LLM Agentic Copilot — part2/defect_cartographer/agents/  (OpenAI Agents SDK)</text>
+  <text x="990" y="932" font-size="10.5" font-weight="700" fill="#1a7a3a">LIVE if OPENAI_API_KEY set</text>
+  <text x="80" y="958" font-size="11.8" fill="#3c2170">Coordinator agent (model default "gpt-5.6-terra") → 2 specialist sub-agents wired in as tools:</text>
+  <text x="100" y="976" font-size="11.6" fill="#3c2170">· measurement_qa subagent (5 tools)</text>
+  <text x="100" y="992" font-size="11.6" fill="#3c2170">· visualization_reporting subagent (5 tools — never places raw CT voxels in model context)</text>
+  <text x="80" y="1013" font-size="11.8" fill="#3c2170">→ call_readonly_mcp() → in-process fastmcp.Client → Canonical MCP Server (④a) only — never touches Path B</text>
+  <text x="80" y="1036" font-size="11.4" fill="#5a3aa0" font-style="italic">GLOBAL_SAFETY_INSTRUCTIONS enforced on every agent: exploratory-candidate language only, no ground-truth</text>
+  <text x="80" y="1052" font-size="11.4" fill="#5a3aa0" font-style="italic">performance claims, tool-grounded facts only.</text>
+  <text x="80" y="1071" font-size="11.4" fill="#5a3aa0" font-style="italic">No API key → graceful no-op: CopilotResponse(status="disabled_no_api_key"). Output is typed:</text>
+  <text x="80" y="1088" font-size="11.4" fill="#5a3aa0" font-style="italic">answer · evidence[] · filter_updates{} · selected_strut_id · warnings[] · status</text>
+
+  <rect x="1240" y="912" width="400" height="180" rx="10" stroke-dasharray="6 4" fill="#fdeeee" stroke="#c94d4d" stroke-width="1.4"/>
+  <text x="1260" y="945" font-size="12.6" font-weight="700" fill="#8a2222">✕ No agent consumer for Path B</text>
+  <text x="1260" y="968" font-size="11.3" fill="#7a2a2a">Orchestration run status/artifacts are</text>
+  <text x="1260" y="985" font-size="11.3" fill="#7a2a2a">only reachable through ④b's raw</text>
+  <text x="1260" y="1002" font-size="11.3" fill="#7a2a2a">agentic_* MCP tool calls — no LLM</text>
+  <text x="1260" y="1019" font-size="11.3" fill="#7a2a2a">agent or UI wraps them today.</text>
+
+  <path d="M640,1092 V1125" stroke="#444" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- ================= Row 7: dashboard ================= -->
+  <rect x="60" y="1125" width="1580" height="130" rx="10" fill="#e6fbfb" stroke="#0f9aa5" stroke-width="1.8"/>
+  <text x="80" y="1152" font-size="16" font-weight="700" fill="#0a5a5f">⑥ Streamlit Dashboard — part2/app.py</text>
+  <text x="1550" y="1146" font-size="10.5" font-weight="700" fill="#1a7a3a">LIVE</text>
+  <text x="80" y="1174" font-size="12" fill="#0a5a5f">Direct file read (dashboard/data.py) of Artifact Store A → strut table, 3D lattice scene, defect report</text>
+  <text x="80" y="1193" font-size="12" fill="#0a5a5f">Copilot chat panel (dashboard/pages.py render_copilot) → ⑤ LLM Agentic Copilot</text>
+  <text x="80" y="1216" font-size="11.6" font-style="italic" fill="#0a5a5f">Path B / orchestration runs are not surfaced anywhere in this UI — confirmed via grep of app.py and pages.py.</text>
+  <text x="80" y="1236" font-size="11.6" font-style="italic" fill="#0a5a5f">human_review_labels.csv overrides are visible here (via Artifact Store A) but were applied upstream in ②a.</text>
+
+  <path d="M445,585 V730" stroke="#2f6fed" stroke-width="1.4" fill="none"/>
+  <path d="M445,730 V912" stroke="#2f6fed" stroke-width="1.4" fill="none"/>
+
+  <!-- ================= Legend ================= -->
+  <rect x="60" y="1280" width="1580" height="255" rx="10" fill="#fbfbfb" stroke="#ccc" stroke-width="1.2"/>
+  <text x="80" y="1308" font-size="14.5" font-weight="700" fill="#222">Legend</text>
+
+  <rect x="80" y="1322" width="26" height="18" rx="4" fill="#eaf2ff" stroke="#2f6fed" stroke-width="1.6"/>
+  <text x="116" y="1336" font-size="12" fill="#222">Deterministic Python (no LLM)</text>
+  <rect x="80" y="1350" width="26" height="18" rx="4" fill="#eafbf0" stroke="#1f9d55" stroke-width="1.6"/>
+  <text x="116" y="1364" font-size="12" fill="#222">On-disk artifact store (source of truth)</text>
+  <rect x="80" y="1378" width="26" height="18" rx="4" fill="#f1e9ff" stroke="#7c3aed" stroke-width="1.6"/>
+  <text x="116" y="1392" font-size="12" fill="#222">MCP server / LLM agent (OpenAI Agents SDK)</text>
+  <rect x="80" y="1406" width="26" height="18" rx="4" fill="#e6fbfb" stroke="#0f9aa5" stroke-width="1.6"/>
+  <text x="116" y="1420" font-size="12" fill="#222">Frontend (Streamlit)</text>
+  <rect x="80" y="1434" width="26" height="18" rx="4" fill="#fff3d6" stroke="#c98a10" stroke-width="1.6"/>
+  <text x="116" y="1448" font-size="12" fill="#222">Human-in-the-loop input</text>
+
+  <rect x="560" y="1322" width="26" height="18" rx="4" fill="#fff" stroke="#333" stroke-width="1.8"/>
+  <text x="596" y="1336" font-size="12" fill="#222">Solid border = LIVE (currently powers the dashboard)</text>
+  <rect x="560" y="1350" width="26" height="18" rx="4" stroke-dasharray="5 4" fill="#fff" stroke="#333" stroke-width="1.8"/>
+  <text x="596" y="1364" font-size="12" fill="#222">Dashed border = EXPERIMENTAL (built, not wired to the live dashboard / not run end-to-end)</text>
+  <text x="560" y="1392" font-size="12" fill="#444">Arrows show data/control flow. Blue thin lines = Artifact Store A being read by consumers.</text>
+  <text x="560" y="1414" font-size="12" fill="#444">Amber dashed lines = Path B control flow (agentic_* tools ⟷ orchestration runtime).</text>
+
+  <text x="80" y="1478" font-size="11.6" fill="#666">Numbers cited (bent_or_misaligned 3,816/18,468 etc.) are from the registration-similarity-fit branch's</text>
+  <text x="80" y="1496" font-size="11.6" fill="#666">regenerated part2/artifacts/sample/full_pipeline_metrics.json — the current best validated science, produced by Path A only.</text>
+  <text x="80" y="1516" font-size="11.6" fill="#666">This repo's own part2/artifacts/sample/* had not yet been regenerated with the ported registration fix as of this diagram's writing.</text>
+</svg>

@@ -1,0 +1,12 @@
+<!DOCTYPE MeshLabDocument>
+<MeshLabProject><MeshGroup><MLMesh label="CT within STL +1 cell (blue) | 73.47%" filename="ct_near_design_blue.ply"><MLMatrix44>
+1 0 0 0
+0 1 0 0
+0 0 1 0
+0 0 0 1
+</MLMatrix44></MLMesh><MLMesh label="CT farther than STL +1 cell (red) | 26.53%" filename="ct_far_design_red.ply"><MLMatrix44>
+1 0 0 0
+0 1 0 0
+0 0 1 0
+0 0 0 1
+</MLMatrix44></MLMesh></MeshGroup><RasterGroup /></MeshLabProject>

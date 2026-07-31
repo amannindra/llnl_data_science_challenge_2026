@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "IN=$(cat); CMD=$(printf '%s' \"$IN\" | jq -r '.tool_input.command // \"\"'); case \"$CMD\" in *python*) FREE=$(memory_pressure -Q 2>/dev/null | awk -F': ' '/free percentage/{gsub(/[^0-9]/,\"\",$2); print $2}'); if [ -n \"$FREE\" ] && [ \"$FREE\" -lt 15 ]; then printf '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"BLOCKED: only %s%% system memory free (<15%% floor). Kill stray project python processes, then retry.\"}}' \"$FREE\"; else printf '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"Memory check: %s%% system-wide free (floor 15%%).\"}}' \"${FREE:-unknown}\"; fi;; esac",
+            "timeout": 15,
+            "statusMessage": "Checking system memory before Python run"
+          }
+        ]
+      }
+    ]
+  }
+}

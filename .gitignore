@@ -182,3 +182,10 @@ paraview_mcp
 # Files over GitHub's 100MB limit (copies/regenerable artifacts; originals live in LFS-tracked data/)
 Aman_Scripts/Tilted_Brian_Tran_segmented.tiff
 Aman_Scripts/outputs/meshlab/
+Aman_Scripts/outputs/mcp_missing_struts_otsu_pipeline/otsu_mask.npy
+Aman_Scripts/outputs/mcp_missing_struts_otsu_pipeline/otsu_mask.tif
+Aman_Scripts/outputs/mcp_missing_struts_otsu_pipeline/otsu_skeleton.npy
+Aman_Scripts/outputs/mcp_tiff_strut_measurements/otsu_mask.tif
+Aman_Scripts/outputs/mcp_tiff_strut_measurements/skeleton.npy
+Aman_Scripts/outputs/simple_strut_metrology/strut_metrology.json
+data/missing_struts/tif_stacks/Tilted_Brian_Tran_segmented.tiff

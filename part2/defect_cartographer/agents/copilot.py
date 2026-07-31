@@ -1,4 +1,4 @@
-"""Manager-style three-agent copilot with a graceful offline mode."""
+"""Two-agent read-only copilot with a graceful offline mode."""
 
 from __future__ import annotations
 
@@ -11,7 +11,6 @@ from agents import Agent, RunConfig, Runner
 
 from ..schemas import CopilotResponse
 from .coordinator import build_analysis_coordinator
-from .measurement_qa import build_measurement_qa_subagent
 from .visualization_reporting import build_visualization_reporting_subagent
 
 
@@ -19,29 +18,25 @@ DEFAULT_AGENT_MODEL = "gpt-5.6-terra"
 
 @dataclass(frozen=True)
 class CopilotBundle:
-    """The coordinator and its two specialist agents."""
+    """The coordinator and visualization/reporting specialist."""
 
     coordinator: Agent[Any]
-    analysis_specialist: Agent[Any]
     visualization_specialist: Agent[Any]
     model: str
 
 
 def build_copilot(model: str | None = None) -> CopilotBundle:
-    """Construct the three-agent topology without calling an external API."""
+    """Construct the two-agent topology without calling an external API."""
 
     selected_model = model or os.getenv("OPENAI_MODEL", DEFAULT_AGENT_MODEL)
 
-    analysis_specialist = build_measurement_qa_subagent(selected_model)
     visualization_specialist = build_visualization_reporting_subagent(selected_model)
     coordinator = build_analysis_coordinator(
         selected_model,
-        analysis_specialist,
         visualization_specialist,
     )
     return CopilotBundle(
         coordinator=coordinator,
-        analysis_specialist=analysis_specialist,
         visualization_specialist=visualization_specialist,
         model=selected_model,
     )

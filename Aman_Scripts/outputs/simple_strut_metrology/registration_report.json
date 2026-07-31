@@ -1,0 +1,432 @@
+{
+  "algorithm_version": "compact-subvoxel-strut-metrology-v1",
+  "corrected_stl_to_ct_matrix": [
+    [
+      0.09684052833555758,
+      -0.04801315528408224,
+      17.189190014605757,
+      414.9657529482523
+    ],
+    [
+      17.189253708971208,
+      0.011020039233725909,
+      -0.09681010580497182,
+      405.71175529235813
+    ],
+    [
+      -0.01074941497816223,
+      17.18945927028788,
+      0.048074467471553826,
+      382.8916113850545
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "elapsed_seconds": 24.537782041996252,
+  "initial_registration": {
+    "design_to_ct_rotation_degrees": 0.33510849611461374,
+    "design_to_ct_scale_voxels_per_unit": 39.48880949493017,
+    "design_to_ct_translation_xyz_voxels": [
+      59.3396041861709,
+      52.18289348673136,
+      26.46173195820745
+    ],
+    "expected_surface_extent_xz_mm": [
+      41.464,
+      41.464
+    ],
+    "fit_max_voxels": 5.67867359184019e-12,
+    "fit_point_count": 10206,
+    "fit_rms_voxels": 3.327465833905942e-12,
+    "fit_scope": "design-JSON to registered-JSON control points; this residual is not an independent STL-to-CT image-registration error",
+    "matrix": [
+      [
+        0.08810763318255853,
+        -0.01410802262535,
+        17.319423431489426,
+        416.2703565020146
+      ],
+      [
+        17.319362899930898,
+        0.04798663135928507,
+        -0.08806823638762563,
+        406.70596969256985
+      ],
+      [
+        -0.047914257007765707,
+        17.319581064144156,
+        0.014351901163363854,
+        381.17098265062987
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "mm_per_design_unit": 2.28,
+    "mm_per_design_unit_source": "paper 4.56 mm cell edge / 2 graph units",
+    "nominal_strut_diameter_mm": 0.424,
+    "stl_center_xyz_mm": [
+      0.0027532577514648438,
+      0.0,
+      -0.0010366439819335938
+    ],
+    "stl_rotation": "+z+x+y",
+    "stl_surface_extent_xz_mm": [
+      41.49277687072754,
+      41.49561882019043
+    ],
+    "surface_extent_residual_xz_mm": [
+      0.028776870727540427,
+      0.03161882019043105
+    ]
+  },
+  "inputs_sha256": {
+    "complete_stl": "2a5b2911f641b0282c276ea6bb1062d98c5b956396a18dd60a9fd3b8c1d8220a",
+    "design_json": "af7bbd51657735f0a0af07ea8ede2007416c61821b7860936457ab0b76fad6a2",
+    "registered_json": "8e422e1ceece719bdc1d0aa1b6f42273c4dea5bff6ee2ebba76e85ffddba99c7",
+    "specimen_stl": "24dcb40c13c4a729cdd84b760b803d78c61bb31ec6b2411724ff6f78cafc2ec4",
+    "tiff": "1dea75b7a9882065cc52d4eb137b7d2cdc86d3ad928543e751ae4c811c466b79"
+  },
+  "peak_observed_rss_bytes": 741588992,
+  "refinement": {
+    "after_held_out": {
+      "median_absolute_offset_voxels": 0.8404135258426173,
+      "median_signed_offset_voxels": -0.7645740378438588,
+      "p90_absolute_offset_voxels": 1.4493168137241257,
+      "robust_sigma_voxels": 0.6296126413117267,
+      "sample_count": 6000,
+      "valid_count": 5457,
+      "valid_fraction": 0.9095
+    },
+    "before_held_out": {
+      "median_absolute_offset_voxels": 1.0162371552278806,
+      "median_signed_offset_voxels": -0.574111584813915,
+      "p90_absolute_offset_voxels": 1.7873035835205078,
+      "robust_sigma_voxels": 1.225315883341718,
+      "sample_count": 6000,
+      "valid_count": 4595,
+      "valid_fraction": 0.7658333333333334
+    },
+    "before_selection": {
+      "median_absolute_offset_voxels": 1.011972063975884,
+      "median_signed_offset_voxels": -0.5639949872841424,
+      "p90_absolute_offset_voxels": 1.7882557570556459,
+      "robust_sigma_voxels": 1.2004561459694238,
+      "sample_count": 6000,
+      "valid_count": 4555,
+      "valid_fraction": 0.7591666666666667
+    },
+    "best_selection_common_comparison": {
+      "after_median_absolute_voxels": 0.7883954382689679,
+      "after_p90_absolute_voxels": 1.3748578823981767,
+      "before_median_absolute_voxels": 1.010762612222736,
+      "before_p90_absolute_voxels": 1.7882039109610972,
+      "common_fraction_of_baseline_valid": 0.994291986827662,
+      "common_valid_count": 4529
+    },
+    "converged": false,
+    "correction_accepted": true,
+    "correction_matrix": [
+      [
+        0.9924848585125101,
+        0.0005370217192720541,
+        -0.0019652280376810036,
+        2.354405035571154
+      ],
+      [
+        -0.0005412075017790447,
+        0.9924845505047185,
+        -0.002113999539204162,
+        3.0934476958308212
+      ],
+      [
+        0.0019640794299303492,
+        0.0021150667329347815,
+        0.9924827523815578,
+        2.9081870848962006
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "held_out_common_comparison": {
+      "after_median_absolute_voxels": 0.8047054316935247,
+      "after_p90_absolute_voxels": 1.3769512908069381,
+      "before_median_absolute_voxels": 1.0166265832733465,
+      "before_p90_absolute_voxels": 1.7889886228197833,
+      "common_fraction_of_baseline_valid": 0.9926006528835691,
+      "common_valid_count": 4561
+    },
+    "held_out_sample_count": 6000,
+    "iteration_history": [
+      {
+        "iteration": 1,
+        "median_signed_crossing_voxels": -0.5922550479697304,
+        "normal_system_condition": 382.12333131010234,
+        "rotation_step_degrees": 0.033638426163116526,
+        "selection_candidate_eligible": true,
+        "selection_common_comparison": {
+          "after_median_absolute_voxels": 0.9469649377211515,
+          "after_p90_absolute_voxels": 1.6670884395238525,
+          "before_median_absolute_voxels": 0.9993707347336497,
+          "before_p90_absolute_voxels": 1.7693999191814211,
+          "common_fraction_of_baseline_valid": 0.9771679473106476,
+          "common_valid_count": 4451
+        },
+        "selection_valid_fraction": 0.7995,
+        "translation_step_voxels": 0.35,
+        "used_crossing_count": 13816,
+        "valid_crossing_fraction": 0.7675555555555555
+      },
+      {
+        "iteration": 2,
+        "median_signed_crossing_voxels": -0.6285597966475194,
+        "normal_system_condition": 381.99985970359535,
+        "rotation_step_degrees": 0.034413856708057994,
+        "selection_candidate_eligible": true,
+        "selection_common_comparison": {
+          "after_median_absolute_voxels": 0.8788204070804161,
+          "after_p90_absolute_voxels": 1.6065724931624583,
+          "before_median_absolute_voxels": 1.0096154518908729,
+          "before_p90_absolute_voxels": 1.7804129588538327,
+          "common_fraction_of_baseline_valid": 0.9714599341383096,
+          "common_valid_count": 4425
+        },
+        "selection_valid_fraction": 0.8323333333333334,
+        "translation_step_voxels": 0.35,
+        "used_crossing_count": 14502,
+        "valid_crossing_fraction": 0.8056666666666666
+      },
+      {
+        "iteration": 3,
+        "median_signed_crossing_voxels": -0.6490873656885694,
+        "normal_system_condition": 382.56229646532296,
+        "rotation_step_degrees": 0.03872361695100692,
+        "selection_candidate_eligible": true,
+        "selection_common_comparison": {
+          "after_median_absolute_voxels": 0.8353427198131304,
+          "after_p90_absolute_voxels": 1.5507038900252967,
+          "before_median_absolute_voxels": 1.0188382572519905,
+          "before_p90_absolute_voxels": 1.788760441337106,
+          "common_fraction_of_baseline_valid": 0.973655323819978,
+          "common_valid_count": 4435
+        },
+        "selection_valid_fraction": 0.8623333333333333,
+        "translation_step_voxels": 0.35000000000000003,
+        "used_crossing_count": 15101,
+        "valid_crossing_fraction": 0.8389444444444445
+      },
+      {
+        "iteration": 4,
+        "median_signed_crossing_voxels": -0.6852447791671944,
+        "normal_system_condition": 384.86612393639405,
+        "rotation_step_degrees": 0.03246373872284007,
+        "selection_candidate_eligible": true,
+        "selection_common_comparison": {
+          "after_median_absolute_voxels": 0.8047551220078002,
+          "after_p90_absolute_voxels": 1.5006725048918892,
+          "before_median_absolute_voxels": 1.0145351063412025,
+          "before_p90_absolute_voxels": 1.7879408182180787,
+          "common_fraction_of_baseline_valid": 0.9846322722283205,
+          "common_valid_count": 4485
+        },
+        "selection_valid_fraction": 0.8893333333333333,
+        "translation_step_voxels": 0.35,
+        "used_crossing_count": 15537,
+        "valid_crossing_fraction": 0.8694444444444445
+      },
+      {
+        "iteration": 5,
+        "median_signed_crossing_voxels": -0.715212001273836,
+        "normal_system_condition": 385.938502612159,
+        "rotation_step_degrees": 0.023465069004012566,
+        "selection_candidate_eligible": true,
+        "selection_common_comparison": {
+          "after_median_absolute_voxels": 0.7993441784862331,
+          "after_p90_absolute_voxels": 1.4458992633277048,
+          "before_median_absolute_voxels": 1.012566412261073,
+          "before_p90_absolute_voxels": 1.7886849683059542,
+          "common_fraction_of_baseline_valid": 0.9892425905598243,
+          "common_valid_count": 4506
+        },
+        "selection_valid_fraction": 0.8998333333333334,
+        "translation_step_voxels": 0.35,
+        "used_crossing_count": 15768,
+        "valid_crossing_fraction": 0.8892222222222222
+      },
+      {
+        "iteration": 6,
+        "median_signed_crossing_voxels": -0.7387832036226889,
+        "normal_system_condition": 385.73074656507595,
+        "rotation_step_degrees": 0.01840578018386872,
+        "selection_candidate_eligible": true,
+        "selection_common_comparison": {
+          "after_median_absolute_voxels": 0.7943620117222414,
+          "after_p90_absolute_voxels": 1.397365841251795,
+          "before_median_absolute_voxels": 1.011972063975884,
+          "before_p90_absolute_voxels": 1.7882039109610972,
+          "common_fraction_of_baseline_valid": 0.9920965971459934,
+          "common_valid_count": 4519
+        },
+        "selection_valid_fraction": 0.9061666666666667,
+        "translation_step_voxels": 0.35,
+        "used_crossing_count": 15873,
+        "valid_crossing_fraction": 0.8996111111111111
+      },
+      {
+        "iteration": 7,
+        "median_signed_crossing_voxels": -0.7640031349682839,
+        "normal_system_condition": 384.59187319482714,
+        "rotation_step_degrees": 0.015998401125572718,
+        "selection_candidate_eligible": true,
+        "selection_common_comparison": {
+          "after_median_absolute_voxels": 0.7883954382689679,
+          "after_p90_absolute_voxels": 1.3748578823981767,
+          "before_median_absolute_voxels": 1.010762612222736,
+          "before_p90_absolute_voxels": 1.7882039109610972,
+          "common_fraction_of_baseline_valid": 0.994291986827662,
+          "common_valid_count": 4529
+        },
+        "selection_valid_fraction": 0.9096666666666666,
+        "translation_step_voxels": 0.31332927231696933,
+        "used_crossing_count": 15922,
+        "valid_crossing_fraction": 0.9057222222222222
+      },
+      {
+        "iteration": 8,
+        "median_signed_crossing_voxels": -0.780026974389378,
+        "normal_system_condition": 383.1750287361455,
+        "rotation_step_degrees": 0.013332758515538395,
+        "selection_candidate_eligible": true,
+        "selection_common_comparison": {
+          "after_median_absolute_voxels": 0.7944071847889866,
+          "after_p90_absolute_voxels": 1.3747041223320136,
+          "before_median_absolute_voxels": 1.0117308123903674,
+          "before_p90_absolute_voxels": 1.7874281563325791,
+          "common_fraction_of_baseline_valid": 0.9949506037321625,
+          "common_valid_count": 4532
+        },
+        "selection_valid_fraction": 0.9105,
+        "translation_step_voxels": 0.17785038950550067,
+        "used_crossing_count": 15975,
+        "valid_crossing_fraction": 0.9091666666666667
+      },
+      {
+        "iteration": 9,
+        "median_signed_crossing_voxels": -0.7819223640333612,
+        "normal_system_condition": 382.3164585010979,
+        "rotation_step_degrees": 0.010126483766400662,
+        "selection_candidate_eligible": true,
+        "selection_common_comparison": {
+          "after_median_absolute_voxels": 0.7963916640148803,
+          "after_p90_absolute_voxels": 1.3814571079236118,
+          "before_median_absolute_voxels": 1.0117308123903674,
+          "before_p90_absolute_voxels": 1.7871143416488127,
+          "common_fraction_of_baseline_valid": 0.9953896816684962,
+          "common_valid_count": 4534
+        },
+        "selection_valid_fraction": 0.9115,
+        "translation_step_voxels": 0.10784100210816361,
+        "used_crossing_count": 16017,
+        "valid_crossing_fraction": 0.9102777777777777
+      },
+      {
+        "iteration": 10,
+        "median_signed_crossing_voxels": -0.7848610807899463,
+        "normal_system_condition": 381.68350578368893,
+        "rotation_step_degrees": 0.008115702049873183,
+        "selection_candidate_eligible": true,
+        "selection_common_comparison": {
+          "after_median_absolute_voxels": 0.7973556702114821,
+          "after_p90_absolute_voxels": 1.3869244444965874,
+          "before_median_absolute_voxels": 1.0117308123903674,
+          "before_p90_absolute_voxels": 1.7874281563325791,
+          "common_fraction_of_baseline_valid": 0.9949506037321625,
+          "common_valid_count": 4532
+        },
+        "selection_valid_fraction": 0.9113333333333333,
+        "translation_step_voxels": 0.06666340335336439,
+        "used_crossing_count": 16047,
+        "valid_crossing_fraction": 0.9108888888888889
+      },
+      {
+        "iteration": 11,
+        "median_signed_crossing_voxels": -0.7838401034922431,
+        "normal_system_condition": 381.28187942330277,
+        "rotation_step_degrees": 0.006153574561453529,
+        "selection_candidate_eligible": true,
+        "selection_common_comparison": {
+          "after_median_absolute_voxels": 0.8002471811371124,
+          "after_p90_absolute_voxels": 1.38747112216315,
+          "before_median_absolute_voxels": 1.0125033083711514,
+          "before_p90_absolute_voxels": 1.7881779879138229,
+          "common_fraction_of_baseline_valid": 0.9947310647639956,
+          "common_valid_count": 4531
+        },
+        "selection_valid_fraction": 0.9113333333333333,
+        "translation_step_voxels": 0.04243048136800733,
+        "used_crossing_count": 16064,
+        "valid_crossing_fraction": 0.9111111111111111
+      },
+      {
+        "iteration": 12,
+        "median_signed_crossing_voxels": -0.7858504610260282,
+        "normal_system_condition": 381.1386704547966,
+        "rotation_step_degrees": 0.004550727931690651,
+        "selection_candidate_eligible": true,
+        "selection_common_comparison": {
+          "after_median_absolute_voxels": 0.8034577650602603,
+          "after_p90_absolute_voxels": 1.3927389057602546,
+          "before_median_absolute_voxels": 1.0125033083711514,
+          "before_p90_absolute_voxels": 1.7881779879138229,
+          "common_fraction_of_baseline_valid": 0.9947310647639956,
+          "common_valid_count": 4531
+        },
+        "selection_valid_fraction": 0.9113333333333333,
+        "translation_step_voxels": 0.027817890458063967,
+        "used_crossing_count": 16073,
+        "valid_crossing_fraction": 0.9113333333333333
+      }
+    ],
+    "method": "local-ISO50 robust point-to-plane rigid refinement + isotropic scale",
+    "pivot_xyz_voxels": [
+      415.8399139523808,
+      406.7066496619094,
+      381.39498457606703
+    ],
+    "registration_uncertainty_voxels": 0.6296126413117267,
+    "rotation_degrees": 0.16951042265684135,
+    "scale_factor": 0.9924869494810322,
+    "selected_iteration": 7,
+    "selection_reason": "validation-selected iteration 7",
+    "selection_sample_count": 6000,
+    "train_sample_count": 18000,
+    "translation_magnitude_voxels": 2.3739264989912154,
+    "translation_xyz_voxels": [
+      -1.301808566805562,
+      -0.9944600917171442,
+      1.718100871307115
+    ]
+  },
+  "scope": "independent small rigid refinement; JSON fit is initialization only",
+  "surface_sampling": {
+    "sample_count": 30000,
+    "surface_area_stl_units_squared": 71367.36782638996,
+    "triangle_count": 3498656
+  },
+  "tiff_shape_zyx": [
+    761,
+    815,
+    837
+  ]
+}

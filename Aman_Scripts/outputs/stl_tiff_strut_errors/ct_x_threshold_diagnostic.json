@@ -1,0 +1,134 @@
+{
+  "bands": [
+    {
+      "above_global_threshold_count": 1635147,
+      "above_global_threshold_fraction": 0.032955245358464405,
+      "above_global_threshold_mean": 47555.79245902662,
+      "native_voxel_count": 49617200,
+      "otsu_threshold": 39498,
+      "q50_intensity": 31727,
+      "q99_intensity": 50307,
+      "x_begin": 0,
+      "x_end_exclusive": 80
+    },
+    {
+      "above_global_threshold_count": 6407031,
+      "above_global_threshold_fraction": 0.12912923341099458,
+      "above_global_threshold_mean": 48231.60494665938,
+      "native_voxel_count": 49617200,
+      "otsu_threshold": 40703,
+      "q50_intensity": 32436,
+      "q99_intensity": 55517,
+      "x_begin": 80,
+      "x_end_exclusive": 160
+    },
+    {
+      "above_global_threshold_count": 6657565,
+      "above_global_threshold_fraction": 0.13417857114065285,
+      "above_global_threshold_mean": 47431.32707964549,
+      "native_voxel_count": 49617200,
+      "otsu_threshold": 40183,
+      "q50_intensity": 32568,
+      "q99_intensity": 54026,
+      "x_begin": 160,
+      "x_end_exclusive": 240
+    },
+    {
+      "above_global_threshold_count": 6744115,
+      "above_global_threshold_fraction": 0.13592292592085004,
+      "above_global_threshold_mean": 47032.451047320515,
+      "native_voxel_count": 49617200,
+      "otsu_threshold": 39919,
+      "q50_intensity": 32614,
+      "q99_intensity": 53406,
+      "x_begin": 240,
+      "x_end_exclusive": 320
+    },
+    {
+      "above_global_threshold_count": 6755310,
+      "above_global_threshold_fraction": 0.13614855332425047,
+      "above_global_threshold_mean": 46867.876484276814,
+      "native_voxel_count": 49617200,
+      "otsu_threshold": 39808,
+      "q50_intensity": 32629,
+      "q99_intensity": 53313,
+      "x_begin": 320,
+      "x_end_exclusive": 400
+    },
+    {
+      "above_global_threshold_count": 6725808,
+      "above_global_threshold_fraction": 0.1355539611263836,
+      "above_global_threshold_mean": 46895.66190143995,
+      "native_voxel_count": 49617200,
+      "otsu_threshold": 39825,
+      "q50_intensity": 32635,
+      "q99_intensity": 53435,
+      "x_begin": 400,
+      "x_end_exclusive": 480
+    },
+    {
+      "above_global_threshold_count": 6731960,
+      "above_global_threshold_fraction": 0.13567795038817185,
+      "above_global_threshold_mean": 47122.12395810433,
+      "native_voxel_count": 49617200,
+      "otsu_threshold": 39975,
+      "q50_intensity": 32632,
+      "q99_intensity": 53813,
+      "x_begin": 480,
+      "x_end_exclusive": 560
+    },
+    {
+      "above_global_threshold_count": 6620945,
+      "above_global_threshold_fraction": 0.133440520625912,
+      "above_global_threshold_mean": 47538.29185682708,
+      "native_voxel_count": 49617200,
+      "otsu_threshold": 40236,
+      "q50_intensity": 32597,
+      "q99_intensity": 54494,
+      "x_begin": 560,
+      "x_end_exclusive": 640
+    },
+    {
+      "above_global_threshold_count": 6415156,
+      "above_global_threshold_fraction": 0.12929298710930887,
+      "above_global_threshold_mean": 48246.65028519961,
+      "native_voxel_count": 49617200,
+      "otsu_threshold": 40684,
+      "q50_intensity": 32514,
+      "q99_intensity": 55804,
+      "x_begin": 640,
+      "x_end_exclusive": 720
+    },
+    {
+      "above_global_threshold_count": 3960373,
+      "above_global_threshold_fraction": 0.0798185508251171,
+      "above_global_threshold_mean": 48583.06850213351,
+      "native_voxel_count": 49617200,
+      "otsu_threshold": 40545,
+      "q50_intensity": 32055,
+      "q99_intensity": 56024,
+      "x_begin": 720,
+      "x_end_exclusive": 800
+    },
+    {
+      "above_global_threshold_count": 0,
+      "above_global_threshold_fraction": 0.0,
+      "above_global_threshold_mean": null,
+      "native_voxel_count": 22947955,
+      "otsu_threshold": 29529,
+      "q50_intensity": 31518,
+      "q99_intensity": 34483,
+      "x_begin": 800,
+      "x_end_exclusive": 837
+    }
+  ],
+  "downsampled": false,
+  "dtype": ">u2",
+  "global_threshold": 40054,
+  "shape_zyx": [
+    761,
+    815,
+    837
+  ],
+  "tiff": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/data/missing_struts/tif_stacks/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.tif"
+}

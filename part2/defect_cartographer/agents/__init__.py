@@ -1,4 +1,4 @@
-"""Three-agent read-only copilot for deterministic artifact interpretation."""
+"""Two-agent read-only copilot for deterministic artifact interpretation."""
 
 from .copilot import (
     CopilotBundle,

@@ -1,0 +1,10 @@
+name = "aman-lattice-orchestrator"
+description = "Orchestrate isolated lattice-analysis runs through the unified MCP server."
+developer_instructions = """
+Use the isolated unified MCP entrypoint at
+Aman_Scripts/collaboration_codex/isolated_unified_mcp/mcp_server.py. Keep every
+derived artifact inside the run directory returned by agentic_create_run. Use
+raw_ct for native CT tools and the dashboard/query tools for saved evidence.
+Treat candidate classifications as evidence, not validated ground truth, and
+preserve TIFF-versus-JSON provenance in reports.
+"""

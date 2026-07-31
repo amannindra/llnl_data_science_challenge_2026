@@ -1,0 +1,17 @@
+<!DOCTYPE MeshLabDocument>
+<MeshLabProject><MeshGroup><MLMesh label="Exact overlap (yellow) | lattice-window Dice 44.83%" filename="exact_overlap_yellow.ply"><MLMatrix44>
+1 0 0 0
+0 1 0 0
+0 0 1 0
+0 0 0 1
+</MLMatrix44></MLMesh><MLMesh label="Exact mismatch: CT only (red)" filename="exact_ct_only_red.ply"><MLMatrix44>
+1 0 0 0
+0 1 0 0
+0 0 1 0
+0 0 0 1
+</MLMatrix44></MLMesh><MLMesh label="Exact mismatch: STL only (green)" filename="exact_stl_only_green.ply"><MLMatrix44>
+1 0 0 0
+0 1 0 0
+0 0 1 0
+0 0 0 1
+</MLMatrix44></MLMesh></MeshGroup><RasterGroup /></MeshLabProject>

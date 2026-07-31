@@ -28,4 +28,4 @@ Thickness statistics are reported only for rows with valid measurements and are 
 
 ## Limitations and next decision
 
-The labels are automated evidence classifications, not validated manufacturing defects. Anchor human reviews are required for missing-versus-broken and bent-versus-registration decisions.
+The labels are automated evidence classifications, not validated manufacturing defects. Anchor independent validation is recommended for ambiguous missing-versus-broken and bent-versus-registration decisions.

@@ -1,0 +1,174 @@
+{
+  "direct_ply_views": {
+    "01_exact_dice_44.83%.ply": {
+      "display_point_count": 373214,
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/Aman_Scripts/outputs/tif2stl_plate/meshlab_metrics/01_exact_dice_44.83%.ply"
+    },
+    "02_ct_within_design_73.47%.ply": {
+      "display_point_count": 262065,
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/Aman_Scripts/outputs/tif2stl_plate/meshlab_metrics/02_ct_within_design_73.47%.ply"
+    },
+    "03_design_realized_60.36%.ply": {
+      "display_point_count": 326545,
+      "path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/Aman_Scripts/outputs/tif2stl_plate/meshlab_metrics/03_design_realized_60.36%.ply"
+    }
+  },
+  "display_sampling": {
+    "ct_within_design_stride": 19,
+    "design_realized_stride": 26,
+    "exact_dice_stride": 28,
+    "method": "common deterministic stride within each exclusive metric partition",
+    "note": "The visual class densities preserve source-count proportions. Exact Dice is shown in the layer label; the yellow fraction of the exact-union display equals IoU, not Dice."
+  },
+  "lattice_window": {
+    "ct_window_voxels": 4979223,
+    "ct_within_design_tolerant": 0.7346879221918762,
+    "design_realized_in_ct_tolerant": 0.6036121657329171,
+    "downsample": 2,
+    "exact_dice": 0.44833620590131756,
+    "exact_iou": 0.28893901346827733,
+    "exact_overlap_fraction_of_union": 0.28893901346827733,
+    "slices_zyx": [
+      [
+        10,
+        372
+      ],
+      [
+        22,
+        385
+      ],
+      [
+        27,
+        390
+      ]
+    ],
+    "stl_window_voxels": 8490142,
+    "tolerance_cells": 1
+  },
+  "layers": [
+    {
+      "color_rgb": [
+        245,
+        225,
+        80
+      ],
+      "file": "exact_overlap_yellow.ply",
+      "label": "Exact overlap (yellow) | lattice-window Dice 44.83%",
+      "sampled_point_count": 107836,
+      "sampling_stride": 28,
+      "source_voxel_count": 3019402
+    },
+    {
+      "color_rgb": [
+        235,
+        70,
+        70
+      ],
+      "file": "exact_ct_only_red.ply",
+      "label": "Exact mismatch: CT only (red)",
+      "sampled_point_count": 69994,
+      "sampling_stride": 28,
+      "source_voxel_count": 1959821
+    },
+    {
+      "color_rgb": [
+        70,
+        205,
+        95
+      ],
+      "file": "exact_stl_only_green.ply",
+      "label": "Exact mismatch: STL only (green)",
+      "sampled_point_count": 195384,
+      "sampling_stride": 28,
+      "source_voxel_count": 5470740
+    },
+    {
+      "color_rgb": [
+        80,
+        190,
+        255
+      ],
+      "file": "ct_near_design_blue.ply",
+      "label": "CT within STL +1 cell (blue) | 73.47%",
+      "sampled_point_count": 192536,
+      "sampling_stride": 19,
+      "source_voxel_count": 3658175
+    },
+    {
+      "color_rgb": [
+        235,
+        70,
+        70
+      ],
+      "file": "ct_far_design_red.ply",
+      "label": "CT farther than STL +1 cell (red) | 26.53%",
+      "sampled_point_count": 69529,
+      "sampling_stride": 19,
+      "source_voxel_count": 1321048
+    },
+    {
+      "color_rgb": [
+        220,
+        220,
+        225
+      ],
+      "file": "ct_reference_gray.ply",
+      "label": "CT reference (gray)",
+      "sampled_point_count": 199169,
+      "sampling_stride": 25,
+      "source_voxel_count": 4979223
+    },
+    {
+      "color_rgb": [
+        245,
+        225,
+        80
+      ],
+      "file": "design_realized_yellow.ply",
+      "label": "STL realized in CT +1 cell (yellow) | 60.36%",
+      "sampled_point_count": 197106,
+      "sampling_stride": 26,
+      "source_voxel_count": 5124753
+    },
+    {
+      "color_rgb": [
+        70,
+        205,
+        95
+      ],
+      "file": "design_unrealized_green.ply",
+      "label": "STL not realized in CT +1 cell (green) | 39.64%",
+      "sampled_point_count": 129439,
+      "sampling_stride": 26,
+      "source_voxel_count": 3365389
+    },
+    {
+      "color_rgb": [
+        90,
+        220,
+        120
+      ],
+      "file": "stl_reference_green.ply",
+      "label": "STL reference (green)",
+      "sampled_point_count": 197446,
+      "sampling_stride": 43,
+      "source_voxel_count": 8490142
+    }
+  ],
+  "projects": {
+    "01_exact_dice.mlp": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/Aman_Scripts/outputs/tif2stl_plate/meshlab_metrics/01_exact_dice.mlp",
+    "02_ct_within_design.mlp": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/Aman_Scripts/outputs/tif2stl_plate/meshlab_metrics/02_ct_within_design.mlp",
+    "03_design_realized.mlp": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/Aman_Scripts/outputs/tif2stl_plate/meshlab_metrics/03_design_realized.mlp"
+  },
+  "registration": {
+    "rms_error_voxels": 3.327465833905942e-12,
+    "rotation_degrees": 0.33510849611461374,
+    "scale_voxels_per_design_unit": 39.48880949493017,
+    "stl_rotation": "+z+x+y"
+  },
+  "runtime_seconds": 137.5,
+  "threshold": {
+    "source": "otsu",
+    "value": 40054.0
+  }
+}

@@ -30,6 +30,38 @@ def test_mcp_lists_unified_dashboard_and_raw_ct_tools() -> None:
     assert "raw_ct_get_full_defect_summary" in names
 
 
+def test_all_six_mcp_tools_execute_without_external_calls() -> None:
+    async def call_all() -> dict[str, dict]:
+        requests = {
+            "get_pipeline_summary": {},
+            "get_strut_details": {"strut_id": 8578},
+            "filter_defect_candidates": {
+                "filters": {"classes": ["broken"], "limit": 2}
+            },
+            "compare_defect_groups": {
+                "group_by": "prediction",
+                "metric": "count",
+            },
+            "get_methodology": {"section": "rules"},
+            "prepare_threejs_scene": {
+                "request": {"classes": ["missing"], "max_overlays": 2}
+            },
+        }
+        outputs: dict[str, dict] = {}
+        async with Client(mcp) as client:
+            for name, arguments in requests.items():
+                result = await client.call_tool(name, arguments)
+                assert not result.is_error
+                assert isinstance(result.structured_content, dict)
+                outputs[name] = result.structured_content
+        return outputs
+
+    outputs = asyncio.run(call_all())
+    assert set(outputs) == NATIVE_TOOLS - {"get_strut_ct_evidence"}
+    assert outputs["get_strut_details"]["record"]["strut_id"] == 8578
+    assert outputs["prepare_threejs_scene"]["raw_ct_included"] is False
+
+
 def test_mcp_calls_return_structured_read_only_results() -> None:
     async def call_tools() -> tuple[dict, dict]:
         async with Client(mcp) as client:
@@ -44,7 +76,7 @@ def test_mcp_calls_return_structured_read_only_results() -> None:
 
     summary, filtered = asyncio.run(call_tools())
     assert summary["sample_size"] == 18_468
-    assert filtered["matching_count"] == 120
+    assert filtered["matching_count"] == 246
     assert all(row["prediction"] == "missing" for row in filtered["records"])
 
 

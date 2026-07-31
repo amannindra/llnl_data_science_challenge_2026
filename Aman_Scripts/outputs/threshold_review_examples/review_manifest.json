@@ -1,0 +1,289 @@
+{
+  "source_table": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/part2/artifacts/sample/full_strut_classification.csv",
+  "source_raw_tiff": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/data/missing_struts/tif_stacks/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.tif",
+  "human_review_path": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/Aman_Scripts/outputs/strut_defect_classification/human_review_labels.csv",
+  "records": [
+    {
+      "strut_id": 18453,
+      "edge_id": "E_N010195_N010205",
+      "classification_reason": "low_axial_support_and_large_gap",
+      "classification_status": "confirmed",
+      "observed_axial_fraction": 0.0465116279069767,
+      "connected_support": false,
+      "longest_unsupported_gap_voxels": 41.432123953156335,
+      "p90_centerline_displacement_voxels": 3.624442133851295,
+      "measurement_valid": true,
+      "tiff_measurement_valid": true,
+      "thickness_um_median": 424.78307349241334,
+      "crop_start_zyx": [
+        648,
+        753,
+        686
+      ],
+      "crop_stop_zyx_exclusive": [
+        706,
+        771,
+        743
+      ],
+      "raw_tiff": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/data/missing_struts/tif_stacks/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.tif",
+      "image_2d": "Aman_Scripts/outputs/threshold_review_examples/strut_18453_2d_raw_tiff.png",
+      "image_3d": null,
+      "why_uncertain": "Automated rule flagged this strut as uncertain (reason: low_axial_support_and_large_gap).",
+      "label_menu": {
+        "healthy": "Continuous strut, correct thickness, no defect visible.",
+        "missing": "No material present anywhere along the expected centerline.",
+        "broken": "Material is present but the centerline is disconnected somewhere along its length (a real internal/partial gap, not just absent everywhere).",
+        "thin": "Continuous strut, but visibly under-diameter versus neighboring struts.",
+        "thick": "Continuous strut, but visibly over-diameter versus neighboring struts.",
+        "bent_or_misaligned": "Continuous strut whose centerline is visibly offset from the red registered/expected line \u2014 plausibly a real bend, or just registration error; use judgment from the image.",
+        "uncertain": "Still genuinely ambiguous after this review (e.g. needs the 3D view or a deeper look) \u2014 leave it for a later pass rather than guessing.",
+        "not_applicable": "The expected strut position is intentionally absent from the design (e.g. exterior scaffold/build plate artifact), not a manufacturing defect."
+      },
+      "image_otsu_mask": "Aman_Scripts/outputs/threshold_review_examples/strut_18453_otsu_mask.png",
+      "otsu": {
+        "path": "Aman_Scripts/outputs/threshold_review_examples/strut_18453_otsu_mask.png",
+        "station_fraction": 0.5,
+        "expected_radius_voxels": 3.5793466567993164,
+        "reason": "insufficient_local_contrast",
+        "otsu_level": null,
+        "contrast": 779.6993148165602,
+        "area_fraction": null
+      }
+    },
+    {
+      "strut_id": 18377,
+      "edge_id": "E_N010167_N010174",
+      "classification_reason": "disconnected_or_unsupported_body",
+      "classification_status": "confirmed",
+      "observed_axial_fraction": 0.9767441860465116,
+      "connected_support": false,
+      "longest_unsupported_gap_voxels": 1.010539608613569,
+      "p90_centerline_displacement_voxels": 3.088518563497148,
+      "measurement_valid": true,
+      "tiff_measurement_valid": true,
+      "thickness_um_median": 357.2031429505448,
+      "crop_start_zyx": [
+        648,
+        714,
+        528
+      ],
+      "crop_stop_zyx_exclusive": [
+        706,
+        772,
+        546
+      ],
+      "raw_tiff": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/data/missing_struts/tif_stacks/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.tif",
+      "image_2d": "Aman_Scripts/outputs/threshold_review_examples/strut_18377_2d_raw_tiff.png",
+      "image_3d": null,
+      "why_uncertain": "Automated rule flagged this strut as uncertain (reason: disconnected_or_unsupported_body).",
+      "label_menu": {
+        "healthy": "Continuous strut, correct thickness, no defect visible.",
+        "missing": "No material present anywhere along the expected centerline.",
+        "broken": "Material is present but the centerline is disconnected somewhere along its length (a real internal/partial gap, not just absent everywhere).",
+        "thin": "Continuous strut, but visibly under-diameter versus neighboring struts.",
+        "thick": "Continuous strut, but visibly over-diameter versus neighboring struts.",
+        "bent_or_misaligned": "Continuous strut whose centerline is visibly offset from the red registered/expected line \u2014 plausibly a real bend, or just registration error; use judgment from the image.",
+        "uncertain": "Still genuinely ambiguous after this review (e.g. needs the 3D view or a deeper look) \u2014 leave it for a later pass rather than guessing.",
+        "not_applicable": "The expected strut position is intentionally absent from the design (e.g. exterior scaffold/build plate artifact), not a manufacturing defect."
+      },
+      "image_otsu_mask": "Aman_Scripts/outputs/threshold_review_examples/strut_18377_otsu_mask.png",
+      "otsu": {
+        "path": "Aman_Scripts/outputs/threshold_review_examples/strut_18377_otsu_mask.png",
+        "station_fraction": 0.5,
+        "expected_radius_voxels": 3.5158188343048096,
+        "reason": "component_selected",
+        "otsu_level": 38174.09754490839,
+        "contrast": 12197.726011711111,
+        "area_fraction": 0.7837837837837838
+      }
+    },
+    {
+      "strut_id": 13061,
+      "edge_id": "E_N007359_N007360",
+      "classification_reason": "radial_deviation_exceeds_effective_tolerance",
+      "classification_status": "confirmed",
+      "observed_axial_fraction": 1.0,
+      "connected_support": true,
+      "longest_unsupported_gap_voxels": 0.0,
+      "p90_centerline_displacement_voxels": 3.896395104709933,
+      "measurement_valid": true,
+      "tiff_measurement_valid": true,
+      "thickness_um_median": 340.17269785500145,
+      "crop_start_zyx": [
+        491,
+        399,
+        289
+      ],
+      "crop_stop_zyx_exclusive": [
+        549,
+        417,
+        347
+      ],
+      "raw_tiff": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/data/missing_struts/tif_stacks/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.tif",
+      "image_2d": "Aman_Scripts/outputs/threshold_review_examples/strut_13061_2d_raw_tiff.png",
+      "image_3d": null,
+      "why_uncertain": "Automated rule flagged this strut as uncertain (reason: radial_deviation_exceeds_effective_tolerance).",
+      "label_menu": {
+        "healthy": "Continuous strut, correct thickness, no defect visible.",
+        "missing": "No material present anywhere along the expected centerline.",
+        "broken": "Material is present but the centerline is disconnected somewhere along its length (a real internal/partial gap, not just absent everywhere).",
+        "thin": "Continuous strut, but visibly under-diameter versus neighboring struts.",
+        "thick": "Continuous strut, but visibly over-diameter versus neighboring struts.",
+        "bent_or_misaligned": "Continuous strut whose centerline is visibly offset from the red registered/expected line \u2014 plausibly a real bend, or just registration error; use judgment from the image.",
+        "uncertain": "Still genuinely ambiguous after this review (e.g. needs the 3D view or a deeper look) \u2014 leave it for a later pass rather than guessing.",
+        "not_applicable": "The expected strut position is intentionally absent from the design (e.g. exterior scaffold/build plate artifact), not a manufacturing defect."
+      },
+      "image_otsu_mask": "Aman_Scripts/outputs/threshold_review_examples/strut_13061_otsu_mask.png",
+      "otsu": {
+        "path": "Aman_Scripts/outputs/threshold_review_examples/strut_13061_otsu_mask.png",
+        "station_fraction": 0.5,
+        "expected_radius_voxels": 3.55483078956604,
+        "reason": "component_selected",
+        "otsu_level": 31375.67543641714,
+        "contrast": 1402.4677235029994,
+        "area_fraction": 1.4102564102564104
+      }
+    },
+    {
+      "strut_id": 5344,
+      "edge_id": "E_N003019_N003021",
+      "classification_reason": "centerline_offset_cannot_separate_bend_from_registration",
+      "classification_status": "review",
+      "observed_axial_fraction": 1.0,
+      "connected_support": true,
+      "longest_unsupported_gap_voxels": 0.0,
+      "p90_centerline_displacement_voxels": 4.7063259580291685,
+      "measurement_valid": true,
+      "tiff_measurement_valid": true,
+      "thickness_um_median": 404.73948654234664,
+      "crop_start_zyx": [
+        175,
+        475,
+        724
+      ],
+      "crop_stop_zyx_exclusive": [
+        233,
+        493,
+        782
+      ],
+      "raw_tiff": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/data/missing_struts/tif_stacks/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.tif",
+      "image_2d": "Aman_Scripts/outputs/threshold_review_examples/strut_5344_2d_raw_tiff.png",
+      "image_3d": null,
+      "why_uncertain": "Automated rule flagged this strut as uncertain (reason: centerline_offset_cannot_separate_bend_from_registration).",
+      "label_menu": {
+        "healthy": "Continuous strut, correct thickness, no defect visible.",
+        "missing": "No material present anywhere along the expected centerline.",
+        "broken": "Material is present but the centerline is disconnected somewhere along its length (a real internal/partial gap, not just absent everywhere).",
+        "thin": "Continuous strut, but visibly under-diameter versus neighboring struts.",
+        "thick": "Continuous strut, but visibly over-diameter versus neighboring struts.",
+        "bent_or_misaligned": "Continuous strut whose centerline is visibly offset from the red registered/expected line \u2014 plausibly a real bend, or just registration error; use judgment from the image.",
+        "uncertain": "Still genuinely ambiguous after this review (e.g. needs the 3D view or a deeper look) \u2014 leave it for a later pass rather than guessing.",
+        "not_applicable": "The expected strut position is intentionally absent from the design (e.g. exterior scaffold/build plate artifact), not a manufacturing defect."
+      },
+      "image_otsu_mask": "Aman_Scripts/outputs/threshold_review_examples/strut_5344_otsu_mask.png",
+      "otsu": {
+        "path": "Aman_Scripts/outputs/threshold_review_examples/strut_5344_otsu_mask.png",
+        "station_fraction": 0.5,
+        "expected_radius_voxels": 3.5753581523895264,
+        "reason": "component_selected",
+        "otsu_level": 35223.957232227775,
+        "contrast": 3662.929737301438,
+        "area_fraction": 0.27848101265822783
+      }
+    },
+    {
+      "strut_id": 11,
+      "edge_id": "E_N000006_N000012",
+      "classification_reason": "measurements_near_a_declared_tolerance",
+      "classification_status": "review",
+      "observed_axial_fraction": 1.0,
+      "connected_support": true,
+      "longest_unsupported_gap_voxels": 0.0,
+      "p90_centerline_displacement_voxels": 1.789588753584202,
+      "measurement_valid": true,
+      "tiff_measurement_valid": true,
+      "thickness_um_median": 380.90607937582166,
+      "crop_start_zyx": [
+        57,
+        44,
+        90
+      ],
+      "crop_stop_zyx_exclusive": [
+        115,
+        62,
+        148
+      ],
+      "raw_tiff": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/data/missing_struts/tif_stacks/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.tif",
+      "image_2d": "Aman_Scripts/outputs/threshold_review_examples/strut_11_2d_raw_tiff.png",
+      "image_3d": null,
+      "why_uncertain": "Automated rule: deterministic measurements sit close enough to the declared tolerance band that the classifier could not confidently call healthy vs. a defect (axial support 100%, connected=True, longest gap 0.0 vox, centerline offset p90 1.79 vox, measured thickness 381 um). Look for a visible gap, thinning/thickening, or centerline offset in the image.",
+      "label_menu": {
+        "healthy": "Continuous strut, correct thickness, no defect visible.",
+        "missing": "No material present anywhere along the expected centerline.",
+        "broken": "Material is present but the centerline is disconnected somewhere along its length (a real internal/partial gap, not just absent everywhere).",
+        "thin": "Continuous strut, but visibly under-diameter versus neighboring struts.",
+        "thick": "Continuous strut, but visibly over-diameter versus neighboring struts.",
+        "bent_or_misaligned": "Continuous strut whose centerline is visibly offset from the red registered/expected line \u2014 plausibly a real bend, or just registration error; use judgment from the image.",
+        "uncertain": "Still genuinely ambiguous after this review (e.g. needs the 3D view or a deeper look) \u2014 leave it for a later pass rather than guessing.",
+        "not_applicable": "The expected strut position is intentionally absent from the design (e.g. exterior scaffold/build plate artifact), not a manufacturing defect."
+      },
+      "image_otsu_mask": "Aman_Scripts/outputs/threshold_review_examples/strut_11_otsu_mask.png",
+      "otsu": {
+        "path": "Aman_Scripts/outputs/threshold_review_examples/strut_11_otsu_mask.png",
+        "station_fraction": 0.5,
+        "expected_radius_voxels": 3.575282573699951,
+        "reason": "component_selected",
+        "otsu_level": 40093.69945859273,
+        "contrast": 12941.55319093605,
+        "area_fraction": 0.879746835443038
+      }
+    },
+    {
+      "strut_id": 12,
+      "edge_id": "E_N000008_N000010",
+      "classification_reason": "all_measurements_clearly_inside_tolerance",
+      "classification_status": "accepted",
+      "observed_axial_fraction": 1.0,
+      "connected_support": true,
+      "longest_unsupported_gap_voxels": 0.0,
+      "p90_centerline_displacement_voxels": 1.5708256242930383,
+      "measurement_valid": true,
+      "tiff_measurement_valid": true,
+      "thickness_um_median": 379.6698069504551,
+      "crop_start_zyx": [
+        57,
+        83,
+        51
+      ],
+      "crop_stop_zyx_exclusive": [
+        115,
+        101,
+        108
+      ],
+      "raw_tiff": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/data/missing_struts/tif_stacks/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.tif",
+      "image_2d": "Aman_Scripts/outputs/threshold_review_examples/strut_12_2d_raw_tiff.png",
+      "image_3d": null,
+      "why_uncertain": "Automated rule flagged this strut as uncertain (reason: all_measurements_clearly_inside_tolerance).",
+      "label_menu": {
+        "healthy": "Continuous strut, correct thickness, no defect visible.",
+        "missing": "No material present anywhere along the expected centerline.",
+        "broken": "Material is present but the centerline is disconnected somewhere along its length (a real internal/partial gap, not just absent everywhere).",
+        "thin": "Continuous strut, but visibly under-diameter versus neighboring struts.",
+        "thick": "Continuous strut, but visibly over-diameter versus neighboring struts.",
+        "bent_or_misaligned": "Continuous strut whose centerline is visibly offset from the red registered/expected line \u2014 plausibly a real bend, or just registration error; use judgment from the image.",
+        "uncertain": "Still genuinely ambiguous after this review (e.g. needs the 3D view or a deeper look) \u2014 leave it for a later pass rather than guessing.",
+        "not_applicable": "The expected strut position is intentionally absent from the design (e.g. exterior scaffold/build plate artifact), not a manufacturing defect."
+      },
+      "image_otsu_mask": "Aman_Scripts/outputs/threshold_review_examples/strut_12_otsu_mask.png",
+      "otsu": {
+        "path": "Aman_Scripts/outputs/threshold_review_examples/strut_12_otsu_mask.png",
+        "station_fraction": 0.5,
+        "expected_radius_voxels": 3.563509702682495,
+        "reason": "component_selected",
+        "otsu_level": 39824.33499237725,
+        "contrast": 12032.201843299496,
+        "area_fraction": 0.7974683544303798
+      }
+    }
+  ]
+}

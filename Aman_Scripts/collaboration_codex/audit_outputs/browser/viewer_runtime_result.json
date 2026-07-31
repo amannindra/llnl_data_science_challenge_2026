@@ -1,0 +1,68 @@
+{
+  "status": "pass",
+  "checks": {
+    "title": true,
+    "edge_count": true,
+    "legend_count": true,
+    "canvas_nonempty": true,
+    "search": true,
+    "legend_toggle": true,
+    "wheel_zoom": true,
+    "reset": true,
+    "console_errors": true,
+    "screenshot": true
+  },
+  "initial_state": {
+    "title": "LLNL DSC Part 2 Defect Viewer",
+    "edges": 18468,
+    "legend": 7,
+    "canvas": [
+      1440,
+      1000
+    ],
+    "info": "Selected strut\n\nClick a visible strut or search an edge ID."
+  },
+  "search_result": "E_N001012_N002152\n\npossible_unintended_missing\n\nLabel: phase2c_auto_supported_possible_unintended_missing\nStatus: auto_supported_spotcheck_recommended\nScore: 5.25\nEvidence count: 7\n\nReason:\nsecond_pass_zero_material_body_despite_bounded_instability",
+  "toggle_result": {
+    "checked": false,
+    "visible": false
+  },
+  "zoom_result": {
+    "before": 1,
+    "after": 1.08
+  },
+  "reset_result": {
+    "rotX": -0.75,
+    "rotY": 0.65,
+    "zoom": 1
+  },
+  "focused_visible_classes": {
+    "present_like": false,
+    "possible_unintended_missing": true,
+    "possible_unintended_disconnected": true,
+    "designed_removed": true,
+    "review_required": false,
+    "low_priority_uncertain": false,
+    "unknown": false
+  },
+  "console_errors": [],
+  "ignored_favicon_errors": [
+    {
+      "method": "Log.entryAdded",
+      "params": {
+        "entry": {
+          "source": "network",
+          "level": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+          "timestamp": 1785260681169.379,
+          "url": "http://127.0.0.1:56190/favicon.ico",
+          "networkRequestId": "13024.2"
+        }
+      }
+    }
+  ],
+  "screenshots": {
+    "default_with_search": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/Aman_Scripts/collaboration_codex/audit_outputs/browser/viewer_runtime.png",
+    "defects_only": "/Users/amannindra/Projects/llnl_data_science_challenge_2026/Aman_Scripts/collaboration_codex/audit_outputs/browser/viewer_defects_only.png"
+  }
+}

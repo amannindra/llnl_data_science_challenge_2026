@@ -1,0 +1,29 @@
+{
+  "anchor_review_count": 25,
+  "classification_counts": {
+    "accepted:healthy": 6595,
+    "confirmed:broken": 90,
+    "confirmed:missing": 246,
+    "confirmed:thin": 6,
+    "excluded:not_applicable": 739,
+    "review:bent_or_misaligned": 3817,
+    "review:uncertain": 6975
+  },
+  "criteria": {
+    "bent_or_misaligned": "centerline displacement failed; human review is required because registration can cause the same signal",
+    "broken": "continuous support failed or a large unsupported gap remained, excluding missing criterion",
+    "healthy": "existing metrology decision was clearly inside declared tolerances",
+    "missing": "axial_coverage and unsupported_gap failed, with observed coverage < 0.35",
+    "thick": "p90 radial deviation exceeded effective tolerance and signed deviation was positive",
+    "thin": "p90 radial deviation exceeded effective tolerance and signed deviation was negative",
+    "uncertain": "invalid, incomplete, conflicting, or near-threshold evidence"
+  },
+  "input": "/Users/amannindra/Projects/llnl_DSC/llnl_data_science_challenge_2026-agentic/Aman_Scripts/outputs/simple_strut_metrology/strut_metrology.json",
+  "limitations": [
+    "subtypes are evidence classifications, not manually confirmed ground truth",
+    "missing versus broken uses a policy boundary at 35 percent axial support",
+    "thin/thick depends on calibrated expected radius and registration uncertainty",
+    "bent and registration offset cannot be separated automatically from this report alone"
+  ],
+  "strut_count": 18468
+}

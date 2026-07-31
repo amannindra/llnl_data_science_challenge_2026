@@ -1,0 +1,796 @@
+{
+  "by_category": {
+    "arithmetic": {
+      "failed": 0,
+      "passed": 20,
+      "skipped": 0,
+      "total": 20
+    },
+    "cross_check": {
+      "failed": 0,
+      "passed": 6,
+      "skipped": 0,
+      "total": 6
+    },
+    "integrity": {
+      "failed": 2,
+      "passed": 8,
+      "skipped": 0,
+      "total": 10
+    },
+    "linkage": {
+      "failed": 1,
+      "passed": 25,
+      "skipped": 0,
+      "total": 26
+    },
+    "row_counts": {
+      "failed": 0,
+      "passed": 15,
+      "skipped": 0,
+      "total": 15
+    },
+    "viewer": {
+      "failed": 0,
+      "passed": 4,
+      "skipped": 0,
+      "total": 4
+    }
+  },
+  "checks": [
+    {
+      "category": "integrity",
+      "check_id": "INT-01",
+      "detail": "176 entries",
+      "evidence": {},
+      "name": "MANIFEST.json exposes a files[] array",
+      "status": "PASS"
+    },
+    {
+      "category": "integrity",
+      "check_id": "INT-02",
+      "detail": "176 unique paths",
+      "evidence": {},
+      "name": "manifest paths are unique",
+      "status": "PASS"
+    },
+    {
+      "category": "integrity",
+      "check_id": "INT-03",
+      "detail": "no absolute or '..' paths",
+      "evidence": {},
+      "name": "manifest paths stay inside the packet",
+      "status": "PASS"
+    },
+    {
+      "category": "integrity",
+      "check_id": "INT-04",
+      "detail": "file_count=176, len(files)=176",
+      "evidence": {},
+      "name": "file_count equals len(files)",
+      "status": "PASS"
+    },
+    {
+      "category": "integrity",
+      "check_id": "INT-05",
+      "detail": "file_count=176, on disk=176",
+      "evidence": {},
+      "name": "file_count equals the recursive on-disk file count",
+      "status": "PASS"
+    },
+    {
+      "category": "integrity",
+      "check_id": "INT-06",
+      "detail": "176/176 present",
+      "evidence": {},
+      "name": "every manifest file exists on disk",
+      "status": "PASS"
+    },
+    {
+      "category": "integrity",
+      "check_id": "INT-07",
+      "detail": "1 mismatch(es): ['MANIFEST.json']",
+      "evidence": {
+        "mismatches": [
+          {
+            "actual": 37600,
+            "declared": 2057,
+            "path": "MANIFEST.json"
+          }
+        ]
+      },
+      "name": "every file's size matches the manifest",
+      "status": "FAIL"
+    },
+    {
+      "category": "integrity",
+      "check_id": "INT-08",
+      "detail": "1 mismatch(es): ['MANIFEST.json']",
+      "evidence": {
+        "mismatches": [
+          {
+            "actual": "c7624c316ee26f41c3824162d9f8accf8971e6cc5e96e199e42b4f3eb5845652",
+            "declared": "cb9eb3aebd3f616fc395773d7207f54a44bf0f1867d76d0f2cc7ace4cd4ddd31",
+            "path": "MANIFEST.json"
+          }
+        ]
+      },
+      "name": "every file's SHA-256 matches the manifest",
+      "status": "FAIL"
+    },
+    {
+      "category": "integrity",
+      "check_id": "INT-09",
+      "detail": "175 payload files verified",
+      "evidence": {},
+      "name": "every payload file (excluding the manifest's self-entry) verifies",
+      "status": "PASS"
+    },
+    {
+      "category": "integrity",
+      "check_id": "INT-10",
+      "detail": "no orphan files",
+      "evidence": {
+        "orphans": []
+      },
+      "name": "no unlisted files exist on disk",
+      "status": "PASS"
+    },
+    {
+      "category": "arithmetic",
+      "check_id": "ARI-01",
+      "detail": "214.0 vs 202.0 + 12.0 = 214.0",
+      "evidence": {},
+      "name": "headline combined == missing + disconnected",
+      "status": "PASS"
+    },
+    {
+      "category": "arithmetic",
+      "check_id": "ARI-02",
+      "detail": "important_counts=214, headline=214.0",
+      "evidence": {},
+      "name": "important_counts baseline == headline combined",
+      "status": "PASS"
+    },
+    {
+      "category": "arithmetic",
+      "check_id": "ARI-03",
+      "detail": "228 vs 214 + 14",
+      "evidence": {},
+      "name": "phase2c candidates == baseline candidates + newly promoted rows",
+      "status": "PASS"
+    },
+    {
+      "category": "arithmetic",
+      "check_id": "ARI-04",
+      "detail": "csv=1.158761, recomputed=1.158761100281568",
+      "evidence": {},
+      "name": "draft_percent == 100 * combined / total",
+      "status": "PASS"
+    },
+    {
+      "category": "arithmetic",
+      "check_id": "ARI-05",
+      "detail": "40.0 vs reviewed_panels=40.0",
+      "evidence": {},
+      "name": "human defect_like + ambiguous + contradictions == reviewed_panels",
+      "status": "PASS"
+    },
+    {
+      "category": "arithmetic",
+      "check_id": "ARI-06",
+      "detail": "tally={'ambiguous': 4, 'material_absent': 29, 'material_disconnected': 7}, sum=40, defect_like=36",
+      "evidence": {},
+      "name": "human_spotcheck_label_counts.csv reproduces the headline spot-check",
+      "status": "PASS"
+    },
+    {
+      "category": "arithmetic",
+      "check_id": "ARI-07",
+      "detail": "sum=18468, total_edge_count=18468",
+      "evidence": {},
+      "name": "phase2c label breakdown sums to total_edge_count",
+      "status": "PASS"
+    },
+    {
+      "category": "arithmetic",
+      "check_id": "ARI-08",
+      "detail": "sum=18468, total_edge_count=18468",
+      "evidence": {},
+      "name": "phase2c status breakdown sums to total_edge_count",
+      "status": "PASS"
+    },
+    {
+      "category": "arithmetic",
+      "check_id": "ARI-09",
+      "detail": "sum=18468, total_edge_count=18468",
+      "evidence": {},
+      "name": "phase2c triage bucket breakdown sums to total_edge_count",
+      "status": "PASS"
+    },
+    {
+      "category": "arithmetic",
+      "check_id": "ARI-10",
+      "detail": "228 vs 215 + 13",
+      "evidence": {},
+      "name": "phase2c combined == phase2c missing + disconnected",
+      "status": "PASS"
+    },
+    {
+      "category": "arithmetic",
+      "check_id": "ARI-11",
+      "detail": "summary=228, manifest=228",
+      "evidence": {},
+      "name": "phase2c combined == important_counts phase2c candidates",
+      "status": "PASS"
+    },
+    {
+      "category": "arithmetic",
+      "check_id": "ARI-12",
+      "detail": "json=0.012345679012345678, recomputed=0.012345679012345678",
+      "evidence": {},
+      "name": "phase2c combined fraction == combined / total_edge_count",
+      "status": "PASS"
+    },
+    {
+      "category": "arithmetic",
+      "check_id": "ARI-13",
+      "detail": "3345 vs 14 + 677 + 2654 = 3345",
+      "evidence": {},
+      "name": "human_verification_template_rows == sum of its three sub-queue counts",
+      "status": "PASS"
+    },
+    {
+      "category": "arithmetic",
+      "check_id": "ARI-14",
+      "detail": "214 + 89 + 14820 + 920 + 2425 = 18468 vs 18468",
+      "evidence": {},
+      "name": "baseline label partition sums to total_expected_struts",
+      "status": "PASS"
+    },
+    {
+      "category": "arithmetic",
+      "check_id": "ARI-15",
+      "detail": "blocked=920 vs promoted+review_required+low_priority_delta=14+677+229=920",
+      "evidence": {},
+      "name": "phase2c re-triages exactly the baseline's blocked rows",
+      "status": "PASS"
+    },
+    {
+      "category": "arithmetic",
+      "check_id": "ARI-16",
+      "detail": "json=1.158761100281568, csv=1.158761",
+      "evidence": {},
+      "name": "final_ct_defect_summary percent agrees with headline_numbers.csv",
+      "status": "PASS"
+    },
+    {
+      "category": "arithmetic",
+      "check_id": "ARI-17",
+      "detail": "sum=18468, edge_count=18468",
+      "evidence": {},
+      "name": "viewer class_counts sum to the viewer edge_count",
+      "status": "PASS"
+    },
+    {
+      "category": "arithmetic",
+      "check_id": "ARI-18",
+      "detail": "recounted tally matches",
+      "evidence": {},
+      "name": "phase2c_labels.csv phase2c_label tally reproduces phase2c_summary.json",
+      "status": "PASS"
+    },
+    {
+      "category": "arithmetic",
+      "check_id": "ARI-19",
+      "detail": "recounted tally matches",
+      "evidence": {},
+      "name": "phase2c_labels.csv phase2c_status tally reproduces phase2c_summary.json",
+      "status": "PASS"
+    },
+    {
+      "category": "arithmetic",
+      "check_id": "ARI-20",
+      "detail": "recounted tally matches",
+      "evidence": {},
+      "name": "phase2c_labels.csv phase2c_triage_bucket tally reproduces phase2c_summary.json",
+      "status": "PASS"
+    },
+    {
+      "category": "row_counts",
+      "check_id": "ROW-01",
+      "detail": "actual=14, claimed=14 (source: MANIFEST.important_counts.newly_promoted_phase2c_rows_to_verify_first)",
+      "evidence": {},
+      "name": "review_tables/newly_promoted_14_to_verify.csv has 14 data rows",
+      "status": "PASS"
+    },
+    {
+      "category": "row_counts",
+      "check_id": "ROW-02",
+      "detail": "actual=677, claimed=677 (source: MANIFEST.important_counts.remaining_review_required_rows)",
+      "evidence": {},
+      "name": "review_tables/remaining_review_required_677_to_verify.csv has 677 data rows",
+      "status": "PASS"
+    },
+    {
+      "category": "row_counts",
+      "check_id": "ROW-03",
+      "detail": "actual=2654, claimed=2654 (source: MANIFEST.important_counts.low_priority_uncertain_audit_rows)",
+      "evidence": {},
+      "name": "review_tables/low_priority_uncertain_2654_audit_table.csv has 2654 data rows",
+      "status": "PASS"
+    },
+    {
+      "category": "row_counts",
+      "check_id": "ROW-04",
+      "detail": "actual=3345, claimed=3345 (source: MANIFEST.important_counts.human_verification_template_rows)",
+      "evidence": {},
+      "name": "review_tables/human_verification_template.csv has 3345 data rows",
+      "status": "PASS"
+    },
+    {
+      "category": "row_counts",
+      "check_id": "ROW-05",
+      "detail": "actual=228, claimed=228 (source: MANIFEST.important_counts.phase2c_auto_supported_possible_unintended_candidates)",
+      "evidence": {},
+      "name": "review_tables/phase2c_auto_supported_unintended_candidates.csv has 228 data rows",
+      "status": "PASS"
+    },
+    {
+      "category": "row_counts",
+      "check_id": "ROW-06",
+      "detail": "actual=18468, claimed=18468 (source: phase2c_summary.json.summary.total_edge_count)",
+      "evidence": {},
+      "name": "review_tables/phase2c_labels.csv has 18468 data rows",
+      "status": "PASS"
+    },
+    {
+      "category": "row_counts",
+      "check_id": "ROW-07",
+      "detail": "actual=677, claimed=677 (source: phase2c_summary.json.summary.phase2c_remaining_review_required_count)",
+      "evidence": {},
+      "name": "review_tables/phase2c_remaining_review_queue.csv has 677 data rows",
+      "status": "PASS"
+    },
+    {
+      "category": "row_counts",
+      "check_id": "ROW-08",
+      "detail": "actual=214, claimed=214 (source: headline_numbers.csv.auto_supported_possible_unintended_combined)",
+      "evidence": {},
+      "name": "final_report_baseline/tables/auto_supported_unintended_candidates.csv has 214 data rows",
+      "status": "PASS"
+    },
+    {
+      "category": "row_counts",
+      "check_id": "ROW-09",
+      "detail": "actual=920, claimed=920 (source: headline_numbers.csv.blocked_manual_review_rows)",
+      "evidence": {},
+      "name": "final_report_baseline/tables/manual_review_queue.csv has 920 data rows",
+      "status": "PASS"
+    },
+    {
+      "category": "row_counts",
+      "check_id": "ROW-10",
+      "detail": "actual=40, claimed=40 (source: headline_numbers.csv.reviewed_panels)",
+      "evidence": {},
+      "name": "final_report_baseline/tables/human_spotcheck_labels_rank001_040.csv has 40 data rows",
+      "status": "PASS"
+    },
+    {
+      "category": "row_counts",
+      "check_id": "ROW-11",
+      "detail": "actual=120, claimed=120 (source: ct_edge_panel_summary.json.edge_count)",
+      "evidence": {},
+      "name": "review_panels_phase2c_top120/ct_edge_panel_summary.csv has 120 data rows",
+      "status": "PASS"
+    },
+    {
+      "category": "row_counts",
+      "check_id": "ROW-12",
+      "detail": "actual=120, claimed=120 (source: ct_edge_panel_summary.json.edge_count (same 120-panel review packet))",
+      "evidence": {},
+      "name": "review_tables/review_panel_index.csv has 120 data rows",
+      "status": "PASS"
+    },
+    {
+      "category": "row_counts",
+      "check_id": "ROW-13",
+      "detail": "actual=14, claimed=14 (source: filename)",
+      "evidence": {},
+      "name": "review_tables/newly_promoted_14_to_verify.csv has 14 data rows",
+      "status": "PASS"
+    },
+    {
+      "category": "row_counts",
+      "check_id": "ROW-14",
+      "detail": "actual=677, claimed=677 (source: filename)",
+      "evidence": {},
+      "name": "review_tables/remaining_review_required_677_to_verify.csv has 677 data rows",
+      "status": "PASS"
+    },
+    {
+      "category": "row_counts",
+      "check_id": "ROW-15",
+      "detail": "actual=2654, claimed=2654 (source: filename)",
+      "evidence": {},
+      "name": "review_tables/low_priority_uncertain_2654_audit_table.csv has 2654 data rows",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-01",
+      "detail": "120 referenced",
+      "evidence": {},
+      "name": "every panel referenced by the summary exists on disk",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-02",
+      "detail": "120 on disk",
+      "evidence": {},
+      "name": "every panel PNG on disk appears in the summary",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-03",
+      "detail": "120 filenames parsed",
+      "evidence": {},
+      "name": "every panel filename follows rank_NNN_E_<u>_<v>_ct_panel.png",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-04",
+      "detail": "{\"duplicates\": [], \"missing\": [], \"unexpected\": []}",
+      "evidence": {},
+      "name": "panel ranks are contiguous 1..120",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-05",
+      "detail": "120 rows agree",
+      "evidence": {},
+      "name": "panel filename rank/edge match the summary row",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-06",
+      "detail": "120 rows agree",
+      "evidence": {},
+      "name": "panel filename node pair matches the row's edge_id",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-07a",
+      "detail": "{\"duplicates\": [], \"missing\": [], \"unexpected\": []}",
+      "evidence": {},
+      "name": "review_panel_index.csv ranks are contiguous 1..120",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-07b",
+      "detail": "120 edge IDs parsed",
+      "evidence": {},
+      "name": "review_panel_index.csv edge_id values parse to a node pair",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-07",
+      "detail": "120/120 derived panel filenames present",
+      "evidence": {
+        "absent_examples": []
+      },
+      "name": "review_panel_index.csv panels resolve to files in this packet",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-08a",
+      "detail": "{\"duplicates\": [], \"missing\": [], \"unexpected\": []}",
+      "evidence": {},
+      "name": "spotcheck_panel_index.csv ranks are contiguous 1..80",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-08b",
+      "detail": "80 edge IDs parsed",
+      "evidence": {},
+      "name": "spotcheck_panel_index.csv edge_id values parse to a node pair",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-08",
+      "detail": "0/80 derived panel filenames present",
+      "evidence": {
+        "absent_examples": [
+          "rank_001_E_N003450_N004589_ct_panel.png",
+          "rank_002_E_N006559_N007697_ct_panel.png",
+          "rank_003_E_N003466_N003471_ct_panel.png",
+          "rank_004_E_N004584_N004604_ct_panel.png",
+          "rank_005_E_N003452_N003456_ct_panel.png"
+        ]
+      },
+      "name": "spotcheck_panel_index.csv panels resolve to files in this packet",
+      "status": "FAIL"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-10",
+      "detail": "14 unique edge IDs resolve against the label table",
+      "evidence": {},
+      "name": "newly_promoted_14_to_verify.csv edge IDs are all present in phase2c_labels.csv",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-11",
+      "detail": "677 unique edge IDs resolve against the label table",
+      "evidence": {},
+      "name": "remaining_review_required_677_to_verify.csv edge IDs are all present in phase2c_labels.csv",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-12",
+      "detail": "2654 unique edge IDs resolve against the label table",
+      "evidence": {},
+      "name": "low_priority_uncertain_2654_audit_table.csv edge IDs are all present in phase2c_labels.csv",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-13",
+      "detail": "3345 unique edge IDs resolve against the label table",
+      "evidence": {},
+      "name": "human_verification_template.csv edge IDs are all present in phase2c_labels.csv",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-14",
+      "detail": "228 unique edge IDs resolve against the label table",
+      "evidence": {},
+      "name": "phase2c_auto_supported_unintended_candidates.csv edge IDs are all present in phase2c_labels.csv",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-15",
+      "detail": "677 unique edge IDs resolve against the label table",
+      "evidence": {},
+      "name": "phase2c_remaining_review_queue.csv edge IDs are all present in phase2c_labels.csv",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-16",
+      "detail": "120 unique edge IDs resolve against the label table",
+      "evidence": {},
+      "name": "review_panel_index.csv edge IDs are all present in phase2c_labels.csv",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-17",
+      "detail": "120 unique edge IDs resolve against the label table",
+      "evidence": {},
+      "name": "ct_edge_panel_summary.csv edge IDs are all present in phase2c_labels.csv",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-18",
+      "detail": "80 unique edge IDs resolve against the label table",
+      "evidence": {},
+      "name": "spotcheck_panel_index.csv edge IDs are all present in phase2c_labels.csv",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-19",
+      "detail": "214 unique edge IDs resolve against the label table",
+      "evidence": {},
+      "name": "auto_supported_unintended_candidates.csv edge IDs are all present in phase2c_labels.csv",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-20",
+      "detail": "920 unique edge IDs resolve against the label table",
+      "evidence": {},
+      "name": "manual_review_queue.csv edge IDs are all present in phase2c_labels.csv",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-21",
+      "detail": "40 unique edge IDs resolve against the label table",
+      "evidence": {},
+      "name": "human_spotcheck_labels_rank001_040.csv edge IDs are all present in phase2c_labels.csv",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-22",
+      "detail": "template={'newly_promoted_14_first_priority': 14, 'remaining_review_required_677_second_priority': 677, 'low_priority_uncertain_2654_audit_only': 2654}, sources={'newly_promoted_14_first_priority': 14, 'remaining_review_required_677_second_priority': 677, 'low_priority_uncertain_2654_audit_only': 2654}",
+      "evidence": {},
+      "name": "human_verification_template.csv queue composition matches its three sources",
+      "status": "PASS"
+    },
+    {
+      "category": "linkage",
+      "check_id": "LNK-23",
+      "detail": "40 labelled rows align with spotcheck_panel_index ranks 1..40",
+      "evidence": {},
+      "name": "human spot-check labels cover the top-ranked spotcheck panel rows",
+      "status": "PASS"
+    },
+    {
+      "category": "cross_check",
+      "check_id": "XVL-01",
+      "detail": "junctions=10206, source struts=18468, unit cells=729",
+      "evidence": {},
+      "name": "registered lattice JSON parses to 10,206 junction records",
+      "status": "PASS"
+    },
+    {
+      "category": "cross_check",
+      "check_id": "XVL-02",
+      "detail": "welded nodes=3430",
+      "evidence": {},
+      "name": "coincident-node welding yields 3,430 physical nodes",
+      "status": "PASS"
+    },
+    {
+      "category": "cross_check",
+      "check_id": "XVL-03",
+      "detail": "recomputed=18468 from data/missing_struts/registered_jsons/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.json, packet claims 18468",
+      "evidence": {},
+      "name": "welded strut count reproduces the packet's total_expected_struts",
+      "status": "PASS"
+    },
+    {
+      "category": "cross_check",
+      "check_id": "XVL-04",
+      "detail": "3430 distinct node IDs in [0, 10205]",
+      "evidence": {},
+      "name": "packet node IDs fall inside the source junction ID range",
+      "status": "PASS"
+    },
+    {
+      "category": "cross_check",
+      "check_id": "XVL-05",
+      "detail": "packet=18468, repo=18468, packet-only=0, repo-only=0, unmapped=0",
+      "evidence": {},
+      "name": "packet edge set equals this repo's welded strut set",
+      "status": "PASS"
+    },
+    {
+      "category": "cross_check",
+      "check_id": "XVL-06",
+      "detail": "18468 distinct IDs inside [0, 18467]",
+      "evidence": {},
+      "name": "packet source_strut_id values are real source strut IDs",
+      "status": "PASS"
+    },
+    {
+      "category": "viewer",
+      "check_id": "VWR-01",
+      "detail": "viewer/index.html",
+      "evidence": {},
+      "name": "the manifest's viewer_entrypoint exists",
+      "status": "PASS"
+    },
+    {
+      "category": "viewer",
+      "check_id": "VWR-02",
+      "detail": "0 referenced local path(s)",
+      "evidence": {
+        "local_paths": []
+      },
+      "name": "every path the viewer references exists",
+      "status": "PASS"
+    },
+    {
+      "category": "viewer",
+      "check_id": "VWR-03",
+      "detail": "no network calls; data arrives via inline <script type=application/json> block(s) ['viewer-data']",
+      "evidence": {},
+      "name": "the viewer is self-contained (no fetch/XHR/external hosts)",
+      "status": "PASS"
+    },
+    {
+      "category": "viewer",
+      "check_id": "VWR-04",
+      "detail": "inline edges=18468, metadata.edge_count=18468, class tally matches run_manifest.json",
+      "evidence": {},
+      "name": "the viewer's embedded payload parses and matches its edge_count",
+      "status": "PASS"
+    }
+  ],
+  "findings": [
+    {
+      "check_id": "INT-05",
+      "message": "MANIFEST.json counts itself: it is one of the files[] entries, so file_count includes the manifest file",
+      "severity": "info"
+    },
+    {
+      "check_id": "INT-07",
+      "message": "1 mismatch(es): ['MANIFEST.json']",
+      "severity": "blocking"
+    },
+    {
+      "check_id": "INT-08",
+      "message": "1 mismatch(es): ['MANIFEST.json']",
+      "severity": "blocking"
+    },
+    {
+      "check_id": "INT-08",
+      "message": "MANIFEST.json contains a self-entry whose size/SHA-256 describe an earlier revision of itself. A manifest cannot contain its own final hash, so this entry is unsatisfiable by construction and should be omitted or recorded in a detached sidecar.",
+      "severity": "warning"
+    },
+    {
+      "check_id": "LNK-01",
+      "message": "ct_edge_panel_summary.csv output_path values point at the collaborator's own run directory (outputs/part2/phase2c/...); linkage is matched on the filename component only",
+      "severity": "info"
+    },
+    {
+      "check_id": "LNK-08",
+      "message": "0/80 derived panel filenames present",
+      "severity": "warning"
+    },
+    {
+      "check_id": "LNK-08",
+      "message": "spotcheck_panel_index.csv indexes 80 panels from a run whose PNGs are not shipped in this packet (80 absent). Only the 120 Phase 2C panels under review_panels_phase2c_top120/ are included.",
+      "severity": "info"
+    },
+    {
+      "check_id": "VWR-04",
+      "message": "viewer/viewer_data.json duplicates the payload already embedded in index.html; index.html never references it, so the sidecar (10.5 MiB) is redundant inside the packet",
+      "severity": "info"
+    },
+    {
+      "check_id": "VWR-02",
+      "message": "viewer sidecar files never referenced by viewer/index.html: ['legend.json', 'run_manifest.json', 'viewer_data.json']",
+      "severity": "info"
+    },
+    {
+      "check_id": "VWR-03",
+      "message": "the viewer opens directly from the filesystem (file://) because it makes no fetch/XHR calls; no local web server is required",
+      "severity": "info"
+    }
+  ],
+  "integrity_gate": "FAIL",
+  "packet": "collaboration/part2_verification_handoff_20260727",
+  "packet_created_utc": "2026-07-27T23:33:33.167018+00:00",
+  "packet_name": "part2_verification_handoff_20260727",
+  "tool": "verify_handoff",
+  "totals": {
+    "failed": 3,
+    "passed": 78,
+    "skipped": 0,
+    "total": 81
+  },
+  "viewer": {
+    "class_counts": {
+      "designed_removed": 89,
+      "low_priority_uncertain": 2654,
+      "possible_unintended_disconnected": 13,
+      "possible_unintended_missing": 215,
+      "present_like": 14820,
+      "review_required": 677
+    },
+    "declared_edge_count": 18468,
+    "edges": 18468,
+    "script_id": "viewer-data"
+  }
+}

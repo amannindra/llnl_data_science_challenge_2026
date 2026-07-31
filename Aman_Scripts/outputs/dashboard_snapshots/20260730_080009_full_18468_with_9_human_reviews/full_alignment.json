@@ -1,0 +1,112 @@
+{
+  "axis_scores": {
+    "0,1,2": {
+      "mean_intensity": 36140.5859375,
+      "median_intensity": 33329.0,
+      "p90_intensity": 46261.3984375,
+      "valid_stations": 5262
+    },
+    "0,2,1": {
+      "mean_intensity": 34603.6171875,
+      "median_intensity": 32664.5,
+      "p90_intensity": 41657.6015625,
+      "valid_stations": 5262
+    },
+    "1,0,2": {
+      "mean_intensity": 34474.140625,
+      "median_intensity": 32572.0,
+      "p90_intensity": 41567.0,
+      "valid_stations": 5277
+    },
+    "1,2,0": {
+      "mean_intensity": 35698.015625,
+      "median_intensity": 32672.0,
+      "p90_intensity": 46185.80078125,
+      "valid_stations": 5277
+    },
+    "2,0,1": {
+      "mean_intensity": 35020.73046875,
+      "median_intensity": 32693.0,
+      "p90_intensity": 43943.3984375,
+      "valid_stations": 5400
+    },
+    "2,1,0": {
+      "mean_intensity": 40409.2578125,
+      "median_intensity": 39599.5,
+      "p90_intensity": 49493.69921875,
+      "valid_stations": 5400
+    }
+  },
+  "centerline_occupancy": 0.46425925925925926,
+  "ct_dtype": ">u2",
+  "ct_file": {
+    "modified_time_ns": 1784583224605686292,
+    "path": "data/missing_struts/tif_stacks/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.tif",
+    "size_bytes": 1038433319
+  },
+  "ct_shape": [
+    761,
+    815,
+    837
+  ],
+  "graph_file": {
+    "modified_time_ns": 1784583084719963501,
+    "path": "data/missing_struts/registered_jsons/210127_Brian_Tran_strut_lattices_0point5dash1 1 Slices.json",
+    "size_bytes": 4958672
+  },
+  "material_found_fraction": 0.9642592592592593,
+  "median_material_distance_um": 58.09,
+  "median_material_distance_vox": 1.0,
+  "note": "Registered positions already encode specimen tilt; no residual transform was justified by this diagnostic. Missing/broken struts are expected to reduce material support.",
+  "p90_material_distance_um": 174.27,
+  "p90_material_distance_vox": 3.0,
+  "p95_material_distance_vox": 4.0,
+  "reliable": true,
+  "residual_correction_applied": false,
+  "residual_transform": [
+    [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "sample_stations": 5400,
+  "sample_struts": 600,
+  "selected_mapping": "JSON (x,y,z) -> CT array (z,y,x)",
+  "selected_permutation": [
+    2,
+    1,
+    0
+  ],
+  "stop_criteria": {
+    "maximum_median_distance_vox": 2.0,
+    "maximum_p90_distance_vox": 4.0,
+    "minimum_material_found_fraction": 0.85
+  },
+  "threshold_li": 39505.76994750259,
+  "threshold_otsu": 40333.0,
+  "voxel_spacing_um": [
+    58.09,
+    58.09,
+    58.09
+  ]
+}

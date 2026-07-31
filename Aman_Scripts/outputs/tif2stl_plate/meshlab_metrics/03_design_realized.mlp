@@ -1,0 +1,12 @@
+<!DOCTYPE MeshLabDocument>
+<MeshLabProject><MeshGroup><MLMesh label="STL realized in CT +1 cell (yellow) | 60.36%" filename="design_realized_yellow.ply"><MLMatrix44>
+1 0 0 0
+0 1 0 0
+0 0 1 0
+0 0 0 1
+</MLMatrix44></MLMesh><MLMesh label="STL not realized in CT +1 cell (green) | 39.64%" filename="design_unrealized_green.ply"><MLMatrix44>
+1 0 0 0
+0 1 0 0
+0 0 1 0
+0 0 0 1
+</MLMatrix44></MLMesh></MeshGroup><RasterGroup /></MeshLabProject>

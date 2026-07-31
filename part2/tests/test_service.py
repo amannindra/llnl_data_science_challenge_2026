@@ -33,16 +33,17 @@ def test_summary_and_filters_are_bounded_and_read_only() -> None:
     )
 
     assert summary["sample_size"] == 18_468
+    assert summary["clustering"]["status"] == "not_available"
     assert summary["candidate_counts"] == {
-        "bent_or_misaligned": 12_723,
-        "healthy": 3_162,
-        "uncertain": 1_467,
+        "bent_or_misaligned": 3_816,
+        "healthy": 6_598,
+        "uncertain": 6_973,
         "not_applicable": 739,
-        "broken": 256,
-        "missing": 120,
-        "thin": 1,
+        "broken": 90,
+        "missing": 246,
+        "thin": 6,
     }
-    assert filtered["matching_count"] == 377
+    assert filtered["matching_count"] == 342
     assert filtered["returned_count"] == 3
     assert all(
         row["prediction"] in {"missing", "broken", "thin"}
@@ -60,6 +61,7 @@ def test_strut_lookup_and_group_comparison() -> None:
 
     assert details["record"]["strut_id"] == 8578
     assert details["record"]["prediction"] == "healthy"
+    assert details["clustering"]["status"] == "not_available"
     assert "not_validated" in details["classification_status"]
     assert comparison["filtered_sample_size"] == 18_468
     assert {row["group"] for row in comparison["groups"]} == {
@@ -88,7 +90,7 @@ def test_methodology_and_threejs_spec_are_bounded() -> None:
     assert "Provisional classification rules" in methodology["markdown"]
     assert scene["viewer_launched"] is False
     assert scene["read_only"] is True
-    assert scene["matching_overlay_count"] == 376
+    assert scene["matching_overlay_count"] == 336
     assert scene["returned_overlay_count"] == 200
     assert len(scene["overlay_strut_ids"]) == 200
     assert scene["nominal_strut_count"] == 18_468

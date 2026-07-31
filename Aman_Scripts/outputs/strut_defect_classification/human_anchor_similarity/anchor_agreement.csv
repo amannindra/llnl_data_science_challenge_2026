@@ -1,0 +1,5 @@
+anchor_strut_id,human_label,nearest_count,nearest_agreement_count,nearest_agreement_fraction,nearest_label_counts,propagation_recommendation
+1523,uncertain,15,14,0.9333333333333333,"{'uncertain': 14, 'broken': 1}",candidate_for_reviewed_cohort_propagation
+1775,healthy,15,0,0.0,{'uncertain': 15},do_not_propagate
+6754,healthy,15,8,0.5333333333333333,"{'healthy': 8, 'uncertain': 4, 'bent_or_misaligned': 3}",do_not_propagate
+14755,healthy,15,0,0.0,{'uncertain': 15},do_not_propagate

@@ -236,7 +236,8 @@ def build_full_dashboard_artifacts(config: DefectConfig = DEFAULT_CONFIG) -> dic
         "Thickness statistics are reported only for rows with valid measurements and are not ground truth.\n\n"
         "## Limitations and next decision\n\n"
         "The labels are automated evidence classifications, not validated manufacturing defects. Anchor "
-        "human reviews are required for missing-versus-broken and bent-versus-registration decisions.\n"
+        "independent validation is recommended for ambiguous missing-versus-broken "
+        "and bent-versus-registration decisions.\n"
     )
     config.dashboard_report_path.write_text(report, encoding="utf-8")
 
