@@ -95,6 +95,18 @@ def classify_defect_subtype(record: dict[str, Any]) -> dict[str, Any]:
         }
 
     if "centerline_displacement" in failed:
+        center_p90 = _finite(record, "p90_centerline_displacement_voxels")
+        center_limit = _finite(record, "effective_centerline_tolerance_voxels")
+        reg_uncertainty = _finite(record, "registration_uncertainty_voxels")
+        if center_p90 is not None and center_limit is not None and reg_uncertainty is not None:
+            excess = center_p90 - center_limit
+            if excess <= reg_uncertainty:
+                return {
+                    "defect_type": "uncertain",
+                    "classification_status": "review",
+                    "classification_confidence": "low",
+                    "classification_reason": "centerline_offset_within_registration_stability_band",
+                }
         return {
             "defect_type": "bent_or_misaligned",
             "classification_status": "review",

@@ -76,12 +76,39 @@ def _confidence(status: pd.Series) -> pd.Series:
     ).fillna(0.0)
 
 
+def _apply_human_review_overrides(table: pd.DataFrame, human_review_path: Path) -> pd.DataFrame:
+    """Overlay confirmed human review labels from `human_review_labels.csv` on top
+    of the automated classification, so a strut a human already reviewed keeps
+    that label even after the automated pipeline is regenerated."""
+
+    if not human_review_path.is_file():
+        return table
+    overrides = pd.read_csv(human_review_path)
+    if overrides.empty:
+        return table
+    invalid = sorted(set(overrides["human_label"].astype(str)) - set(CLASSIFICATION_LABELS))
+    if invalid:
+        raise ValueError(f"Unsupported human review labels: {invalid}")
+    overrides = overrides.drop_duplicates(subset="strut_id", keep="last").set_index("strut_id")
+
+    table = table.set_index("strut_id", drop=False)
+    matched = table.index.intersection(overrides.index)
+    table.loc[matched, "defect_type"] = overrides.loc[matched, "human_label"]
+    table.loc[matched, "classification_status"] = "accepted"
+    table.loc[matched, "classification_confidence"] = "high"
+    table.loc[matched, "classification_reason"] = "human_review_override"
+    table["human_review_note"] = overrides["review_note"].reindex(table.index) if "review_note" in overrides else pd.NA
+    table["human_reviewer"] = overrides["reviewer"].reindex(table.index) if "reviewer" in overrides else pd.NA
+    return table.reset_index(drop=True)
+
+
 def build_full_results_table(
     config: DefectConfig = DEFAULT_CONFIG,
     *,
     classification_path: Path | str | None = None,
     measurements_path: Path | str | None = None,
     metrology_path: Path | str | None = None,
+    human_review_path: Path | str | None = None,
 ) -> pd.DataFrame:
     """Join classification, registered geometry, and measurement evidence."""
 
@@ -111,6 +138,9 @@ def build_full_results_table(
     merged = geometry.merge(classification, on="strut_id", how="left", validate="one_to_one")
     if merged["defect_type"].isna().any():
         raise ValueError("Some registered struts have no classification record")
+
+    human_review_file = Path(human_review_path or config.human_review_path)
+    merged = _apply_human_review_overrides(merged, human_review_file)
 
     measurement_file = Path(measurements_path or config.measurements_path)
     measurement_file = _source_path(measurement_file, Path(""))

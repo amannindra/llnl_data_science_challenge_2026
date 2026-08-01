@@ -80,9 +80,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="evenly spaced CAD-expected diagnostic members; omit for all members",
     )
     parser.add_argument("--surface-samples", type=int, default=30_000)
-    parser.add_argument("--registration-iterations", type=int, default=6)
+    parser.add_argument("--registration-iterations", type=int, default=12)
     parser.add_argument("--minimum-registration-contrast", type=float, default=1000.0)
-    parser.add_argument("--maximum-registration-translation", type=float, default=2.0)
+    parser.add_argument("--maximum-registration-translation", type=float, default=3.0)
     parser.add_argument("--maximum-registration-rotation-deg", type=float, default=0.5)
     parser.add_argument("--minimum-registration-valid-fraction", type=float, default=0.20)
     parser.add_argument("--minimum-local-contrast", type=float, default=1000.0)

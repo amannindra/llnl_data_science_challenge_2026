@@ -1,0 +1,10 @@
+strut_id,human_label,review_note,reviewer
+6754,healthy,Raw-TIFF review shows a continuous member; automated uncertainty was caused by near-tolerance centerline displacement.,human_review
+14755,healthy,"Raw-TIFF review shows a healthy continuous member; the red registered line is offset, indicating registration/overlay error rather than a physical defect.",human_review
+1523,uncertain,The 2D projection does not provide enough depth evidence to decide missing versus broken; retain for a deeper 3D review.,human_review
+1775,healthy,"Human review marked Image 2 healthy; the 2D projection alone is not sufficient for a missing/broken decision, so this label should be rechecked with the 3D view.",human_review
+1870,bent_or_misaligned,"Full axial support (100%), connected, gap=0, thickness 363um near nominal, but Otsu-mask centroid at mid-body is offset ~2.5vox from the CAD axis and p90 centerline displacement is 1.84vox. Continuous, correctly-sized material consistently offset from the expected line.",human_review
+10005,missing,"Axial support only 4.7%, 41.4vox unsupported gap (of ~57vox crop). Otsu segmentation failed at mid-body (contrast 689 < 1000 threshold) -- no rod-shaped material found. Raw MIP shows a flat black band along the whole expected path; no material to be misaligned.",human_review
+10536,healthy,"Full axial support, connected, gap=0, centerline offset 1.73vox, thickness 367um near nominal. Otsu mask well-centered and round, contrast 16151, area_fraction 0.82.",human_review
+14098,missing,"Axial support only 4.7%, 41.4vox unsupported gap -- same signature as strut 10005. Otsu segmentation failed at mid-body (contrast 667 < 1000 threshold), no rod-shaped material found along the diagonal expected path.",human_review
+17654,healthy,"Full axial support, connected, gap=0, centerline offset 1.78vox, thickness 352um almost exactly the 350um design nominal. Otsu mask well-centered, area_fraction 0.78.",human_review
